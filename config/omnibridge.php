@@ -67,8 +67,24 @@ return [
     ],
 
     // omnibase's storages (local.uploads, s3.private...) and the Laravel disk
-    // each is; "default" for a storage not named.
+    // each is; "default" for a storage not named. With media on, omnibase's
+    // Flysystem reads them too (a storage not named is the disk of its name),
+    // local.cache - the thumbnails made - required.
     'storages' => [],
+
+    // omnibase's media rule (audit R6): false (off), true, or its options.
+    // On, MediaService is built on Laravel's router, Base\Contract\Media and
+    // Pictures' thumbnails answer through it, and omnibase's image routes
+    // (/images/..., /contents/...) are declared under their Symfony names and
+    // answered by Base\Service\ImageRoute - the same obfuscated addresses,
+    // thumbnails and formats as under Symfony. Its parameters are the config's
+    // "base": base.images.* (max_quality, enable_webp, fallback, no_image...),
+    // base.obfuscator.* (uuid, compression..., cache_dir: the identifiers' map,
+    // the Symfony site's to read the addresses it wrote), base.uploader.storage,
+    // base.twig.editor.storage; omnibase's defaults where it says nothing.
+    // Options: routes (false: declare the routes yourself), secret (the
+    // hashids compression's, the Symfony site's kernel.secret; app.key when null).
+    'media' => false,
 
     // The entity namespaces of the bundles the site uses, and their prefix in
     // the "entities" catalogues (Base\Marketplace\Entity\ => marketplace\).

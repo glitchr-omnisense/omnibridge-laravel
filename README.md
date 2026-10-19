@@ -52,12 +52,13 @@ for its templates: this package opens Doctrine on one of Laravel's connections
 | `Symfony\Component\Mailer\MailerInterface` | the default mailer's Symfony transport | `Contract\TransportMailer` |
 | `Doctrine\DBAL\Connection`, `Doctrine\ORM\EntityManagerInterface` | the Laravel connection configured, omnibridge/doctrine's entity manager | `Doctrine\Connections` |
 | `Twig\Environment` | the site's templates and namespaces, omnibridge/twig's contract and helpers | `View\Twig` |
-| `Base\Contract\Pictures` | `\|picture`'s rule but the thumbnails: a public file by its path, an address as it is, else the build's asset; a stored picture where the application serves it (`stored()`) | `Screen\AddressPictures` |
+| `Base\Contract\Pictures` | `\|picture`'s rule: a public file by its thumbnail at the size asked (MediaService's, `omnibridge.media` on) or its path, an address as it is, else the build's asset; a stored picture where the application serves it (`stored()`) | `Screen\AddressPictures` |
 | `Base\Contract\Texts` | `\|wysiwyg` and `\|wysiwyg_toc`'s passes (headings, links, every leaf a string, Editor.js's renderer or Quill's HTML) through omnibase's own views (`@Base` among the Twig paths, or `on($twig)`); a picture where the application serves it (`images()`) | `Screen\WysiwygTexts` |
 | `Base\Screen\ContextProvider` | a screen's frame: the locale as a Symfony request carries it (`fr_FR`), the site's settings, home, login, register, logout and each language's address, the guard's user, the colour scheme of the visitor's mode (`omnibridge.theme`), the session's messages | `Screen\ScreenContext` |
 
-Not bound: `Media` (omnibase's image route, which Laravel does not serve: no
-thumbnail of a stored picture at a size, no obfuscated address).
+With `omnibridge.media` on (see below): `Base\Contract\Media` (`Media\ServiceMedia`,
+MediaService's answers), `Base\Service\MediaService`, `Base\Service\ImageRoute`, and
+omnibase's image routes. Off (the default), none of them.
 
 **Screens.** With those three, a screen of the core is built on Laravel as under
 Symfony, without code of the application's:
@@ -140,6 +141,32 @@ the entities read `base.uploader.storage`...), `types`, `enumerations`,
 gives what it registered. `OmnibaseMappingTest` checks the metadata against those
 omniscient/omnibase records from its Symfony harness, class by class.
 
+### omnibase's images
+
+```php
+// config/omnibridge.php
+'storages' => ['local.cache' => 'omnibase-images', 'local.uploads' => 'uploads'],   // Laravel's disks
+'media' => true,   // or ['routes' => false, 'secret' => ...]; false (the default) leaves it off
+```
+
+With `omnibridge.media` on, omnibase's media rule runs under Laravel as under Symfony:
+`MediaService` (thumbnails, formats, the image route's obfuscated addresses) built on
+Laravel's router (`Media\LaravelMediaRouter`, the core's `Base\Contract\MediaRouter`),
+omnibase's `Obfuscator` and `Flysystem` (its storages are Laravel's disks,
+`Media\DiskStorages`: `omnibridge.storages`, else the disk of the storage's name;
+`local.cache`, where the thumbnails are kept, is required) and Imagine (Imagick, else GD).
+The image routes (`/images/...`, `/contents/...`) are declared under their Symfony names
+in Symfony's order (`Base\Service\ImageRoute::ROUTES`) and answered by the core's
+`Base\Service\ImageRoute` (`Media\ImageController`, a line per request): the same
+addresses, thumbnails, formats, redirections and placeholder. Its parameters are the
+config's `base`: `base.images.*` (`max_quality`, `enable_webp`, `fallback`, `no_image`...),
+`base.obfuscator.*` (`uuid`, `compression`... and `cache_dir`, the map of the
+identifiers: share the Symfony site's to read the addresses it wrote),
+`base.uploader.storage`, `base.twig.editor.storage`; omnibase's defaults where it says
+nothing. A file has the address Symfony gives it when it has the same path on both hosts
+(the identifiers are made of it: the same project folder, the uploads where the Symfony
+site's `public/` links them).
+
 First used by lesringostars' Laravel twin, which renders the Symfony site's blog
 and articles from the same database and templates.
 
@@ -155,8 +182,10 @@ container as one object, each answer (routes, ICU messages and `exists()`, local
 the gate, sign-out, the CSRF token, the clock under `travel()`, events, disks, the
 parameters with a false setting over a true config), Doctrine on Laravel's SQLite
 database in UTC, omnibase's mapping (an `App\` class over a `Base\` one, another only by
-alias, the metadata of 94 classes equal to Symfony's), the settings of the site, Encore
-tags, the breakpoints, a form.
+alias, the metadata of 94 classes equal to Symfony's), omnibase's images (a thumbnail's
+address made and read back, redirected to its extension, served at its size, in webp and
+without the local cache, a missing one a 404, Pictures' thumbnails; Imagick in the image),
+the settings of the site, Encore tags, the breakpoints, a form.
 
 ## Licence
 

@@ -9,6 +9,22 @@ use Base\Screen\ContextProvider;
 use Base\Service\HotParameters;
 use Base\Service\Model\EntityNouns;
 use Base\Service\ParameterBagInterface;
+use Base\Imagine\Svg\Imagine as SvgImagine;
+use Base\Repository\Layout\ImageCropRepository;
+use Base\Service\Flysystem;
+use Base\Service\ImageRoute;
+use Base\Service\MediaService;
+use Base\Service\Model\Obfuscator\Compression\DeflateCompression;
+use Base\Service\Model\Obfuscator\Compression\GzipCompression;
+use Base\Service\Model\Obfuscator\Compression\HashidsCompression;
+use Base\Service\Model\Obfuscator\Compression\NullCompression;
+use Base\Service\Model\Obfuscator\Compression\ZlibCompression;
+use Base\Service\Obfuscator;
+use Imagine\Image\Metadata\ExifMetadataReader;
+use Omnibridge\Laravel\Media\DiskStorages;
+use Omnibridge\Laravel\Media\ImageController;
+use Omnibridge\Laravel\Media\LaravelMediaRouter;
+use Omnibridge\Laravel\Media\ServiceMedia;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,7 +74,10 @@ use Twig\Environment;
  * Pictures (a picture's address, the application's stored ones where it says),
  * Texts (|wysiwyg's passes on omnibase's own views) and the screen context
  * (Base\Screen\ContextProvider: locale, site, links, viewer, theme, flashes).
- * Not bound: Media (omnibase's image route, which Laravel does not serve).
+ * With omnibridge.media on (R6), omnibase's media rule: MediaService on
+ * Laravel's router, Media bound to it, Pictures' thumbnails, and the image
+ * routes (/images/...) answered by Base\Service\ImageRoute - the same
+ * obfuscated addresses, thumbnails and formats as under Symfony.
  */
 final class OmnibridgeServiceProvider extends ServiceProvider
 {
@@ -97,7 +116,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(EventDispatcherInterface::class, fn (Application $app) => new DispatcherEvents($app->make('events')));
         $this->app->singleton(MailerInterface::class, fn (Application $app) => new TransportMailer($app));
 
-        $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Host\Urls::class), $app->publicPath()));
+        $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Host\Urls::class), $app->publicPath(), null, self::media($app) ? $app->make(MediaService::class) : null));
         $this->app->singleton(Contract\Texts::class, fn (Application $app) => new Screen\WysiwygTexts(static fn () => $app->make(Environment::class)));
         $this->app->bind(ContextProvider::class, fn (Application $app) => new Screen\ScreenContext($app));
 
@@ -124,6 +143,17 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Runtime::setContainer($this->app);
+
+        if (self::media($this->app)) {
+            $this->registerMedia();
+        }
+        if (self::media($this->app) && false !== ($this->app['config']->get('omnibridge.media.routes') ?? true)) {
+            // omnibase's image routes under their Symfony names, in Symfony's order (ImageRoute::ROUTES).
+            $router = $this->app->make('router');
+            foreach (ImageRoute::ROUTES as $name => [$path]) {
+                $router->get($path, ImageController::class)->name($name)->where('data', '.+');
+            }
+        }
 
         $this->publishes([__DIR__.'/../config/omnibridge.php' => config_path('omnibridge.php')], 'omnibridge-config');
     }
@@ -249,6 +279,139 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         }
 
         return $flat;
+    }
+
+    /**
+     * omnibase's media rule hosted by Laravel (audit "lesringostars face au
+     * master plan", R6), when omnibridge.media is on: MediaService - the
+     * image route's obfuscated addresses, thumbnails and formats - built on
+     * Laravel's router (LaravelMediaRouter, Base\Contract\MediaRouter),
+     * omnibase's Obfuscator (its identifiers' map in base.obfuscator.cache_dir,
+     * the Symfony site's to read the addresses it wrote), omnibase's Flysystem
+     * over Laravel's disks (DiskStorages: omnibridge.storages, local.cache
+     * required) and Imagine; Base\Contract\Media bound to it (ServiceMedia),
+     * Pictures' thumbnails made by it; the image routes declared under their
+     * Symfony names (ImageRoute::ROUTES, boot()) and answered by
+     * Base\Service\ImageRoute (ImageController). The parameters are the
+     * config's "base" (base.images.*, base.obfuscator.*, base.uploader.storage,
+     * base.twig.editor.storage), omnibase's defaults where it says nothing.
+     * Bound at boot, once the configuration is read: off, none of it is
+     * bound (Runtime::has(Media::class) is false).
+     */
+    private function registerMedia(): void
+    {
+        $this->app->singleton(LaravelMediaRouter::class, fn (Application $app) => new LaravelMediaRouter($app->make('router'), $app->make('url'), $app->make(Host\Urls::class)));
+        $this->app->singleton(Obfuscator::class, function (Application $app) {
+            $parameters = self::mediaParameters($app);
+            $obfuscator = new Obfuscator($parameters, (string) $parameters->get('base.obfuscator.cache_dir'));
+            foreach ([new NullCompression(), new ZlibCompression(), new GzipCompression(), new DeflateCompression(), new HashidsCompression((string) ($app['config']->get('omnibridge.media.secret') ?? $app['config']->get('app.key')))] as $compression) {
+                $obfuscator->addCompression($compression);
+            }
+
+            return $obfuscator;
+        });
+        $this->app->singleton(Flysystem::class, fn (Application $app) => new Flysystem(new DiskStorages($app->make('filesystem'), $app['config']->get('omnibridge.storages', []))));
+        $this->app->singleton(MediaService::class, fn (Application $app) => new MediaService(
+            $app->make(Environment::class),
+            $app->make(LaravelMediaRouter::class),
+            $app->make(Obfuscator::class),
+            $app->make(Flysystem::class),
+            self::mediaParameters($app),
+            self::imagine(),
+            (new SvgImagine())->setMetadataReader(new ExifMetadataReader()),
+            null,
+            $app->make('log'),
+        ));
+        $this->app->singleton(ImageRoute::class, fn (Application $app) => new ImageRoute(
+            $app->make(MediaService::class),
+            $app->make(Flysystem::class),
+            null !== self::omnibase($app) ? self::crops($app) : null,
+        ));
+        $this->app->singleton(Contract\Media::class, fn (Application $app) => new ServiceMedia($app->make(MediaService::class)));
+    }
+
+    /**
+     * The parameters, omnibase's defaults for the media laid under the
+     * config's "base" first (once); asked with omnibridge.media off, says so.
+     */
+    private static function mediaParameters(Application $app): ParameterBagInterface
+    {
+        if (!self::media($app)) {
+            throw new \LogicException('omnibase\'s media are off: omnibridge.media.');
+        }
+        $config = $app['config'];
+        if (!$app->bound('omnibridge.media.defaults')) {
+            $config->set('base', array_replace_recursive(self::mediaDefaults($app), (array) $config->get('base', [])));
+            $app->instance('omnibridge.media.defaults', true);
+        }
+
+        return $app->make(ParameterBagInterface::class);
+    }
+
+    /** omnibridge.media: on with true or its options, off (the default) with false or null. */
+    private static function media(Application $app): bool
+    {
+        $media = $app['config']->get('omnibridge.media', false);
+
+        return null !== $media && false !== $media;
+    }
+
+    /** Imagick's Imagine where the extension is loaded (omnibase's imagine.bitmap), GD's otherwise. */
+    private static function imagine(): \Imagine\Image\ImagineInterface
+    {
+        $imagine = \extension_loaded('imagick') ? new \Imagine\Imagick\Imagine() : new \Imagine\Gd\Imagine();
+        $imagine->setMetadataReader(new ExifMetadataReader());
+
+        return $imagine;
+    }
+
+    /** The crops' repository on omnibase's entity manager (crops by slug, ratio or size), when it is one. */
+    private static function crops(Application $app): ?ImageCropRepository
+    {
+        $repository = $app->make(EntityManagerInterface::class)->getRepository(\Base\Entity\Layout\ImageCrop::class);
+
+        return $repository instanceof ImageCropRepository ? $repository : null;
+    }
+
+    /**
+     * omnibase's defaults for the media parameters (BaseBundle's
+     * configuration), under the config's "base": an application says what
+     * its Symfony site's base.yaml says over them.
+     *
+     * @return array<string, mixed>
+     */
+    private static function mediaDefaults(Application $app): array
+    {
+        $noImage = static fn (string $file) => $app->publicPath('bundles/base/images/'.$file);
+
+        return [
+            'images' => [
+                'max_resolution' => \Base\Imagine\Filter\Basic\Definition\UltraHighDefinitionFilter::class,
+                'debug' => false,
+                'max_quality' => 1,
+                'timeout' => 60,
+                'enable_webp' => true,
+                'fallback' => false,
+                'no_image' => [
+                    ['extension' => 'webp', 'path' => $noImage('image.webp')],
+                    ['extension' => 'jpg', 'path' => $noImage('image.jpg')],
+                    ['extension' => 'jpeg', 'path' => $noImage('image.jpg')],
+                    ['extension' => 'png', 'path' => $noImage('image.png')],
+                    ['extension' => 'svg', 'path' => $noImage('image.svg')],
+                    ['extension' => 'gif', 'path' => $noImage('image.gif')],
+                ],
+            ],
+            'obfuscator' => [
+                'level' => -1,
+                'uuid' => \Symfony\Component\Uid\Uuid::NAMESPACE_URL,
+                'encoding' => null,
+                'max_length' => 0,
+                'compression' => 'null',
+                'cache_dir' => $app->storagePath('framework/cache/omnibase-obfuscator'),
+            ],
+            'uploader' => ['storage' => null],
+            'twig' => ['editor' => ['storage' => null]],
+        ];
     }
 
     /** Twig over omnibridge.twig.paths, omnibridge/twig's contract answered by the bound Urls and Translations. */

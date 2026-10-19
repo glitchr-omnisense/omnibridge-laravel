@@ -39,7 +39,7 @@ final class ContractsTest extends TestCase
         $this->assertInstanceOf(RouterUrls::class, Runtime::urls());
         $this->assertSame(Runtime::urls(), $this->app->make(\Omnibridge\Twig\Contract\Urls::class));
         $this->assertInstanceOf(CatalogueTranslations::class, Runtime::translations());
-        $this->assertFalse(Runtime::has(Contract\Media::class), 'Media is not bound: omnibase\'s image route is Symfony\'s');
+        $this->assertFalse(Runtime::has(Contract\Media::class), 'Media is not bound unless omnibridge.media is on (MediaTest)');
     }
 
     /** A former name is a Laravel alias of the contract's own: the binding made under the new name, an extension of it seen under the old. */

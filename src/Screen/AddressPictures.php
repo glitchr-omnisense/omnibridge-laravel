@@ -3,15 +3,17 @@
 namespace Omnibridge\Laravel\Screen;
 
 use Base\Contract\Pictures;
+use Base\Service\MediaService;
 use Omnibridge\Contract\Urls;
 
 /**
  * omnibase's Pictures contract under Laravel: what its `|picture` filter
- * answers, but for the thumbnails - a file under the public folder by its
- * public path, an address or a path as it is, anything else an asset of the
- * build (assets/...). Laravel has no image route to make a thumbnail of a
- * stored picture at a size: an application that serves its stored pictures
- * says where (stored()), and that answer comes first.
+ * answers (CommonsTwigExtension::picture()) - a file under the public folder
+ * by its thumbnail at the size asked, MediaService's (omnibridge.media on,
+ * audit R6), or by its public path without it; an address or a path as it
+ * is; anything else an asset of the build (assets/...). An application that
+ * serves its stored pictures itself says where (stored()), and that answer
+ * comes first.
  */
 final class AddressPictures implements Pictures
 {
@@ -22,6 +24,7 @@ final class AddressPictures implements Pictures
         private readonly Urls $urls,
         private readonly string $publicDir = '',
         private readonly ?\Closure $stored = null,
+        private readonly ?MediaService $media = null,
     ) {
     }
 
@@ -32,7 +35,7 @@ final class AddressPictures implements Pictures
      */
     public function stored(\Closure $stored): self
     {
-        return new self($this->urls, $this->publicDir, $stored);
+        return new self($this->urls, $this->publicDir, $stored, $this->media);
     }
 
     public function picture(?string $image, ?int $width = null, ?int $height = null): ?string
@@ -44,7 +47,9 @@ final class AddressPictures implements Pictures
             return $address;
         }
         if ('' !== $this->publicDir && str_starts_with($image, $this->publicDir.'/')) {
-            return substr($image, \strlen($this->publicDir));
+            $thumbnail = $this->media?->thumbnail($image, $width, $height);
+
+            return \is_string($thumbnail) ? $thumbnail : substr($image, \strlen($this->publicDir));
         }
         if (str_starts_with($image, '/') || preg_match('#^https?://#', $image)) {
             return $image;
