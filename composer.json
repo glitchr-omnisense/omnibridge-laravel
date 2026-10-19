@@ -50,7 +50,11 @@
     "autoload-dev": {
         "psr-4": {
             "Omnibridge\\Laravel\\Tests\\": "tests/",
-            "App\\Entity\\": "tests/Fixtures/Entity/"
+            "App\\Entity\\": [
+                "tests/Fixtures/Entity/",
+                "tests/Fixtures/Omnibase/Entity/"
+            ],
+            "App\\Repository\\": "tests/Fixtures/Omnibase/Repository/"
         }
     },
     "extra": {

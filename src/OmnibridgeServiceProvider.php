@@ -3,6 +3,7 @@
 namespace Omnibridge\Laravel;
 
 use Base\Contract;
+use Base\Bridge\Doctrine\Mapping;
 use Base\Contract\Runtime;
 use Base\Screen\ContextProvider;
 use Base\Service\HotParameters;
@@ -61,6 +62,8 @@ use Twig\Environment;
  */
 final class OmnibridgeServiceProvider extends ServiceProvider
 {
+    private ?Mapping $mapping = null;
+
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/omnibridge.php', 'omnibridge');
@@ -152,6 +155,16 @@ final class OmnibridgeServiceProvider extends ServiceProvider
      * names, the settings read through it, and omnibridge/doctrine's entity
      * manager over omnibridge.doctrine.entities. Asked without a connection
      * configured, they say so.
+     *
+     * With omnibridge.doctrine.omnibase on, the entity manager is omnibase's,
+     * as under Symfony: built with Base\Bridge\Doctrine\Mapping::configure()
+     * (omnibridge/doctrine's configure:, the repositories from omnibase's
+     * registry), over the core's entities beside the application's, then
+     * Mapping::register() - the class convention (App\Entity\X is
+     * Base\Entity\X where the application has none), the column types and
+     * enumerations, the naming strategy, the discriminator maps, #[Alias],
+     * the translations, the listeners and the filters - before the first
+     * metadata is read.
      */
     private function registerDoctrine(): void
     {
@@ -161,11 +174,81 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             return Connections::create($app['config']->get('database.connections.'.$name) ?? throw new \InvalidArgumentException(\sprintf('No database connection "%s" (omnibridge.doctrine.connection).', $name)));
         });
         $this->app->singleton(DatabaseSettings::class, fn (Application $app) => new DatabaseSettings($app->make(Connection::class)));
-        $this->app->singleton(EntityManagerInterface::class, fn (Application $app) => EntityManagers::create(
-            $app->make(Connection::class),
-            $app['config']->get('omnibridge.doctrine.entities', []),
-            (bool) $app['config']->get('app.debug'),
-        ));
+        $this->app->singleton(EntityManagerInterface::class, function (Application $app) {
+            $paths = $app['config']->get('omnibridge.doctrine.entities', []);
+            $options = self::omnibase($app);
+            if (null === $options) {
+                return EntityManagers::create($app->make(Connection::class), $paths, (bool) $app['config']->get('app.debug'));
+            }
+
+            // omnibase's own entities, as BaseBundle maps them under Symfony, beside the application's.
+            $core = \dirname((string) (new \ReflectionClass(\Base\Entity\User::class))->getFileName());
+            $entityManager = EntityManagers::create(
+                $app->make(Connection::class),
+                array_values(array_unique([...$paths, $core])),
+                (bool) $app['config']->get('app.debug'),
+                configure: Mapping::configure(...),
+            );
+            $this->mapping = Mapping::register($entityManager, $options);
+
+            return $entityManager;
+        });
+        // What the mapping registered (its registry, reader, repositories), once the entity manager is built.
+        $this->app->singleton(Mapping::class, function (Application $app) {
+            $app->make(EntityManagerInterface::class);
+
+            return $this->mapping ?? throw new \LogicException('omnibase\'s Doctrine mapping is off: omnibridge.doctrine.omnibase.');
+        });
+    }
+
+    /** Laravel's environments by omnibase's names (the vault filter's, the rows Symfony wrote). */
+    private const ENVIRONMENTS = ['production' => 'prod', 'local' => 'dev', 'development' => 'dev', 'testing' => 'test'];
+
+    /**
+     * Base\Bridge\Doctrine\Mapping::register()'s options when
+     * omnibridge.doctrine.omnibase is on (true, or the options themselves),
+     * null when off: the project's folder (its src/Enum, src/Attribute),
+     * the environment by omnibase's name, a cache folder under storage/, and
+     * the parameters - Laravel's config under "base" by full name
+     * (base.extension.max_revisions...), those given over them.
+     *
+     * @return array<string, mixed>|null
+     */
+    private static function omnibase(Application $app): ?array
+    {
+        $option = $app['config']->get('omnibridge.doctrine.omnibase', false);
+        if (null === $option || false === $option) {
+            return null;
+        }
+        $options = \is_array($option) ? $option : [];
+        $environment = (string) $app->environment();
+        $environment = $options['environment'] ?? self::ENVIRONMENTS[$environment] ?? $environment;
+
+        return [
+            'project_dir' => $options['project_dir'] ?? $app->basePath(),
+            'environment' => $environment,
+            'cache_dir' => $options['cache_dir'] ?? $app->storagePath('framework/cache/omnibase-doctrine/'.$environment),
+            'parameters' => ($options['parameters'] ?? []) + self::flatten((array) $app['config']->get('base', []), 'base'),
+        ] + $options;
+    }
+
+    /**
+     * @param array<array-key, mixed> $values
+     *
+     * @return array<string, mixed> the values by their full dotted name, a list kept whole
+     */
+    private static function flatten(array $values, string $prefix): array
+    {
+        $flat = [];
+        foreach ($values as $key => $value) {
+            if (\is_array($value) && !array_is_list($value)) {
+                $flat += self::flatten($value, $prefix.'.'.$key);
+            } else {
+                $flat[$prefix.'.'.$key] = $value;
+            }
+        }
+
+        return $flat;
     }
 
     /** Twig over omnibridge.twig.paths, omnibridge/twig's contract answered by the bound Urls and Translations. */

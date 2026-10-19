@@ -35,9 +35,18 @@ return [
 
     // Doctrine: the Laravel connection (config/database.php) Doctrine DBAL opens,
     // and the entities' folders the entity manager maps (omnibridge/doctrine).
+    // omnibase: omnibase's own mapping on that entity manager, as under Symfony
+    // (Base\Bridge\Doctrine\Mapping: the class convention, the core's entities,
+    // its types, discriminators, translations, listeners and filters) - false
+    // (off), true, or Mapping::register()'s options: project_dir (base_path()
+    // when not given: its src/Enum and src/Attribute), environment (omnibase's
+    // name, the vault's: prod, dev, test from production, local, testing),
+    // cache_dir, parameters (over the config's "base" by full name), types,
+    // enumerations, attribute_paths, resolve_target_entities, entity_listeners.
     'doctrine' => [
         'connection' => null,
         'entities' => [],
+        'omnibase' => false,
     ],
 
     // The application's parameters (Runtime::parameters()) are Laravel's config,

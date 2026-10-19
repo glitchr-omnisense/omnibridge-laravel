@@ -113,6 +113,33 @@ $this->app->extend(RouterUrls::class, fn (RouterUrls $urls) => $urls->elsewhere(
 ));
 ```
 
+### omnibase's Doctrine mapping
+
+```php
+// config/omnibridge.php
+'doctrine' => [
+    'connection' => 'mysql',
+    'entities' => [app_path('Entity')],
+    'omnibase' => ['project_dir' => base_path()],   // or true; false (the default) leaves it off
+],
+```
+
+With `omnibridge.doctrine.omnibase` on, the bound entity manager is omnibase's, as
+under Symfony: built by omnibridge/doctrine with `Base\Bridge\Doctrine\Mapping::configure()`
+(the repositories from omnibase's registry), over the core's entities beside the
+application's, then `Mapping::register()` - the class convention (`App\Entity\X` is
+`Base\Entity\X` where the application has none, an alias and not a subclass; an
+application's own class always wins), the column types and enumerations (the
+project's `src/Enum`), the naming strategy, the discriminator maps, `#[Alias]`, the
+translations, the listeners and the trash and vault filters. Its options are
+`Mapping::register()`'s: `project_dir` (`base_path()`), `environment` (omnibase's
+name, the vault's: `prod`, `dev`, `test` for Laravel's `production`, `local`,
+`testing`), `cache_dir`, `parameters` (over Laravel's `base` config by full name -
+the entities read `base.uploader.storage`...), `types`, `enumerations`,
+`attribute_paths`, `resolve_target_entities`, `entity_listeners`. `app(Mapping::class)`
+gives what it registered. `OmnibaseMappingTest` checks the metadata against those
+omniscient/omnibase records from its Symfony harness, class by class.
+
 First used by lesringostars' Laravel twin, which renders the Symfony site's blog
 and articles from the same database and templates.
 
@@ -127,7 +154,9 @@ installed from Packagist: every contract reached through `Runtime` and the
 container as one object, each answer (routes, ICU messages and `exists()`, locales,
 the gate, sign-out, the CSRF token, the clock under `travel()`, events, disks, the
 parameters with a false setting over a true config), Doctrine on Laravel's SQLite
-database in UTC, the settings of the site, Encore tags, the breakpoints, a form.
+database in UTC, omnibase's mapping (an `App\` class over a `Base\` one, another only by
+alias, the metadata of 94 classes equal to Symfony's), the settings of the site, Encore
+tags, the breakpoints, a form.
 
 ## Licence
 
