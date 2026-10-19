@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel\Contract;
 
-use Base\Contract\Locales;
+use Omnibridge\Contract\Locales;
 
 /**
  * The site's languages in omnibase's form (fr-FR: language and country

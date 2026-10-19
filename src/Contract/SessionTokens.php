@@ -2,8 +2,8 @@
 
 namespace Omnibridge\Laravel\Contract;
 
-use Base\Contract\Tokens;
 use Illuminate\Contracts\Container\Container;
+use Omnibridge\Contract\Tokens;
 
 /**
  * A form's token against cross-site requests: Laravel's session token, the

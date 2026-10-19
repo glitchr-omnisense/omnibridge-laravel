@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel;
 
-use Base\Contract\Translations;
+use Omnibridge\Contract\Translations;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Translator;
@@ -22,8 +22,8 @@ use Symfony\Component\Translation\Translator;
  * Without a locale given, each message is in Laravel's current one
  * (app()->getLocale()), which a middleware sets per request.
  *
- * omnibase's Base\Contract\Translations (trans() and exists()), hence
- * omnibridge/twig's.
+ * omniscient/omnibridge's Translations (trans() and exists()), omnibase's and
+ * omnibridge/twig's by their former names.
  */
 final class CatalogueTranslations implements Translations
 {

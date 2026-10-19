@@ -2,8 +2,8 @@
 
 namespace Omnibridge\Laravel\View;
 
-use Omnibridge\Twig\Contract\Translations;
-use Omnibridge\Twig\Contract\Urls;
+use Omnibridge\Contract\Translations;
+use Omnibridge\Contract\Urls;
 use Omnibridge\Twig\ContractExtension;
 use Omnibridge\Twig\HelperExtension;
 use Twig\Environment;

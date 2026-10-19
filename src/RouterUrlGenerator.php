@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel;
 
-use Omnibridge\Twig\Contract\Urls;
+use Omnibridge\Contract\Urls;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 

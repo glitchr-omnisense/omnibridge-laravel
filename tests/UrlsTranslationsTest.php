@@ -25,7 +25,7 @@ final class UrlsTranslationsTest extends TestCase
         $this->assertSame('http://localhost/japon/articles/le-fuji', $urls->url('article', ['slug' => 'le-fuji']));
 
         $this->app->extend(RouterUrls::class, static fn (RouterUrls $urls) => $urls->elsewhere(static fn (string $name, array $parameters, string $locale) => "https://symfony.test/$locale/$name?".http_build_query($parameters)));
-        $urls = $this->app->make(\Base\Contract\Urls::class);
+        $urls = $this->app->make(\Omnibridge\Contract\Urls::class);
         $this->assertSame('/japon/articles/le-fuji', $urls->path('article', ['slug' => 'le-fuji']));
         $this->assertSame('https://symfony.test/fr/app_privacy?a=1', $urls->path('app_privacy', ['a' => 1]));
         $this->assertSame('https://symfony.test/fr/app_privacy?', $urls->url('app_privacy'));
@@ -102,7 +102,7 @@ final class UrlsTranslationsTest extends TestCase
         app()->setLocale('de_DE');
         $this->assertSame('de-DE', $locales->getLocale());
         config()->set('omnibridge.locales.default', 'en');
-        $this->app->forgetInstance(\Base\Contract\Locales::class);
+        $this->app->forgetInstance(\Omnibridge\Contract\Locales::class);
         Runtime::setContainer(null);
         Runtime::setContainer($this->app);
         $this->assertSame(['en-GB', 'fr-FR', 'de-DE'], Runtime::locales()->getAvailableLocales());

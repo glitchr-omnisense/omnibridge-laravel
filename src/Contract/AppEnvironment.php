@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel\Contract;
 
-use Base\Contract\Environment;
+use Omnibridge\Contract\Environment;
 
 /** What the application runs as: Laravel's environment (APP_ENV), debug (app.debug) and key (app.key, the secret). */
 final class AppEnvironment implements Environment

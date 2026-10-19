@@ -5,6 +5,7 @@ namespace Omnibridge\Laravel\Tests;
 use Base\Contract;
 use Base\Contract\Runtime;
 use Base\Service\ParameterBagInterface;
+use Omnibridge\Contract as Host;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
@@ -22,6 +23,9 @@ final class ContractsTest extends TestCase
     public function testRuntimeAndTheContainerGiveTheSameObjects(): void
     {
         $contracts = [
+            Host\Urls::class, Host\Translations::class, Host\Locales::class, Host\Access::class, Host\Sessions::class,
+            Host\Tokens::class, Host\Environment::class, Host\Routes::class, Host\Files::class,
+            // Their former names, omnibase's and omnibridge/twig's (aliases until omnibase 4's final pass):
             Contract\Urls::class, \Omnibridge\Twig\Contract\Urls::class, Contract\Translations::class, \Omnibridge\Twig\Contract\Translations::class,
             Contract\Locales::class, Contract\Nouns::class, Contract\Access::class, Contract\Sessions::class, Contract\Tokens::class,
             Contract\Environment::class, Contract\Routes::class, Contract\Files::class, Contract\Pictures::class, Contract\Texts::class, ParameterBagInterface::class,
@@ -36,6 +40,43 @@ final class ContractsTest extends TestCase
         $this->assertSame(Runtime::urls(), $this->app->make(\Omnibridge\Twig\Contract\Urls::class));
         $this->assertInstanceOf(CatalogueTranslations::class, Runtime::translations());
         $this->assertFalse(Runtime::has(Contract\Media::class), 'Media is not bound: omnibase\'s image route is Symfony\'s');
+    }
+
+    /** A former name is a Laravel alias of the contract's own: the binding made under the new name, an extension of it seen under the old. */
+    public function testTheFormerNamesAreAliasesOfTheContracts(): void
+    {
+        foreach ([Host\Urls::class => [Contract\Urls::class, \Omnibridge\Twig\Contract\Urls::class], Host\Translations::class => [Contract\Translations::class, \Omnibridge\Twig\Contract\Translations::class], Host\Locales::class => [Contract\Locales::class], Host\Files::class => [Contract\Files::class]] as $contract => $formers) {
+            foreach ($formers as $former) {
+                $this->assertContains($former, Runtime::formerNames($contract));
+                $this->assertTrue($this->app->isAlias($former), $former);
+                $this->assertSame($this->app->make($contract), $this->app->make($former), $former);
+            }
+        }
+
+        $this->app->extend(Host\Locales::class, fn (Host\Locales $locales) => new class($locales) implements Host\Locales {
+            public function __construct(private Host\Locales $locales)
+            {
+            }
+
+            public function getLocale(): string
+            {
+                return 'de-DE';
+            }
+
+            public function getDefaultLocale(): string
+            {
+                return $this->locales->getDefaultLocale();
+            }
+
+            public function getAvailableLocales(): array
+            {
+                return $this->locales->getAvailableLocales();
+            }
+        });
+        Runtime::setContainer(null);
+        Runtime::setContainer($this->app);
+        $this->assertSame('de-DE', $this->app->make(Contract\Locales::class)->getLocale());
+        $this->assertSame('de-DE', Runtime::locales()->getLocale());
     }
 
     public function testTheClockIsLaravelsDates(): void
@@ -126,7 +167,7 @@ final class ContractsTest extends TestCase
         config()->set('filesystems.disks.uploads', ['driver' => 'local', 'root' => $root, 'url' => 'http://localhost/storage', 'visibility' => 'public']);
         config()->set('filesystems.disks.cloud', ['driver' => 's3', 'bucket' => 'b', 'region' => 'eu-west-3']);
         config()->set('omnibridge.storages', ['local.uploads' => 'uploads', 's3.private' => 'cloud']);
-        $this->app->forgetInstance(Contract\Files::class);
+        $this->app->forgetInstance(Host\Files::class);
         Runtime::setContainer(null);
         Runtime::setContainer($this->app);
         @mkdir($root.'/logo', 0777, true);

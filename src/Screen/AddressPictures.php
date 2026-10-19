@@ -3,7 +3,7 @@
 namespace Omnibridge\Laravel\Screen;
 
 use Base\Contract\Pictures;
-use Base\Contract\Urls;
+use Omnibridge\Contract\Urls;
 
 /**
  * omnibase's Pictures contract under Laravel: what its `|picture` filter

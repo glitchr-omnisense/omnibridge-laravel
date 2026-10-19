@@ -13,6 +13,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Omnibridge\Contract as Host;
 use Omnibridge\Doctrine\EntityManagers;
 use Omnibridge\Laravel\Contract\AppEnvironment;
 use Omnibridge\Laravel\Contract\AppLocales;
@@ -36,8 +37,15 @@ use Twig\Environment;
 /**
  * omniscient/omnibase hosted by Laravel: each contract of its Fondation bound
  * to Laravel's services under the contract's interface, and the Fondation's
- * registry (Base\Contract\Runtime) on Laravel's container, so that
- * Runtime::urls(), ::parameters()... and app(Urls::class) are one object.
+ * registry (Base\Contract\Runtime, omniscient/omnibridge's Omnibridge\Runtime)
+ * on Laravel's container, so that Runtime::urls(), ::parameters()... and
+ * app(Urls::class) are one object.
+ *
+ * The host's contracts are omniscient/omnibridge's (Omnibridge\Contract\*), bound
+ * under their own names; their former names (Base\Contract\Urls...,
+ * omnibridge/twig's) are Laravel aliases of them, whichever the registry knows
+ * (Runtime::formerNames()): the same binding under either. omnibase's own
+ * (Nouns, Pictures, Texts, the parameters, the screen context) keep Base\.
  *
  * Bound: Urls (and omnibridge/twig's) on the router and the asset manifest,
  * Translations (and omnibridge/twig's) on the ICU catalogues, Locales,
@@ -58,43 +66,56 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/omnibridge.php', 'omnibridge');
 
         $this->app->singleton(RouterUrls::class, fn (Application $app) => new RouterUrls(null, $app['config']->get('omnibridge.assets.manifest')));
-        $this->app->alias(RouterUrls::class, Contract\Urls::class);
-        $this->app->alias(RouterUrls::class, \Omnibridge\Twig\Contract\Urls::class);
+        $this->app->alias(RouterUrls::class, Host\Urls::class);
 
         $this->app->singleton(CatalogueTranslations::class, fn (Application $app) => new CatalogueTranslations(
             $app['config']->get('omnibridge.translations.paths', []),
             null,
             (string) ($app['config']->get('omnibridge.translations.fallback') ?? $app['config']->get('app.fallback_locale', 'en')),
         ));
-        $this->app->alias(CatalogueTranslations::class, Contract\Translations::class);
-        $this->app->alias(CatalogueTranslations::class, \Omnibridge\Twig\Contract\Translations::class);
+        $this->app->alias(CatalogueTranslations::class, Host\Translations::class);
 
-        $this->app->singleton(Contract\Locales::class, fn (Application $app) => new AppLocales(
+        $this->app->singleton(Host\Locales::class, fn (Application $app) => new AppLocales(
             $app['config']->get('omnibridge.locales.available', []),
             $app['config']->get('omnibridge.locales.default'),
         ));
-        $this->app->singleton(Contract\Nouns::class, fn (Application $app) => new EntityNouns($app->make(Contract\Translations::class), $app['config']->get('omnibridge.entity_namespaces', [])));
-        $this->app->singleton(Contract\Access::class, fn (Application $app) => new GateAccess($app->make(\Illuminate\Contracts\Auth\Access\Gate::class), $app->make('auth')));
-        $this->app->singleton(Contract\Sessions::class, fn (Application $app) => new GuardSessions($app->make('auth')));
-        $this->app->singleton(Contract\Tokens::class, fn (Application $app) => new SessionTokens($app));
-        $this->app->singleton(Contract\Environment::class, fn (Application $app) => new AppEnvironment(
+        $this->app->singleton(Contract\Nouns::class, fn (Application $app) => new EntityNouns($app->make(Host\Translations::class), $app['config']->get('omnibridge.entity_namespaces', [])));
+        $this->app->singleton(Host\Access::class, fn (Application $app) => new GateAccess($app->make(\Illuminate\Contracts\Auth\Access\Gate::class), $app->make('auth')));
+        $this->app->singleton(Host\Sessions::class, fn (Application $app) => new GuardSessions($app->make('auth')));
+        $this->app->singleton(Host\Tokens::class, fn (Application $app) => new SessionTokens($app));
+        $this->app->singleton(Host\Environment::class, fn (Application $app) => new AppEnvironment(
             (string) $app->environment(),
             (bool) $app['config']->get('app.debug'),
             (string) $app['config']->get('app.key'),
         ));
-        $this->app->singleton(Contract\Routes::class, fn (Application $app) => new RouterRoutes($app->make('router')));
-        $this->app->singleton(Contract\Files::class, fn (Application $app) => new DiskFiles($app->make('filesystem'), $app['config']->get('omnibridge.storages', [])));
+        $this->app->singleton(Host\Routes::class, fn (Application $app) => new RouterRoutes($app->make('router')));
+        $this->app->singleton(Host\Files::class, fn (Application $app) => new DiskFiles($app->make('filesystem'), $app['config']->get('omnibridge.storages', [])));
         $this->app->singleton(ClockInterface::class, DateClock::class);
         $this->app->singleton(EventDispatcherInterface::class, fn (Application $app) => new DispatcherEvents($app->make('events')));
         $this->app->singleton(MailerInterface::class, fn (Application $app) => new TransportMailer($app));
 
-        $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Contract\Urls::class), $app->publicPath()));
+        $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Host\Urls::class), $app->publicPath()));
         $this->app->singleton(Contract\Texts::class, fn (Application $app) => new Screen\WysiwygTexts(static fn () => $app->make(Environment::class)));
         $this->app->bind(ContextProvider::class, fn (Application $app) => new Screen\ScreenContext($app));
 
         $this->registerParameters();
         $this->registerDoctrine();
         $this->registerTwig();
+        $this->registerFormerNames();
+    }
+
+    /**
+     * The former names of the host's contracts, Laravel aliases of their own
+     * (until omnibase 4's final pass): an application or a package that makes
+     * Base\Contract\Urls gets the bound Urls, the same object.
+     */
+    private function registerFormerNames(): void
+    {
+        foreach ([Host\Urls::class, Host\Translations::class, Host\Locales::class, Host\Access::class, Host\Sessions::class, Host\Tokens::class, Host\Environment::class, Host\Routes::class, Host\Files::class] as $contract) {
+            foreach (Runtime::formerNames($contract) as $former) {
+                $this->app->alias($contract, $former);
+            }
+        }
     }
 
     public function boot(): void
@@ -116,7 +137,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             $parameters = new HotParameters(new ConfigParameters($app['config']), $app['config']->get('omnibridge.parameters.hot'));
             if ($parameters->isEnabled() && null !== $app['config']->get('omnibridge.doctrine.connection')) {
                 try {
-                    $parameters->add($app->make(DatabaseSettings::class)->parameters($app->make(Contract\Locales::class)->getDefaultLocale()));
+                    $parameters->add($app->make(DatabaseSettings::class)->parameters($app->make(Host\Locales::class)->getDefaultLocale()));
                     $parameters->markAsReady();
                 } catch (DBALException) {
                 }

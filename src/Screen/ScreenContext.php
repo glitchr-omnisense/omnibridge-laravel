@@ -2,14 +2,14 @@
 
 namespace Omnibridge\Laravel\Screen;
 
-use Base\Contract\Access;
-use Base\Contract\Locales;
-use Base\Contract\Urls;
 use Base\Screen\ContextProvider;
 use Base\Screen\Frame;
 use Base\Screen\Site;
 use Base\Screen\Viewer;
 use Illuminate\Contracts\Foundation\Application;
+use Omnibridge\Contract\Access;
+use Omnibridge\Contract\Locales;
+use Omnibridge\Contract\Urls;
 use Omnibridge\Laravel\Page\Theme;
 use Omnibridge\Laravel\Parameters\DatabaseSettings;
 

@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel\Form;
 
-use Omnibridge\Twig\Contract\Translations;
+use Omnibridge\Contract\Translations;
 
 /**
  * form_start(), form_widget(), form_row(), form_errors() and form_end() for

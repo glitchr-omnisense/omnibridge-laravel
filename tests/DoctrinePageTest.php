@@ -95,7 +95,7 @@ final class DoctrinePageTest extends TestCase
         $form = (new FormView('newsletter_subscriber'))
             ->add('email', ['type' => 'email', 'required' => true])
             ->add('_csrf_token', ['type' => 'hidden']);
-        $renderer = new FormRenderer($this->app->make(\Base\Contract\Translations::class));
+        $renderer = new FormRenderer($this->app->make(\Omnibridge\Contract\Translations::class));
 
         $html = $renderer->start($form).$renderer->row($form['email']).$renderer->end($form);
         $this->assertStringStartsWith('<form name="newsletter_subscriber" method="post">', $html);

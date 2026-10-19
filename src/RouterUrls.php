@@ -2,8 +2,8 @@
 
 namespace Omnibridge\Laravel;
 
-use Base\Contract\Urls;
 use Illuminate\Support\Facades\Route;
+use Omnibridge\Contract\Urls;
 
 /**
  * Addresses answered by Laravel: a route by its name through Laravel's
@@ -16,8 +16,9 @@ use Illuminate\Support\Facades\Route;
  * application that serves part of a site gives the other part's addresses.
  * Without that, an unknown route is Laravel's error.
  *
- * omnibase's Base\Contract\Urls, hence omnibridge/twig's: one object answers
- * the templates' path(), url(), asset() and the Fondation's Runtime::urls().
+ * omniscient/omnibridge's Urls (omnibase's Base\Contract\Urls and omnibridge/twig's
+ * by their former names): one object answers the templates' path(), url(), asset()
+ * and Runtime::urls().
  */
 final class RouterUrls implements Urls
 {

@@ -2,8 +2,8 @@
 
 namespace Omnibridge\Laravel\Contract;
 
-use Base\Contract\Files;
 use Illuminate\Contracts\Filesystem\Factory as Disks;
+use Omnibridge\Contract\Files;
 
 /**
  * omnibase's storages as Laravel's disks: a storage ("local.uploads",

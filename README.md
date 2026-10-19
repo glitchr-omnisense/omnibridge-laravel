@@ -9,7 +9,12 @@ php artisan vendor:publish --tag=omnibridge-config
 That hosts [omniscient/omnibase](https://github.com/glitchr-studio/omnibase) in a
 Laravel application: the provider is discovered by Laravel, binds each contract of
 omnibase's Fondation to Laravel's services, and hands Laravel's container to the
-Fondation's registry, `Base\Contract\Runtime`. omnibase's framework-free code -
+Fondation's registry, `Base\Contract\Runtime` (omniscient/omnibridge's
+`Omnibridge\Runtime` with omnibase's accessors). The host's contracts are
+[omniscient/omnibridge](https://github.com/glitchr-studio/omnibridge)'s
+(`Omnibridge\Contract\*`), bound under their own names; their former names
+(`Base\Contract\Urls`..., omnibridge/twig's) are Laravel aliases of them until
+omnibase 4's final pass, the same binding under either. omnibase's framework-free code -
 an entity's link, its noun, a translatable's language, a screen's builder - then
 runs under Laravel as it runs under Symfony:
 
@@ -19,7 +24,7 @@ use Base\Contract\Runtime;
 Runtime::urls()->path('article', ['slug' => 'le-fuji']);   // Laravel's router
 Runtime::translations()->trans('@messages.menu.home');      // omnibase's ICU catalogues
 Runtime::parameters()->get('base.user.delay');              // Laravel's config, the database settings over it
-app(Base\Contract\Urls::class) === Runtime::urls();         // one object
+app(Omnibridge\Contract\Urls::class) === Runtime::urls();   // one object, also app(Base\Contract\Urls::class)
 ```
 
 omnibase asks for PHP 8.4 and the extensions its own packages need (bcmath, intl,
@@ -31,16 +36,16 @@ for its templates: this package opens Doctrine on one of Laravel's connections
 
 | Contract | Answered by | Class |
 |---|---|---|
-| `Base\Contract\Urls` (and omnibridge/twig's) | Laravel's router (`route()`), the build's asset manifest; a route Laravel does not have may be answered elsewhere | `RouterUrls` |
-| `Base\Contract\Translations` (and omnibridge/twig's) | the ICU catalogues of the folders configured, read by symfony/translation, in Laravel's current locale; `exists()` | `CatalogueTranslations` |
-| `Base\Contract\Locales` | Laravel's locale (`fr`) as the site's locale (`fr-FR`), the default first | `Contract\AppLocales` |
+| `Omnibridge\Contract\Urls` (formerly `Base\Contract\Urls` and omnibridge/twig's) | Laravel's router (`route()`), the build's asset manifest; a route Laravel does not have may be answered elsewhere | `RouterUrls` |
+| `Omnibridge\Contract\Translations` (formerly `Base\Contract\Translations` and omnibridge/twig's) | the ICU catalogues of the folders configured, read by symfony/translation, in Laravel's current locale; `exists()` | `CatalogueTranslations` |
+| `Omnibridge\Contract\Locales` (formerly `Base\Contract\Locales`) | Laravel's locale (`fr`) as the site's locale (`fr-FR`), the default first | `Contract\AppLocales` |
 | `Base\Contract\Nouns` | omnibase's own rule (`EntityNouns`) on those catalogues | - |
-| `Base\Contract\Access` | the gate (`Gate::allows()`), the default guard's user | `Contract\GateAccess` |
-| `Base\Contract\Sessions` | the guard's `logout()` for the user signed in | `Contract\GuardSessions` |
-| `Base\Contract\Tokens` | the session's CSRF token (one for every intent) | `Contract\SessionTokens` |
-| `Base\Contract\Environment` | `APP_ENV`, `app.debug`, `app.key` | `Contract\AppEnvironment` |
-| `Base\Contract\Routes` | a route's declared path, the route of an address; no icons | `Contract\RouterRoutes` |
-| `Base\Contract\Files` | the disks (omnibase's storage names mapped to disks) | `Contract\DiskFiles` |
+| `Omnibridge\Contract\Access` (formerly `Base\Contract\Access`) | the gate (`Gate::allows()`), the default guard's user | `Contract\GateAccess` |
+| `Omnibridge\Contract\Sessions` (formerly `Base\Contract\Sessions`) | the guard's `logout()` for the user signed in | `Contract\GuardSessions` |
+| `Omnibridge\Contract\Tokens` (formerly `Base\Contract\Tokens`) | the session's CSRF token (one for every intent) | `Contract\SessionTokens` |
+| `Omnibridge\Contract\Environment` (formerly `Base\Contract\Environment`) | `APP_ENV`, `app.debug`, `app.key` | `Contract\AppEnvironment` |
+| `Omnibridge\Contract\Routes` (formerly `Base\Contract\Routes`) | a route's declared path, the route of an address; no icons | `Contract\RouterRoutes` |
+| `Omnibridge\Contract\Files` (formerly `Base\Contract\Files`) | the disks (omnibase's storage names mapped to disks) | `Contract\DiskFiles` |
 | `Base\Service\ParameterBagInterface` | Laravel's config, the settings linked to a parameter laid over it (omnibase's `HotParameters`) | `Parameters\ConfigParameters`, `Parameters\DatabaseSettings` |
 | `Psr\Clock\ClockInterface` | Laravel's dates (`Date::setTestNow()`, `travel()` move it) | `Contract\DateClock` |
 | `Psr\EventDispatcher\EventDispatcherInterface` | Laravel's dispatcher | `Contract\DispatcherEvents` |

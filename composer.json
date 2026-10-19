@@ -29,6 +29,7 @@
         "omnibridge/doctrine": "^1.0",
         "omnibridge/twig": "^1.0",
         "omniscient/omnibase": "^4.0",
+        "omniscient/omnibridge": "^1.0",
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "symfony/mailer": "^7.0|^8.0",

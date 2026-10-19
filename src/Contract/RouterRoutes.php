@@ -2,9 +2,9 @@
 
 namespace Omnibridge\Laravel\Contract;
 
-use Base\Contract\Routes;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
+use Omnibridge\Contract\Routes;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
