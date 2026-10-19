@@ -4,6 +4,7 @@ namespace Omnibridge\Laravel;
 
 use Base\Contract;
 use Base\Contract\Runtime;
+use Base\Screen\ContextProvider;
 use Base\Service\HotParameters;
 use Base\Service\Model\EntityNouns;
 use Base\Service\ParameterBagInterface;
@@ -44,8 +45,11 @@ use Twig\Environment;
  * Environment, Routes, Files (the disks), the parameters (Laravel's config,
  * the database settings laid over it), PSR-20's clock, PSR-14's dispatcher,
  * symfony/mailer's mailer; and Doctrine DBAL and ORM (omnibridge/doctrine)
- * and Twig (omnibridge/twig) on the configuration. Not bound: Media, Pictures and
- * Texts (omnibase's image route and text enhancers, Symfony's for now).
+ * and Twig (omnibridge/twig) on the configuration; for omnibase's screens,
+ * Pictures (a picture's address, the application's stored ones where it says),
+ * Texts (|wysiwyg's passes on omnibase's own views) and the screen context
+ * (Base\Screen\ContextProvider: locale, site, links, viewer, theme, flashes).
+ * Not bound: Media (omnibase's image route, which Laravel does not serve).
  */
 final class OmnibridgeServiceProvider extends ServiceProvider
 {
@@ -83,6 +87,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(ClockInterface::class, DateClock::class);
         $this->app->singleton(EventDispatcherInterface::class, fn (Application $app) => new DispatcherEvents($app->make('events')));
         $this->app->singleton(MailerInterface::class, fn (Application $app) => new TransportMailer($app));
+
+        $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Contract\Urls::class), $app->publicPath()));
+        $this->app->singleton(Contract\Texts::class, fn (Application $app) => new Screen\WysiwygTexts(static fn () => $app->make(Environment::class)));
+        $this->app->bind(ContextProvider::class, fn (Application $app) => new Screen\ScreenContext($app));
 
         $this->registerParameters();
         $this->registerDoctrine();

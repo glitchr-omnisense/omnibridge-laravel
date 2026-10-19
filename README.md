@@ -47,9 +47,30 @@ for its templates: this package opens Doctrine on one of Laravel's connections
 | `Symfony\Component\Mailer\MailerInterface` | the default mailer's Symfony transport | `Contract\TransportMailer` |
 | `Doctrine\DBAL\Connection`, `Doctrine\ORM\EntityManagerInterface` | the Laravel connection configured, omnibridge/doctrine's entity manager | `Doctrine\Connections` |
 | `Twig\Environment` | the site's templates and namespaces, omnibridge/twig's contract and helpers | `View\Twig` |
+| `Base\Contract\Pictures` | `\|picture`'s rule but the thumbnails: a public file by its path, an address as it is, else the build's asset; a stored picture where the application serves it (`stored()`) | `Screen\AddressPictures` |
+| `Base\Contract\Texts` | `\|wysiwyg` and `\|wysiwyg_toc`'s passes (headings, links, every leaf a string, Editor.js's renderer or Quill's HTML) through omnibase's own views (`@Base` among the Twig paths, or `on($twig)`); a picture where the application serves it (`images()`) | `Screen\WysiwygTexts` |
+| `Base\Screen\ContextProvider` | a screen's frame: the locale as a Symfony request carries it (`fr_FR`), the site's settings, home, login, register, logout and each language's address, the guard's user, the colour scheme of the visitor's mode (`omnibridge.theme`), the session's messages | `Screen\ScreenContext` |
 
-Not bound: `Media`, `Pictures` and `Texts` (omnibase's image route and text
-enhancers, still Symfony's).
+Not bound: `Media` (omnibase's image route, which Laravel does not serve: no
+thumbnail of a stored picture at a size, no obfuscated address).
+
+**Screens.** With those three, a screen of the core is built on Laravel as under
+Symfony, without code of the application's:
+
+```php
+use Base\Contract\Runtime;
+use Base\Screen\Builder\Stories;
+
+$frame = app(Base\Screen\ContextProvider::class)->frame(['destination' => $destination]);
+$text  = (new Stories(Runtime::texts(), Runtime::pictures()))->text($thread->getContent(), ['headings' => true]);
+```
+
+An application says where it serves its stored pictures, in a provider:
+
+```php
+$this->app->extend(Base\Contract\Pictures::class, fn ($pictures) => $pictures->stored(fn (string $image) => /* its address, or null */));
+$this->app->extend(Base\Contract\Texts::class, fn ($texts) => $texts->images(fn (string $source) => /* its address, or null */));
+```
 
 **Parameters.** `Runtime::parameters()` reads Laravel's config by the same dotted
 path (`app.name`; `base.user.delay` for a site with `config/base.php`), and, when
@@ -78,7 +99,7 @@ a library that asks for one).
 
 `config/omnibridge.php`: the site's locales, the catalogues' folders, the asset
 manifest, Twig's folders and namespaces, the Laravel connection Doctrine opens and
-the entities' folders, the parameters' overlay, the storages, the bundles' entity
+the entities' folders, the parameters' overlay, the themes (the screens' colour scheme), the storages, the bundles' entity
 namespaces. A route Laravel does not serve can be answered elsewhere:
 
 ```php

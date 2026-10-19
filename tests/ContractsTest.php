@@ -24,7 +24,7 @@ final class ContractsTest extends TestCase
         $contracts = [
             Contract\Urls::class, \Omnibridge\Twig\Contract\Urls::class, Contract\Translations::class, \Omnibridge\Twig\Contract\Translations::class,
             Contract\Locales::class, Contract\Nouns::class, Contract\Access::class, Contract\Sessions::class, Contract\Tokens::class,
-            Contract\Environment::class, Contract\Routes::class, Contract\Files::class, ParameterBagInterface::class,
+            Contract\Environment::class, Contract\Routes::class, Contract\Files::class, Contract\Pictures::class, Contract\Texts::class, ParameterBagInterface::class,
             ClockInterface::class, EventDispatcherInterface::class, MailerInterface::class,
         ];
         foreach ($contracts as $contract) {

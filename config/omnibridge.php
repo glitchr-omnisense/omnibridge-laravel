@@ -48,6 +48,15 @@ return [
         'hot' => null,
     ],
 
+    // omnibase's themes, as the screens' context reads the visitor's colour scheme
+    // (their cookie THEME/MODE): the modes (id => [id, class, icon, prefers]), the
+    // filters, the one for no filter; no scheme without modes.
+    'theme' => [
+        'modes' => [],
+        'filters' => [],
+        'no_filter' => [],
+    ],
+
     // omnibase's storages (local.uploads, s3.private...) and the Laravel disk
     // each is; "default" for a storage not named.
     'storages' => [],
