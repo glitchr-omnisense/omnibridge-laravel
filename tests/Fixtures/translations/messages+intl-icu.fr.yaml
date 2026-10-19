@@ -1,0 +1,6 @@
+menu:
+    home: Accueil
+    welcome: "Bonjour {name}"
+    position: "{0} et {1}"
+    nested: menu.home
+articles: "{count, plural, =0 {aucun article} one {un article} other {# articles}}"

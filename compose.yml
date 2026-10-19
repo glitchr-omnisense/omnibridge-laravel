@@ -1,0 +1,13 @@
+# The test suite: docker compose run --rm test
+# omniscient/omnibase asks for extensions (imagick, igbinary, gd...) that nothing here loads: the
+# install does without them.
+services:
+  test:
+    build: docker
+    image: omnibridge-laravel:php8.4
+    volumes:
+      - .:/package
+      - composer-cache:/tmp/composer/cache
+    command: sh -c "composer update --no-progress --ignore-platform-req='ext-*' && vendor/bin/phpunit"
+volumes:
+  composer-cache:

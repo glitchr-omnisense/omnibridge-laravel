@@ -1,0 +1,1 @@
+{"entrypoints": {"app-async": {"css": ["/assets/app-async.css"], "js": ["/assets/runtime.js", "/assets/app-async.js"]}, "app-defer": {"js": ["/assets/runtime.js", "/assets/app-defer.js"]}}}
