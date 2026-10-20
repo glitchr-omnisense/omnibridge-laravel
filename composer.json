@@ -32,6 +32,7 @@
         "omniscient/omnibridge": "^1.0",
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
+        "symfony/cache": "^7.0|^8.0",
         "symfony/mailer": "^7.0|^8.0",
         "symfony/routing": "^7.0|^8.0",
         "symfony/translation": "^7.0|^8.0",

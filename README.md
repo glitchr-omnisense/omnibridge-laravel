@@ -167,6 +167,19 @@ nothing. A file has the address Symfony gives it when it has the same path on bo
 (the identifiers are made of it: the same project folder, the uploads where the Symfony
 site's `public/` links them).
 
+With omnibase's mapping on as well, what a site's entities and repositories ask of
+their host is answered here too: the attribute reader reads the stored files through
+that `Flysystem` (`#[Uploader]`: an avatar, an article's audio, whose `/contents/...`
+addresses `ImageRoute` serves), `BaseTrait::getMediaService()` is the bound
+`MediaService`, the editor's pictures go through omnibase's `MediaEnhancer`
+(`MediaEnhancerInterface`, the image route's address of each picture of a text, as
+Symfony's `|wysiwyg` gives it), and a repository taking services beside the registry
+(a site's `CommentRepository`, its cache pool first) is given them from Laravel's
+container by type (`Mapping::register()`'s `services`). omnibase's cache pool
+(`Psr\Cache\CacheItemPoolInterface`, Symfony's `CacheInterface`) is Symfony's cache
+component in `storage/framework/cache/omnibase-pool` - not Laravel's store, which
+unserializes no object (`cache.serializable_classes`).
+
 First used by lesringostars' Laravel twin, which renders the Symfony site's blog
 and articles from the same database and templates.
 

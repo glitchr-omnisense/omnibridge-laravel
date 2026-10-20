@@ -20,6 +20,8 @@ use Base\Service\Model\Obfuscator\Compression\HashidsCompression;
 use Base\Service\Model\Obfuscator\Compression\NullCompression;
 use Base\Service\Model\Obfuscator\Compression\ZlibCompression;
 use Base\Service\Obfuscator;
+use Base\Service\Model\Wysiwyg\MediaEnhancer;
+use Base\Service\Model\Wysiwyg\MediaEnhancerInterface;
 use Imagine\Image\Metadata\ExifMetadataReader;
 use Omnibridge\Laravel\Media\DiskStorages;
 use Omnibridge\Laravel\Media\ImageController;
@@ -47,6 +49,9 @@ use Omnibridge\Laravel\Parameters\ConfigParameters;
 use Omnibridge\Laravel\Parameters\DatabaseSettings;
 use Omnibridge\Laravel\View\Twig;
 use Psr\Clock\ClockInterface;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\CacheInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Twig\Environment;
@@ -77,7 +82,10 @@ use Twig\Environment;
  * With omnibridge.media on (R6), omnibase's media rule: MediaService on
  * Laravel's router, Media bound to it, Pictures' thumbnails, and the image
  * routes (/images/...) answered by Base\Service\ImageRoute - the same
- * obfuscated addresses, thumbnails and formats as under Symfony.
+ * obfuscated addresses, thumbnails and formats as under Symfony; with omnibase's
+ * mapping too (R7), the attribute reader's Flysystem (an entity's #[Uploader]:
+ * uploads, audio), and the editor's pictures by omnibase's MediaEnhancer
+ * (Texts, MediaEnhancerInterface).
  */
 final class OmnibridgeServiceProvider extends ServiceProvider
 {
@@ -119,6 +127,15 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Host\Urls::class), $app->publicPath(), null, self::media($app) ? $app->make(MediaService::class) : null));
         $this->app->singleton(Contract\Texts::class, fn (Application $app) => new Screen\WysiwygTexts(static fn () => $app->make(Environment::class)));
         $this->app->bind(ContextProvider::class, fn (Application $app) => new Screen\ScreenContext($app));
+
+        // omnibase's cache pool (what its repositories and the sites' keep a count or a list in,
+        // cache.app under Symfony), as PSR-6 and Symfony's cache contracts: Symfony's cache
+        // component in storage/framework/cache/omnibase-pool. Not Laravel's store through a
+        // PSR-16 adapter: its values are objects, which Laravel's cache refuses to unserialize
+        // (cache.serializable_classes false, Laravel's default).
+        $this->app->singleton(FilesystemAdapter::class, fn (Application $app) => new FilesystemAdapter('omnibase', 0, $app->storagePath('framework/cache/omnibase-pool')));
+        $this->app->alias(FilesystemAdapter::class, CacheItemPoolInterface::class);
+        $this->app->alias(FilesystemAdapter::class, CacheInterface::class);
 
         $this->registerParameters();
         $this->registerDoctrine();
@@ -219,6 +236,13 @@ final class OmnibridgeServiceProvider extends ServiceProvider
                 (bool) $app['config']->get('app.debug'),
                 configure: Mapping::configure(...),
             );
+            // omnibase's Flysystem with the media on (R6): what an entity's #[Uploader] reads (an
+            // upload's public address, an article's audio) goes through the attribute reader's.
+            if (self::media($app) && $app->bound(Flysystem::class)) {
+                $options['flysystem'] ??= $app->make(Flysystem::class);
+            }
+            // What a repository takes beside the registry (a site's cache pool...), from Laravel's container.
+            $options['services'] ??= static fn (string $type): ?object => $app->bound($type) || class_exists($type) && !(new \ReflectionClass($type))->isAbstract() ? $app->make($type) : null;
             $this->mapping = Mapping::register($entityManager, $options);
 
             return $entityManager;
@@ -328,6 +352,24 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             null !== self::omnibase($app) ? self::crops($app) : null,
         ));
         $this->app->singleton(Contract\Media::class, fn (Application $app) => new ServiceMedia($app->make(MediaService::class)));
+
+        // The editor's pictures as under Symfony (audit R7): omnibase's MediaEnhancer
+        // (Symfony's editor_enhancer's media pass), each picture of a text by the image
+        // route's address made from its stored origin, in the editor's storage
+        // (base.twig.editor.storage), as HtmlTwigExtension asks it.
+        $this->app->singleton(MediaEnhancerInterface::class, fn (Application $app) => new MediaEnhancer($app->make(MediaService::class), $app->make(Flysystem::class), $app->make('log')));
+        $this->app->extend(Contract\Texts::class, function (Contract\Texts $texts, Application $app) {
+            if (!$texts instanceof Screen\WysiwygTexts) {
+                return $texts;
+            }
+            $storage = self::mediaParameters($app)->get('base.twig.editor.storage');
+
+            return $texts->images(static function (string $source) use ($app, $storage): ?string {
+                $address = $app->make(MediaEnhancerInterface::class)->enhance($source, ['storage' => $storage], [], ['class' => 'markdown-media']);
+
+                return \is_string($address) && '' !== $address ? $address : null;
+            });
+        });
     }
 
     /**
