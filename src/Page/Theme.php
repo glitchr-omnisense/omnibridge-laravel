@@ -2,12 +2,16 @@
 
 namespace Omnibridge\Laravel\Page;
 
+use Base\Service\ThemizerInterface;
+
 /**
  * app.theme, as omnibase's Themizer answers it: the mode and the filter the
  * visitor chose (their cookies THEME/MODE and THEME/FILTER), among those the
- * site offers.
+ * site offers. omnibase's ThemizerInterface too, which its theme menus read
+ * (Base\Twig\Extension\MenuTwigExtension: render_theme_modes()...): no
+ * widths, events nor audiences offered here.
  */
-final class Theme
+final class Theme implements ThemizerInterface
 {
     /**
      * @param array<string, array<string, string>> $modes
@@ -64,5 +68,55 @@ final class Theme
     public function filters(): array
     {
         return $this->filters;
+    }
+
+    public function getAvailableModes(): array
+    {
+        return $this->modes();
+    }
+
+    public function getMode(): ?array
+    {
+        return $this->mode();
+    }
+
+    public function getAvailableFilters(): array
+    {
+        return $this->filters();
+    }
+
+    public function getFilter(): ?array
+    {
+        return $this->filter();
+    }
+
+    public function getAvailableWidths(): array
+    {
+        return [];
+    }
+
+    public function getWidth(): ?array
+    {
+        return $this->width();
+    }
+
+    public function getAvailableEvents(): array
+    {
+        return [];
+    }
+
+    public function getEvent(): ?array
+    {
+        return $this->event();
+    }
+
+    public function getAudienceCategories(): array
+    {
+        return [];
+    }
+
+    public function getAudience(): ?array
+    {
+        return $this->audience();
     }
 }

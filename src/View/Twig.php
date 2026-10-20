@@ -2,8 +2,12 @@
 
 namespace Omnibridge\Laravel\View;
 
+use Illuminate\Container\Container;
+use Omnibridge\Contract\Access;
+use Omnibridge\Contract\Tokens;
 use Omnibridge\Contract\Translations;
 use Omnibridge\Contract\Urls;
+use Omnibridge\Twig\AccessExtension;
 use Omnibridge\Twig\ContractExtension;
 use Omnibridge\Twig\HelperExtension;
 use Twig\Environment;
@@ -13,8 +17,11 @@ use Twig\Loader\FilesystemLoader;
 /**
  * A Twig environment over an omnibase site's templates, answered by Laravel:
  * its folders and their namespaces (@Base, @Layout...), omnibridge/twig's
- * contract (path(), url(), asset(), |trans) and helpers (|datetime, lang()...)
- * in the page's language, and the application's own extensions.
+ * contract (path(), url(), asset(), |trans), its is_granted() and
+ * csrf_token() on the container's Access and Tokens (AccessExtension, the
+ * code Symfony's pages ask as well: omnibridge/symfony registers it there)
+ * and helpers (|datetime, lang()...) in the page's language, and the
+ * application's own extensions.
  */
 final class Twig
 {
@@ -31,11 +38,28 @@ final class Twig
         }
         $twig = new Environment($loader, $options + ['auto_reload' => true, 'strict_variables' => false]);
         $twig->addExtension(new ContractExtension($urls, $translations));
+        $twig->addExtension(new AccessExtension(self::bound(Access::class), self::bound(Tokens::class)));
         $twig->addExtension(new HelperExtension($locale, $timezone));
         foreach ($extensions as $extension) {
             $twig->addExtension($extension);
         }
 
         return $twig;
+    }
+
+    /**
+     * The container's answer to a contract, null when it binds none.
+     *
+     * @template T of object
+     *
+     * @param class-string<T> $contract
+     *
+     * @return T|null
+     */
+    private static function bound(string $contract): ?object
+    {
+        $container = Container::getInstance();
+
+        return $container->bound($contract) ? $container->make($contract) : null;
     }
 }

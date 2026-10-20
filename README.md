@@ -51,7 +51,7 @@ for its templates: this package opens Doctrine on one of Laravel's connections
 | `Psr\EventDispatcher\EventDispatcherInterface` | Laravel's dispatcher | `Contract\DispatcherEvents` |
 | `Symfony\Component\Mailer\MailerInterface` | the default mailer's Symfony transport | `Contract\TransportMailer` |
 | `Doctrine\DBAL\Connection`, `Doctrine\ORM\EntityManagerInterface` | the Laravel connection configured, omnibridge/doctrine's entity manager | `Doctrine\Connections` |
-| `Twig\Environment` | the site's templates and namespaces, omnibridge/twig's contract and helpers | `View\Twig` |
+| `Twig\Environment` | the site's templates and namespaces, omnibridge/twig's contract (`path()`, `url()`, `asset()`, `\|trans`), its `AccessExtension` (`is_granted()` on the gate, `csrf_token()` the session's token: the code a Symfony page asks too, omnibridge/symfony registering it there) and helpers | `View\Twig` |
 | `Base\Contract\Pictures` | `\|picture`'s rule: a public file by its thumbnail at the size asked (MediaService's, `omnibridge.media` on) or its path, an address as it is, else the build's asset; a stored picture where the application serves it (`stored()`) | `Screen\AddressPictures` |
 | `Base\Contract\Texts` | `\|wysiwyg` and `\|wysiwyg_toc`'s passes (headings, links, every leaf a string, Editor.js's renderer or Quill's HTML) through omnibase's own views (`@Base` among the Twig paths, or `on($twig)`); a picture where the application serves it (`images()`) | `Screen\WysiwygTexts` |
 | `Base\Screen\ContextProvider` | a screen's frame: the locale as a Symfony request carries it (`fr_FR`), the site's settings, home, login, register, logout and each language's address, the guard's user, the colour scheme of the visitor's mode (`omnibridge.theme`), the session's messages | `Screen\ScreenContext` |
@@ -96,7 +96,8 @@ omnibase's templates with Laravel: `View\Encore` (`encore_entry_link_tags()` and
 stylesheets), `View\Breakpoints` (the style omnibase puts before the first
 stylesheet), `Page\AppVariable` and its parts (the `app` variable with Symfony's
 words: `app.request.getLocale()`, `app.request.attributes.get('_route')`,
-`app.site`, `app.theme`, `app.session`), `Form\FormView` and `Form\FormRenderer`
+`app.site`, `app.theme`, `app.session`; `Page\Theme` is omnibase's `ThemizerInterface` too,
+which its theme menus read: `Base\Twig\Extension\MenuTwigExtension`), `Form\FormView` and `Form\FormRenderer`
 (a few simple forms in the markup of omnibase's form theme), and
 `RouterUrlGenerator` (Symfony's `UrlGeneratorInterface` over the Urls contract, for
 a library that asks for one).
