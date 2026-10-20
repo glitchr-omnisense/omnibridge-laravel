@@ -29,6 +29,12 @@ final class TwigAccessTest extends TestCase
         $this->assertSame('visitor', $granted);
         $this->assertSame($this->app['session']->token(), $token, 'the session\'s token, the one VerifyCsrfToken checks');
         $this->assertNotSame('', $token);
+        // The Tokens contract checks it as VerifyCsrfToken does: the session's token, whatever the intent.
+        $tokens = $this->app->make(\Omnibridge\Contract\Tokens::class);
+        $this->assertTrue($tokens->isValid('ux_typesense', $token));
+        $this->assertFalse($tokens->isValid('ux_typesense', 'forged'));
+        $this->assertFalse($tokens->isValid('ux_typesense', ''));
+        $this->assertFalse($tokens->isValid('ux_typesense', null));
 
         $this->actingAs(new GenericUser(['id' => 1]));
         $this->assertStringStartsWith('user|', $page->render(), 'the gate, for the user signed in');
