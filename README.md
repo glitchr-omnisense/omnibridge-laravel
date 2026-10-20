@@ -78,6 +78,32 @@ $this->app->extend(Base\Contract\Pictures::class, fn ($pictures) => $pictures->s
 $this->app->extend(Base\Contract\Texts::class, fn ($texts) => $texts->images(fn (string $source) => /* its address, or null */));
 ```
 
+**Actions.** An action written once for every host (no Request, no Response: its inputs,
+and a result of omnibase's - `Base\Screen\Template`, `Json`, `Shell`, `File`, a `View`, or
+null for no such page) is a route here, answered by omnibase's `Base\Screen\Negotiation`
+(HTML, JSON when the template allows it and the client prefers it, omnibridge/react's
+protocol and its 409) through `Screen\Responder`, as `Base\Bridge\Symfony\ScreenResponder`
+answers it under Symfony:
+
+```php
+use Omnibridge\Laravel\Screen\Responder;
+
+Route::get('/{destination}/articles/{slug}', Responder::action(App\Action\Blog\Article::class))->name('app_article');
+```
+
+The action's parameters are the route's by name, `$query` the query string's values, the
+rest the container's. The templates are rendered by the container's Twig; an application
+whose pages carry more (a page context, what it adds once rendered) binds its own
+`Base\Screen\Negotiation`, rendering `Negotiation::PAGE` (a page), `PART` (a value of a
+JSON answer) and `ALONE` (a page whole, its own markup only) each its way.
+
+**Language.** omnibase's language under Laravel, as its LocalizerSubscriber and
+LocalizerController give it under Symfony: `Http\Localize` (the web group's middleware: the
+LANG cookie, else the browser's language among `omnibridge.locales.available`, else
+`omnibridge.locales.default`) and `Http\SwitchLocale` (`Route::get('/locale/{_locale?}',
+SwitchLocale::class)->name('_switch_locale')`: the choice kept as Symfony writes it, en_GB, and
+back to the page it came from on the site). Leave LANG out of the encrypted cookies.
+
 **Parameters.** `Runtime::parameters()` reads Laravel's config by the same dotted
 path (`app.name`; `base.user.delay` for a site with `config/base.php`), and, when
 `omnibridge.parameters.hot` is on (or the config's own

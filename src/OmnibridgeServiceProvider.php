@@ -6,6 +6,7 @@ use Base\Contract;
 use Base\Bridge\Doctrine\Mapping;
 use Base\Contract\Runtime;
 use Base\Screen\ContextProvider;
+use Base\Screen\Negotiation;
 use Base\Service\HotParameters;
 use Base\Service\Model\EntityNouns;
 use Base\Service\ParameterBagInterface;
@@ -30,6 +31,7 @@ use Omnibridge\Laravel\Media\ServiceMedia;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Omnibridge\Contract as Host;
@@ -78,7 +80,10 @@ use Twig\Environment;
  * and Twig (omnibridge/twig) on the configuration; for omnibase's screens,
  * Pictures (a picture's address, the application's stored ones where it says),
  * Texts (|wysiwyg's passes on omnibase's own views) and the screen context
- * (Base\Screen\ContextProvider: locale, site, links, viewer, theme, flashes).
+ * (Base\Screen\ContextProvider: locale, site, links, viewer, theme, flashes);
+ * and an action's result answered (R10): omnibase's Negotiation on the
+ * container's Twig, Screen\Responder its Laravel side (Responder::action()
+ * for a route).
  * With omnibridge.media on (R6), omnibase's media rule: MediaService on
  * Laravel's router, Media bound to it, Pictures' thumbnails, and the image
  * routes (/images/...) answered by Base\Service\ImageRoute - the same
@@ -127,6 +132,14 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Contract\Pictures::class, fn (Application $app) => new Screen\AddressPictures($app->make(Host\Urls::class), $app->publicPath(), null, self::media($app) ? $app->make(MediaService::class) : null));
         $this->app->singleton(Contract\Texts::class, fn (Application $app) => new Screen\WysiwygTexts(static fn () => $app->make(Environment::class)));
         $this->app->bind(ContextProvider::class, fn (Application $app) => new Screen\ScreenContext($app));
+        // An action's result answered (omnibase's Negotiation, framework-free; Screen\Responder its Laravel side):
+        // the container's Twig renders every template; an application whose pages carry more binds its own.
+        $this->app->bind(Negotiation::class, fn (Application $app) => new Negotiation(
+            static fn (string $template, array $context): string => $app->make(Environment::class)->render($template, $context),
+            $app->make(ContextProvider::class),
+            $app['config']->get('omnibridge.screens.version'),
+        ));
+        $this->app->bind(Screen\Responder::class, fn (Application $app) => new Screen\Responder($app->make(Negotiation::class)));
 
         // omnibase's cache pool (what its repositories and the sites' keep a count or a list in,
         // cache.app under Symfony), as PSR-6 and Symfony's cache contracts: Symfony's cache
@@ -246,6 +259,13 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             $this->mapping = Mapping::register($entityManager, $options);
 
             return $entityManager;
+        });
+        // A repository by its class (a type-hint of an action, a service), as Symfony autowires a
+        // ServiceEntityRepository: the entity manager's own, of the entity that names it (R10).
+        $this->app->beforeResolving(static function ($abstract, $parameters, Application $app): void {
+            if (\is_string($abstract) && str_contains($abstract, '\\') && !$app->bound($abstract) && is_subclass_of($abstract, EntityRepository::class)) {
+                $app->singleton($abstract, static fn (Application $app) => self::repository($app->make(EntityManagerInterface::class), $abstract));
+            }
         });
         // What the mapping registered (its registry, reader, repositories), once the entity manager is built.
         $this->app->singleton(Mapping::class, function (Application $app) {
@@ -454,6 +474,27 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             'uploader' => ['storage' => null],
             'twig' => ['editor' => ['storage' => null]],
         ];
+    }
+
+    /**
+     * The repository of the entity whose repositoryClass is $class. Several name it (an
+     * application's App\Entity\User over omnibase's Base\Entity\User): the entity the
+     * repository is named after (App\Repository\UserRepository: App\Entity\User), else the first.
+     *
+     * @param class-string<EntityRepository> $class
+     */
+    private static function repository(EntityManagerInterface $entities, string $class): EntityRepository
+    {
+        $named = preg_replace('/Repository$/', '', str_replace('\\Repository\\', '\\Entity\\', $class));
+        $found = null;
+        foreach ($entities->getMetadataFactory()->getAllMetadata() as $metadata) {
+            if ($metadata->customRepositoryClassName === $class && (null === $found || $metadata->getName() === $named)) {
+                $found = $metadata->getName();
+            }
+        }
+        $repository = null !== $found ? $entities->getRepository($found) : null;
+
+        return $repository instanceof $class ? $repository : throw new \LogicException(\sprintf('No mapped entity names %s as its repository (repositoryClass).', $class));
     }
 
     /** Twig over omnibridge.twig.paths, omnibridge/twig's contract answered by the bound Urls and Translations. */
