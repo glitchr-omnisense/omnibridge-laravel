@@ -59,8 +59,8 @@ use Symfony\Component\Mailer\MailerInterface;
 use Twig\Environment;
 
 /**
- * omniscient/omnibase hosted by Laravel: each contract of its Fondation bound
- * to Laravel's services under the contract's interface, and the Fondation's
+ * omniscient/omnibase hosted by Laravel: each contract of its Foundation bound
+ * to Laravel's services under the contract's interface, and the Foundation's
  * registry (Base\Contract\Runtime, omniscient/omnibridge's Omnibridge\Runtime)
  * on Laravel's container, so that Runtime::urls(), ::parameters()... and
  * app(Urls::class) are one object.

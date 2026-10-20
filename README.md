@@ -8,8 +8,8 @@ php artisan vendor:publish --tag=omnibridge-config
 
 That hosts [omniscient/omnibase](https://github.com/glitchr-studio/omnibase) in a
 Laravel application: the provider is discovered by Laravel, binds each contract of
-omnibase's Fondation to Laravel's services, and hands Laravel's container to the
-Fondation's registry, `Base\Contract\Runtime` (omniscient/omnibridge's
+omnibase's Foundation to Laravel's services, and hands Laravel's container to the
+Foundation's registry, `Base\Contract\Runtime` (omniscient/omnibridge's
 `Omnibridge\Runtime` with omnibase's accessors). The host's contracts are
 [omniscient/omnibridge](https://github.com/glitchr-studio/omnibridge)'s
 (`Omnibridge\Contract\*`), bound under their own names; their former names

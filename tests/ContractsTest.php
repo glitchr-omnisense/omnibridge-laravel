@@ -17,7 +17,7 @@ use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
-/** Every contract of the Fondation the provider binds, reached through omnibase's Runtime as through Laravel's container: one object. */
+/** Every contract of the Foundation the provider binds, reached through omnibase's Runtime as through Laravel's container: one object. */
 final class ContractsTest extends TestCase
 {
     public function testRuntimeAndTheContainerGiveTheSameObjects(): void

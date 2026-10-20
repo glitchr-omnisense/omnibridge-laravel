@@ -1,6 +1,6 @@
 {
     "name": "omnibridge/laravel",
-    "description": "The Laravel host of omniscient/omnibase: its Fondation contracts (urls, translations, locales, access, parameters with the database settings laid over Laravel's config, clock, events...) answered by Laravel's services and seeded in Base\\Contract\\Runtime, Doctrine through omnibridge/doctrine, Twig through omnibridge/twig, and the pieces an omnibase page asks of its framework (Encore tags, the app variable, simple forms).",
+    "description": "The Laravel host of omniscient/omnibase: its Foundation contracts (urls, translations, locales, access, parameters with the database settings laid over Laravel's config, clock, events...) answered by Laravel's services and seeded in Base\\Contract\\Runtime, Doctrine through omnibridge/doctrine, Twig through omnibridge/twig, and the pieces an omnibase page asks of its framework (Encore tags, the app variable, simple forms).",
     "type": "library",
     "keywords": [
         "laravel",

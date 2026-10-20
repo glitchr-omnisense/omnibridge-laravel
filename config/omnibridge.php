@@ -1,6 +1,6 @@
 <?php
 
-// omnibridge/laravel: what omnibase's Fondation is answered with in this
+// omnibridge/laravel: what omnibase's Foundation is answered with in this
 // application (php artisan vendor:publish --tag=omnibridge-config).
 
 return [
