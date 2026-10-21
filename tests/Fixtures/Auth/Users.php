@@ -25,7 +25,7 @@ final class Users implements Accounts, Passwords, LinkTokens, EmailCodes, Backup
     public function byIdentifier(string $identifier): ?object
     {
         foreach ($this->users as $user) {
-            if (0 === strcasecmp($user->email, trim($identifier))) {
+            if (0 === strcasecmp($user->email, trim($identifier)) || (null !== $user->username && $user->username === trim($identifier))) {
                 return $user;
             }
         }

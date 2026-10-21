@@ -28,8 +28,9 @@ return [
     // CSRF field and intent (checked by the Tokens contract: Laravel's session token), where a
     // visitor goes once signed in, the page's template (rendered by omnibase's Negotiation, the
     // application's page around it), whether it offers the sign-in link, and the hasher
-    // (symfony/password-hasher's native one, bcrypt at cost 13, when null: Symfony's "auto" on
-    // a host without sodium; ['algorithm' => ..., 'cost' => ...] otherwise).
+    // (symfony/password-hasher's native one, bcrypt at cost 13, when null; otherwise what
+    // security.yaml's password_hashers says, read by Symfony's PasswordHasherFactory:
+    // ['algorithm' => 'auto'|'bcrypt'|'argon2id'|..., 'cost' => 13, 'migrate_from' => [...]]).
     'password' => [
         'path' => '/login',
         'form' => null,

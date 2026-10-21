@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
  * language, its address, its headers and attributes, as Symfony's Request
  * names them), the visitor (the account signed in, the application's own
  * object, as Symfony's app.user; none by default), the session, the site,
- * the theme, and the referrer (omnibase's app.referrer, an object printed as
- * the page the visitor came from on this site, or as nothing: Page\Referrer).
+ * the theme, the referrer (omnibase's app.referrer, an object printed as
+ * the page the visitor came from on this site, or as nothing: Page\Referrer),
+ * and the application's app.admin when it gives one (omnibase's AdminVariable:
+ * the back-office address of a record, app.admin.crudify(entity)).
  */
 final class AppVariable
 {
@@ -21,12 +23,14 @@ final class AppVariable
         public readonly mixed $user = null,
         public readonly mixed $session = null,
         public readonly ?Referrer $referrer = null,
+        /** omnibase's app.admin (its AdminVariable: crudify() gives a record's back-office address), the application's own object */
+        public readonly ?object $admin = null,
     ) {
     }
 
-    public static function of(Request $request, string $locale, Site $site, Theme $theme, ?object $user = null): self
+    public static function of(Request $request, string $locale, Site $site, Theme $theme, ?object $user = null, ?object $admin = null): self
     {
-        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView(), new Referrer(self::referrer($request)));
+        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView(), new Referrer(self::referrer($request)), $admin);
     }
 
     /** The page the visitor came from, when it is this site's and not the page itself. */

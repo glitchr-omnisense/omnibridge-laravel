@@ -47,6 +47,7 @@ use Omnibridge\Laravel\Auth\Middleware\SecondFactorPending;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\NativePasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 /**
@@ -157,13 +158,17 @@ final class AuthServiceProvider extends ServiceProvider
             $app->make(EventDispatcherInterface::class),
             $app->make(ClockInterface::class),
         ));
+        // The hasher as security.yaml's password_hashers would set it: Symfony's PasswordHasherFactory reads
+        // the same keys (algorithm: auto, bcrypt, argon2i, argon2id, sodium, native, plaintext...; cost,
+        // time_cost, memory_cost, migrate_from), so the site's configuration is said once. NativePasswordHasher
+        // alone takes no such name ("bcrypt" is not a password_hash() algorithm: 500 at the first sign-in).
         $this->app->singleton(PasswordHasherInterface::class, function (Application $app) {
             $hasher = $app->make(Settings::class)->password['hasher'] ?? null;
             if (!\is_array($hasher)) {
                 return new NativePasswordHasher();
             }
 
-            return new NativePasswordHasher(null, null, isset($hasher['cost']) ? Settings::int($hasher['cost'], 13) : null, isset($hasher['algorithm']) ? Settings::string($hasher['algorithm']) : null);
+            return (new PasswordHasherFactory(['omniauth' => Settings::stringKeys($hasher)]))->getPasswordHasher('omniauth');
         });
         $this->app->singleton(RememberMe::class, function (Application $app) {
             $settings = $app->make(Settings::class);

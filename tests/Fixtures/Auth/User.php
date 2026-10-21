@@ -23,6 +23,7 @@ final class User
         public ?string $totpSecret = null,
         public ?string $refused = null,
         public array $roles = ['ROLE_USER'],
+        public ?string $username = null,
     ) {
     }
 
