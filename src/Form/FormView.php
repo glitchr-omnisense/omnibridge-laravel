@@ -26,7 +26,8 @@ final class FormView implements \ArrayAccess, \IteratorAggregate
     public function __construct(string $name, array $vars = [], public readonly ?FormView $parent = null)
     {
         $full = null !== $parent ? $parent->vars['full_name'].'['.$name.']' : $name;
-        $id = null !== $parent ? $parent->vars['id'].'_'.$name : $name;
+        // Symfony's ids: the full name with its brackets made underscores, the leading underscores and digits dropped (not allowed in an id).
+        $id = null !== $parent ? $parent->vars['id'].'_'.$name : ltrim($name, '_0123456789');
         $this->vars = $vars + ['name' => $name, 'full_name' => $full, 'id' => $id, 'type' => 'text', 'value' => null, 'attr' => [], 'required' => false, 'label' => null];
     }
 

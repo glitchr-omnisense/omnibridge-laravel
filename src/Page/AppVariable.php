@@ -9,8 +9,8 @@ use Illuminate\Http\Request;
  * language, its address, its headers and attributes, as Symfony's Request
  * names them), the visitor (the account signed in, the application's own
  * object, as Symfony's app.user; none by default), the session, the site,
- * the theme, and the referrer (omnibase's app.referrer: the page the visitor
- * came from on this site, null for another site or none).
+ * the theme, and the referrer (omnibase's app.referrer, an object printed as
+ * the page the visitor came from on this site, or as nothing: Page\Referrer).
  */
 final class AppVariable
 {
@@ -20,13 +20,13 @@ final class AppVariable
         public readonly Theme $theme,
         public readonly mixed $user = null,
         public readonly mixed $session = null,
-        public readonly ?string $referrer = null,
+        public readonly ?Referrer $referrer = null,
     ) {
     }
 
     public static function of(Request $request, string $locale, Site $site, Theme $theme, ?object $user = null): self
     {
-        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView(), self::referrer($request));
+        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView(), new Referrer(self::referrer($request)));
     }
 
     /** The page the visitor came from, when it is this site's and not the page itself. */

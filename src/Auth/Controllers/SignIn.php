@@ -385,16 +385,19 @@ final class SignIn
         $sign = $this->settings->password;
         $name = Settings::string($sign['form'] ?? null);
         $csrf = $this->settings->csrf($sign);
+        // As omnibase's SecurityLoginType renders it under Symfony: no action (the page's own address), the
+        // identifier's value printed even empty, "remember me" ticked, the token's field under its Stimulus controller.
         $view = new FormView($name, [
             'method' => 'post',
-            'action' => $request->getPathInfo(),
-            'allow_login_token' => (bool) $sign['allow_login_token'] && null !== $this->settings->link,
+            'action' => null,
+            // The link's page may be another host's (the Symfony site's security_loginWithToken, when the link is off here).
+            'allow_login_token' => (bool) ($sign['allow_login_token'] ?? false),
         ]);
-        $view->add(Settings::string($sign['identifier']), ['type' => 'text', 'value' => $last, 'required' => true, 'attr' => ['autocomplete' => 'username']]);
-        $view->add(Settings::string($sign['password']), ['type' => 'password', 'required' => true, 'attr' => ['autocomplete' => 'current-password']]);
-        $view->add(Settings::string($sign['remember']), ['type' => 'checkbox', 'value' => '1']);
+        $view->add(Settings::string($sign['identifier']), ['type' => 'text', 'value' => $last, 'required' => true, 'attr' => ['value' => $last]]);
+        $view->add(Settings::string($sign['password']), ['type' => 'password', 'required' => true]);
+        $view->add(Settings::string($sign['remember']), ['type' => 'checkbox', 'value' => '1', 'checked' => true]);
         if (null !== $csrf && null !== $this->tokens) {
-            $view->add($csrf['field'], ['type' => 'hidden', 'value' => $this->tokens->csrf($csrf['intent'])]);
+            $view->add($csrf['field'], ['type' => 'hidden', 'value' => $this->tokens->csrf($csrf['intent']), 'attr' => ['data-controller' => 'csrf-protection']]);
         }
 
         return self::flat($view, $name);

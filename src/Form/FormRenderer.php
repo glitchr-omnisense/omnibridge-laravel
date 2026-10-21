@@ -5,8 +5,8 @@ namespace Omnibridge\Laravel\Form;
 use Omnibridge\Contract\Translations;
 
 /**
- * form_start(), form_widget(), form_row(), form_errors() and form_end() for
- * the forms of FormView, with the markup omnibase's form theme gives
+ * form_start(), form_widget(), form_row(), form_label(), form_errors(),
+ * form_rest() and form_end() for the forms of FormView, with the markup omnibase's form theme gives
  * them: inputs, a switch, a list of switches. Placeholders
  * and labels are translated as Symfony's form theme translates them.
  */
@@ -61,8 +61,21 @@ final class FormRenderer
         return '';
     }
 
-    /** The fields not printed yet (the hidden ones: a parent's id, the token), then the end of the form. */
-    public function end(FormView $form): string
+    /**
+     * form_label(): the field's label (the one given, else its own), in omnibase's form theme's markup.
+     *
+     * @param array<string, mixed> $options
+     */
+    public function fieldLabel(FormView $field, ?string $label = null, array $options = []): string
+    {
+        $text = $label ?? $options['label'] ?? $field->vars['label'] ?? $field->vars['name'];
+        $id = $field->vars['id'];
+
+        return $this->label(\is_scalar($id) ? (string) $id : '', $this->translate($text));
+    }
+
+    /** form_rest(): the fields not printed yet (the hidden ones: the token), without the form's end. */
+    public function rest(FormView $form): string
     {
         $rest = '';
         foreach ($form->children as $child) {
@@ -71,7 +84,13 @@ final class FormRenderer
             }
         }
 
-        return $rest.'</form>';
+        return $rest;
+    }
+
+    /** The fields not printed yet (the hidden ones: a parent's id, the token), then the end of the form. */
+    public function end(FormView $form): string
+    {
+        return $this->rest($form).'</form>';
     }
 
     /** @param array<string, mixed> $vars */
