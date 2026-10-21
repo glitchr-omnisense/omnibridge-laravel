@@ -79,8 +79,16 @@ final class CatalogueTranslations implements Translations
             return $asked;
         }
         $text = $this->translator->trans($id, $this->icu($named), $domain, $locale);
-        for ($depth = 0; $depth < self::NESTED_DEPTH && $text !== $id && $this->defined($catalogue, $text, $domain); ++$depth) {
-            $text = $this->translator->trans($text, $this->icu($named), $domain, $locale);
+        // A message that is itself a key - "@notifications.login.success.day.back" under
+        // login.success.afternoon.back, or a bare key of the same domain - is followed, as
+        // omnibase's Translator follows it, a few times at most.
+        for ($depth = 0; $depth < self::NESTED_DEPTH && $text !== $id; ++$depth) {
+            [$nextId, $nextDomain] = str_starts_with($text, '@') ? self::named($text, $domain) : [$text, $domain];
+            if (!$this->defined($catalogue, $nextId, $nextDomain)) {
+                break;
+            }
+            [$id, $domain] = [$nextId, $nextDomain];
+            $text = $this->translator->trans($id, $this->icu($named), $domain, $locale);
         }
 
         return trim($text);

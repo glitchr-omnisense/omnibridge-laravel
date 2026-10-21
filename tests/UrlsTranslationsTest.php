@@ -53,6 +53,8 @@ final class UrlsTranslationsTest extends TestCase
         $this->assertSame('Paul et John', $translations->trans('menu.position', ['Paul', 'John']));
         $this->assertSame('3 articles', $translations->trans('articles', ['count' => 3]));
         $this->assertSame('Accueil', $translations->trans('menu.nested'), 'a message naming another is translated again');
+        $this->assertSame('Bonjour Ringo', $translations->trans('@messages.menu.alias', ['name' => 'Ringo']), 'a message that is a "@domain.key" is followed, with the parameters (the twin of lesringostars printed @notifications.login.success.day.back)');
+        $this->assertSame('Bonjour Ringo', $translations->trans('menu.chain', ['name' => 'Ringo']), 'and followed again');
         $this->assertSame('menu.nowhere', $translations->trans('menu.nowhere'));
         $this->assertSame('Fil', ucfirst($translations->trans('thread._singular', [], 'entities')));
 

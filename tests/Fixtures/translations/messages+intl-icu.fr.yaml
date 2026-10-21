@@ -3,4 +3,7 @@ menu:
     welcome: "Bonjour {name}"
     position: "{0} et {1}"
     nested: menu.home
+    # An entry that is itself a key of another domain's message (omnibase's notifications catalogue does this: login.success.afternoon.back is "@notifications.login.success.day.back").
+    alias: "@messages.menu.welcome"
+    chain: "@messages.menu.alias"
 articles: "{count, plural, =0 {aucun article} one {un article} other {# articles}}"
