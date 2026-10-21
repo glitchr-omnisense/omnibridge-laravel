@@ -21,8 +21,8 @@ use Psr\Log\LoggerInterface;
  * answers as the Symfony site's, whatever they are); the account itself is
  * the message's {0}, as omnibase's Notification gives it. Translated in the
  * visitor's language (the Locales contract's), else the catalogues' default;
- * a key the catalogues do not have is logged and flashed as nothing - a page
- * never prints a key.
+ * a key the catalogues do not have - asked, or pointed to by an entry that is
+ * itself a key - is logged and flashed as nothing: a page never prints a key.
  */
 final class WelcomeFlash
 {
@@ -49,15 +49,21 @@ final class WelcomeFlash
         $name = $user instanceof \Stringable || method_exists($user, '__toString') ? (string) $user : '';
         $locale = $this->locales?->getLocale();
         $message = $this->translations->trans($title, [$name], null, $locale);
-        if ($message === $title && null !== $locale) {
+        if (self::isKey($message) && null !== $locale) {
             $message = $this->translations->trans($title, [$name]);
         }
-        if ($message === $title) {
+        if (self::isKey($message)) {
             $this->logger?->warning('The word of welcome has no translation: {key} in {locale}.', ['key' => $title, 'locale' => $locale ?? 'the default']);
 
             return;
         }
         SessionView::add($this->session, 'success', $message);
+    }
+
+    /** A key given back for a message: the one asked, or one it pointed to ("@notifications...": a catalogue entry that is itself a key). */
+    private static function isKey(string $message): bool
+    {
+        return str_starts_with($message, '@') && str_contains($message, '.') && !str_contains($message, ' ');
     }
 
     /** "first" when the last activity is not today's (omnibase's daydiff(): the day of the activity against today), "back" when it is. */
