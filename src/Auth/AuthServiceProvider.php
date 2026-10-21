@@ -43,6 +43,7 @@ use Omniauth\Method\SecondFactor;
 use Omniauth\Omniauth;
 use Omniauth\Password\PasswordMethod;
 use Omniauth\TrustedDevice\TrustedDevices;
+use Omnibridge\Laravel\Auth\Listener\WelcomeFlash;
 use Omnibridge\Laravel\Auth\Middleware\SecondFactorPending;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -259,10 +260,12 @@ final class AuthServiceProvider extends ServiceProvider
             Routes::register($this->app->make(Router::class), $settings);
         }
 
-        // omnibase's listeners of omniauth's events: the account brought up to date at its sign-in.
+        // omnibase's listeners of omniauth's events: the account brought up to date at its sign-in, and the
+        // word of welcome its SecuritySubscriber flashes under Symfony (Listener\WelcomeFlash).
         if ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {
             $events = $this->app->make(Dispatcher::class);
             $events->listen('Omniauth\Event\SignedIn', ['Base\Auth\Listener\UpdateAccount', 'onSignedIn']);
+            $events->listen('Omniauth\Event\SignedIn', [WelcomeFlash::class, 'onSignedIn']);
         }
 
         $this->publishes([__DIR__.'/../../config/omniauth.php' => $this->app->configPath('omniauth.php')], 'omniauth-config');

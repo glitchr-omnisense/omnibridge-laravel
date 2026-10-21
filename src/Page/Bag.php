@@ -2,11 +2,17 @@
 
 namespace Omnibridge\Laravel\Page;
 
-/** A read-only bag with Symfony's get(). */
+/**
+ * A bag read by a closure, with the words of Symfony's ParameterBag and
+ * FlashBag: get(key, default) and all().
+ */
 final class Bag
 {
-    /** @param \Closure(string): mixed $read */
-    public function __construct(private readonly \Closure $read)
+    /**
+     * @param \Closure(string): mixed    $read the value under a key
+     * @param (\Closure(): array<mixed>)|null $all  every value, [] when the bag gives none
+     */
+    public function __construct(private readonly \Closure $read, private readonly ?\Closure $all = null)
     {
     }
 
@@ -15,9 +21,9 @@ final class Bag
         return ($this->read)($key) ?? $default;
     }
 
-    /** Everything in it, as a flash bag gives it: nothing here. */
+    /** @return array<mixed> */
     public function all(): array
     {
-        return [];
+        return null !== $this->all ? ($this->all)() : [];
     }
 }

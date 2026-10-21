@@ -30,7 +30,7 @@ final class AppVariable
 
     public static function of(Request $request, string $locale, Site $site, Theme $theme, ?object $user = null, ?object $admin = null): self
     {
-        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView(), new Referrer(self::referrer($request)), $admin);
+        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView($request->hasSession() ? $request->session() : null), new Referrer(self::referrer($request)), $admin);
     }
 
     /** The page the visitor came from, when it is this site's and not the page itself. */
