@@ -1,0 +1,2 @@
+{# The sign-in link's page (omnibase's login_token, reduced): the form asking for an address, as JSON a test reads. #}
+{"page": "link", "token": {{ token|json_encode|raw }}, "csrf": {{ csrf_token('login_token')|json_encode|raw }}, "form": {{ form.vars.name|json_encode|raw }}, "link_sent": {{ link_sent ? 'true' : 'false' }}, "error": {{ error ? error.messageKey|json_encode|raw : 'null' }}}

@@ -5,6 +5,7 @@ namespace Omnibridge\Laravel\Contract;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Omnibridge\Contract\Sessions;
+use Omnibridge\Laravel\Auth\AccountUser;
 
 /**
  * The visitor's session ended by Laravel's guard: a user signed out when it
@@ -20,7 +21,9 @@ final class GuardSessions implements Sessions
     public function signOut(object $user): bool
     {
         $guard = $this->auth->guard();
-        if (!$guard instanceof StatefulGuard || !$guard->check() || $guard->user() !== $user) {
+        $signedIn = $guard->user();
+        $signedIn = $signedIn instanceof AccountUser ? $signedIn->account : $signedIn;
+        if (!$guard instanceof StatefulGuard || !$guard->check() || $signedIn !== $user) {
             return false;
         }
         $guard->logout();

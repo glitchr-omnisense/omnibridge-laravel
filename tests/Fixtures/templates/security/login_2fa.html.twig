@@ -1,0 +1,11 @@
+{# The second factor's page as scheb/2fa's variables draw it (omnibase's template, reduced): the same template as omnibridge/symfony's test. #}
+<p id="provider">{{ twoFactorProvider }}</p>
+<p id="providers">{{ availableTwoFactorProviders|join(',') }}</p>
+{% if authenticationError %}<p id="error">{{ authenticationError }}</p>{% endif %}
+<form action="{{ checkPathUrl ? checkPathUrl : path(checkPathRoute) }}" method="post">
+    <input type="text" name="{{ authCodeParameterName }}" value="">
+    {% if displayTrustedOption %}<input type="checkbox" name="{{ trustedParameterName }}" value="1">{% endif %}
+    {% if isCsrfProtectionEnabled %}<input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">{% endif %}
+    <a id="cancel" href="{{ logoutPath }}">cancel</a>
+    <button type="submit">confirm</button>
+</form>

@@ -5,6 +5,7 @@ namespace Omnibridge\Laravel\Contract;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Omnibridge\Contract\Access;
+use Omnibridge\Laravel\Auth\AccountUser;
 
 /**
  * What the visitor may do, answered by Laravel's gate: an attribute is an
@@ -23,8 +24,11 @@ final class GateAccess implements Access
         return $this->gate->allows($attribute instanceof \UnitEnum ? $attribute : (string) $attribute, null === $subject ? [] : [$subject]);
     }
 
+    /** The visitor's account: the application's own object (omnibase's user), unwrapped from the guard's AccountUser. */
     public function getUser(): ?object
     {
-        return $this->auth->guard()->user();
+        $user = $this->auth->guard()->user();
+
+        return $user instanceof AccountUser ? $user->account : $user;
     }
 }

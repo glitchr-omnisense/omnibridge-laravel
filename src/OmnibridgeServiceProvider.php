@@ -154,6 +154,13 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->registerDoctrine();
         $this->registerTwig();
         $this->registerFormerNames();
+
+        // Signing in through omniauth (plan "omniauth", step AU8), where omniscient/omniauth is
+        // installed: Auth\AuthServiceProvider, which wires nothing unless omnibridge.auth is on
+        // (the configuration may be set after the providers register: Testbench's defineEnvironment).
+        if (class_exists(\Omniauth\Omniauth::class)) {
+            $this->app->register(Auth\AuthServiceProvider::class);
+        }
     }
 
     /**

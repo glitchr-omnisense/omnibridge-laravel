@@ -40,8 +40,20 @@
         "twig/twig": "^3.10"
     },
     "require-dev": {
+        "omniauth/google": "1.x-dev",
+        "omniauth/oauth": "1.x-dev",
+        "omniauth/passkey": "1.x-dev",
+        "omniauth/totp": "1.x-dev",
+        "omniscient/omniauth": "1.x-dev",
         "orchestra/testbench": "^10.0|^11.0",
         "phpunit/phpunit": "^11.5|^12.0"
+    },
+    "suggest": {
+        "omniscient/omniauth": "Omnibridge\\Laravel\\Auth\\: Laravel's guard and user provider over omniauth, one controller for every way of signing in (password, sign-in link, e-mailed code, backup codes, trusted devices), the second factor's page, the routes; config/omnibridge.php 'auth' => true and config/omniauth.php (nothing of Auth\\ without it)",
+        "omniauth/passkey": "Passkeys through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: passkey)",
+        "omniauth/totp": "Authenticator applications through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: totp)",
+        "omniauth/oauth": "Identity providers through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth), each provider a package of its own (omniauth/google)",
+        "omniauth/google": "Google sign-in through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)"
     },
     "autoload": {
         "psr-4": {

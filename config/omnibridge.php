@@ -89,4 +89,11 @@ return [
     // The entity namespaces of the bundles the site uses, and their prefix in
     // the "entities" catalogues (Base\Marketplace\Entity\ => marketplace\).
     'entity_namespaces' => [],
+
+    // Signing in through omniauth (plan "omniauth", step AU8; omniscient/omniauth
+    // installed): true turns on Omnibridge\Laravel\Auth\ - the guard and the user
+    // provider (config/auth.php: driver "omniauth"), the routes of every way in at
+    // the Symfony site's addresses, the second factor's page, the sign-out - on
+    // config/omniauth.php (the same keys as omnibridge/symfony's omniauth.yaml).
+    'auth' => false,
 ];

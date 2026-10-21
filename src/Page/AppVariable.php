@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 /**
  * The app variable of omnibase's templates, in Laravel: the request (its
  * language, its address, its headers and attributes, as Symfony's Request
- * names them), the visitor (none by default), the session, the site and the
- * theme.
+ * names them), the visitor (the account signed in, the application's own
+ * object, as Symfony's app.user; none by default), the session, the site,
+ * the theme, and the referrer (omnibase's app.referrer: the page the visitor
+ * came from on this site, null for another site or none).
  */
 final class AppVariable
 {
@@ -18,11 +20,28 @@ final class AppVariable
         public readonly Theme $theme,
         public readonly mixed $user = null,
         public readonly mixed $session = null,
+        public readonly ?string $referrer = null,
     ) {
     }
 
-    public static function of(Request $request, string $locale, Site $site, Theme $theme): self
+    public static function of(Request $request, string $locale, Site $site, Theme $theme, ?object $user = null): self
     {
-        return new self(new RequestView($request, $locale), $site, $theme, null, new SessionView());
+        return new self(new RequestView($request, $locale), $site, $theme, $user, new SessionView(), self::referrer($request));
+    }
+
+    /** The page the visitor came from, when it is this site's and not the page itself. */
+    public static function referrer(Request $request): ?string
+    {
+        $referrer = (string) $request->headers->get('referer');
+        if ('' === $referrer) {
+            return null;
+        }
+        $host = parse_url($referrer, \PHP_URL_HOST);
+        if (!\is_string($host) || 0 !== strcasecmp($host, $request->getHost())) {
+            return null;
+        }
+        $path = parse_url($referrer, \PHP_URL_PATH);
+
+        return \is_string($path) && $path !== $request->getPathInfo() ? $referrer : null;
     }
 }

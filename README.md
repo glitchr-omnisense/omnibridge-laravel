@@ -128,6 +128,70 @@ which its theme menus read: `Base\Twig\Extension\MenuTwigExtension`), `Form\Form
 `RouterUrlGenerator` (Symfony's `UrlGeneratorInterface` over the Urls contract, for
 a library that asks for one).
 
+## Signing in through omniauth
+
+```php
+// config/omnibridge.php
+'auth' => true,
+// config/auth.php
+'guards' => ['web' => ['driver' => 'omniauth', 'provider' => 'omnibase']],
+'providers' => ['omnibase' => ['driver' => 'omniauth']],
+```
+
+With `omnibridge.auth` on and [omniscient/omniauth](https://github.com/glitchr-studio/omniauth)
+installed (it is only suggested), `Auth\AuthServiceProvider` wires omniauth's sign-in
+under Laravel as omnibridge/symfony wires it under Symfony (plan "omniauth", §3.2, step
+AU8), from `config/omniauth.php` (`php artisan vendor:publish --tag=omniauth-config`) -
+the same keys as `config/packages/omniauth.yaml` there, so one site says the same thing
+under both hosts: each method's key turns it on (the password, the sign-in link, the
+e-mailed code, the backup codes, the trusted devices; passkeys, the authenticator
+application and the identity providers with their package, omniauth/passkey,
+omniauth/totp, omniauth/oauth and omniauth/google), the stores (`"omnibase"`: the core's
+`Base\Auth\` on the entity manager - the user, userToken, userPasskey and userIdentity
+tables -, or the container's bindings by key), the throttle on a Laravel cache store, the
+messages.
+
+- `Auth\OmniauthGuard` (`StatefulGuard`, driver `omniauth`) keeps the account's handle
+  in the session, reads the account back through omniauth's `Accounts` at each request,
+  renews the session's id at a sign-in, sets the signed remember-me cookie
+  (`Auth\RememberMe`: the handle, the expiry, the password hash and the address, as
+  Security's `signature_properties`) and forgets it at a sign-out; `attempt()` asks
+  omniauth the password. `Auth\OmniauthUserProvider` (driver `omniauth`) answers
+  Laravel's `UserProvider` over the same stores, the passwords checked by
+  symfony/password-hasher as under Symfony (>72-byte passwords included).
+- The account is Laravel's `Authenticatable` through `Auth\AccountUser`, a wrapper the
+  contracts unwrap: `Omnibridge\Contract\Access::getUser()`, the screens' viewer and
+  Twig's `app.user` give the application's own object, as under Symfony.
+- `Auth\Controllers\SignIn` is every way in: the password form (and its page, the
+  site's `security/login.html.twig` with the form as omnibase's templates read it), the
+  sign-in link, a passkey (web-auth's JSON), the second factor's code, an identity
+  provider's return, and the sign-out (CSRF-checked as Security's logout with
+  `enable_csrf`); `Auth\Controllers\Ceremony` the second factor's page (scheb/2fa's
+  variables: the site's template renders unchanged), a passkey's options, the trip out
+  to a provider. The forms' CSRF tokens are checked through the Tokens contract
+  (Laravel's session token); Laravel's own CSRF middleware is left off these routes.
+- `Auth\Routes` declares them at the Symfony site's addresses and under its route names
+  (`security_login`, `2fa_login`, `2fa_login_check`, `oauth_google`,
+  `oauth_google_check`, `security_logout`, `security_logoutRequest`...), in the web
+  group; `omniauth.routes` false to declare them yourself.
+- `Auth\Middleware\SecondFactorPending` (appended to the web group, before `auth`)
+  keeps a visitor between two factors on the second factor's page; `Auth\Roles`
+  answers Security's attributes through `Gate::before()` - `ROLE_*` with
+  `omniauth.role_hierarchy`, `IS_AUTHENTICATED_FULLY`, `IS_AUTHENTICATED_REMEMBERED`,
+  `IS_AUTHENTICATED_2FA_IN_PROGRESS`, `PUBLIC_ACCESS` - so `is_granted()` and the
+  Access contract answer as under Symfony.
+- The cookies the Symfony site shares (`trusted_device` in scheb/2fa's format, the
+  remember-me) are left out of Laravel's cookie encryption; `omniauth.secret` is the
+  Symfony site's `kernel.secret`, so the devices it trusted and the codes it sent are
+  good here. An identity provider's return address is the path of its check route,
+  completed with the host of each request (a long-running server keeps the providers).
+
+With omnibase's stores, the core's `Base\Auth\Listener\UpdateAccount` brings the
+account up to date at its sign-in (a role dropped, its time zone and language kept, its
+kick lifted); `Base\Auth\Policy` decorates the second-factor rule where the
+application binds omnibase's `SecurityPolicy`; a sign-in link or an e-mailed code needs
+a `Omniauth\Contract\Sender` (omnibase's `NotifierSender` needs its Notifier).
+
 ## Configuration
 
 `config/omnibridge.php`: the site's locales, the catalogues' folders, the asset
