@@ -128,7 +128,7 @@ final class AuthServiceProvider extends ServiceProvider
         $this->app->singleton(Throttle::class, function (Application $app) {
             $settings = $app->make(Settings::class);
             $throttle = $settings->throttle ?? throw new \LogicException('The throttle is off (config/omniauth.php: throttle).');
-            $store = $app->make(CacheFactory::class)->store(Settings::string($throttle['store'] ?? null) ?: null);
+            $store = self::throttleCache($app, $throttle);
             $limits = [];
             foreach (\is_array($throttle['limits'] ?? null) ? $throttle['limits'] : [] as $scope => $limit) {
                 $limit = \is_array($limit) ? $limit : [];
@@ -222,6 +222,7 @@ final class AuthServiceProvider extends ServiceProvider
                     $app->make(Session::class),
                     $app->make(Cookies::class),
                     null !== $app->make(Settings::class)->rememberMe ? $app->make(RememberMe::class) : null,
+                    $app->make(Dispatcher::class),
                 );
                 if ($app->bound('request')) {
                     $guard->setRequest($app->make(Request::class));
@@ -265,7 +266,12 @@ final class AuthServiceProvider extends ServiceProvider
 
         // omnibase's listeners of omniauth's events: the account brought up to date at its sign-in, and the
         // word of welcome its SecuritySubscriber flashes under Symfony (Listener\WelcomeFlash).
-        if ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {
+        // With omnibase 4.x's framework-free sign-in effects (AU8b), all of config/services/auth.php's listeners
+        // and what they need (OmnibaseEffects): connections, the new device, the captcha, welcome back, the e-mails.
+        if (OmnibaseEffects::on($this->app)) {
+            OmnibaseEffects::register($this->app);
+            OmnibaseEffects::boot($this->app, $this->app->make(Dispatcher::class));
+        } elseif ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {
             $events = $this->app->make(Dispatcher::class);
             $events->listen('Omniauth\Event\SignedIn', ['Base\Auth\Listener\UpdateAccount', 'onSignedIn']);
             $events->listen('Omniauth\Event\SignedIn', [WelcomeFlash::class, 'onSignedIn']);
@@ -306,7 +312,12 @@ final class AuthServiceProvider extends ServiceProvider
             if (class_exists('Base\Auth\NotifierSender') && !$this->app->bound(Sender::class)) {
                 $this->app->bind(Sender::class, static function (Application $app) {
                     if (!$app->bound('Base\Notifier\Notifier')) {
-                        throw new \LogicException('omniauth\'s Sender (a sign-in link, a code by e-mail) is omnibase\'s NotifierSender, which needs Base\Notifier\Notifier: bind one, or a Sender of your own.');
+                        // Without Symfony's Notifier: the same e-mails written by omnibase's SignInMails, sent by Laravel's mailer.
+                        $sender = OmnibaseEffects::on($app) ? OmnibaseEffects::sender($app) : null;
+                        if ($sender instanceof Sender) {
+                            return $sender;
+                        }
+                        throw new \LogicException('omniauth\'s Sender (a sign-in link, a code by e-mail) is omnibase\'s NotifierSender, which needs Base\Notifier\Notifier or omnibase 4.x\'s SignInMails: bind one, or a Sender of your own.');
                     }
                     $class = 'Base\Auth\NotifierSender';
 
@@ -421,7 +432,7 @@ final class AuthServiceProvider extends ServiceProvider
     private function totp(Application $app, Settings $settings, array $totp, ClockInterface $clock): SecondFactor
     {
         self::needs('Omniauth\Otp\TotpMethod', 'omniauth/otp', 'totp');
-        $store = $app->make(CacheFactory::class)->store(Settings::string($settings->throttle['store'] ?? null) ?: null);
+        $store = self::throttleCache($app, $settings->throttle ?? []);
         $used = 'Omniauth\Otp\CacheUsedSteps';
         $method = 'Omniauth\Otp\TotpMethod';
         return new $method(
@@ -469,6 +480,27 @@ final class AuthServiceProvider extends ServiceProvider
         \assert(\is_bool($linking) || $linking instanceof \Omniauth\OAuth\Contract\EmailLinking);
         $method = 'Omniauth\OAuth\OAuthMethod';
         return new $method($app->make(Accounts::class), $app->make(Identities::class), $app->make('Omniauth\OAuth\Provider\Providers'), $linking, $clock);
+    }
+
+    /**
+     * Where the tries are counted (and the TOTP codes already used): the PSR-6
+     * pool throttle.pool names (a binding - the Symfony site's own, so both
+     * hosts count the same tries), else the Laravel cache store throttle.store
+     * names (the default store without one).
+     *
+     * @param array<string, mixed> $throttle
+     */
+    private static function throttleCache(Application $app, array $throttle): \Psr\Cache\CacheItemPoolInterface|\Psr\SimpleCache\CacheInterface
+    {
+        $pool = Settings::string($throttle['pool'] ?? null);
+        if ('' !== $pool) {
+            $cache = $app->make($pool);
+            \assert($cache instanceof \Psr\Cache\CacheItemPoolInterface);
+
+            return $cache;
+        }
+
+        return $app->make(CacheFactory::class)->store(Settings::string($throttle['store'] ?? null) ?: null);
     }
 
     private static function needs(string $class, string $package, string $key): void

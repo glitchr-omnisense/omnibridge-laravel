@@ -53,6 +53,30 @@ final class Encore
         return $tags;
     }
 
+    /**
+     * encore_entry_css_source(): an entry's stylesheets themselves, one after
+     * the other, from the first build that has the entry (omnibase's
+     * WebpackTagRenderer::renderCssSource(): what an e-mail's template inlines,
+     * the e-mail frame's email-layout1); '' when none has it.
+     */
+    public function cssSource(string $entry): string
+    {
+        foreach ($this->builds as $index => $build) {
+            $files = $this->build($index)['entrypoints'][$entry]['css'] ?? null;
+            if (null === $files) {
+                continue;
+            }
+            $source = '';
+            foreach ($files as $file) {
+                $source .= (string) @file_get_contents($this->publicDir.'/'.$file);
+            }
+
+            return $source;
+        }
+
+        return '';
+    }
+
     /** @return list<string> */
     private function files(string $entry, string $type, bool $breakpoints): array
     {

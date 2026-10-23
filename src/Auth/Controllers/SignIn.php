@@ -66,6 +66,13 @@ final class SignIn
     public const LAST_USERNAME = 'omnibridge.auth.last_username';
     /** A sign-in link was asked: the page says one was sent. */
     public const LINK_SENT = 'omnibridge.auth.link_sent';
+    /**
+     * The binding of what the sign-in form carries besides its fields, a
+     * \Closure(Request): string of markup printed with them (form_rest()):
+     * omnibase's captcha after failures from the visitor's address
+     * (Auth\OmnibaseEffects), as its Symfony form carries it.
+     */
+    public const FORM_EXTRA = 'omnibridge.auth.form_extra';
 
     public function __construct(
         private readonly Omniauth $omniauth,
@@ -398,6 +405,12 @@ final class SignIn
         $view->add(Settings::string($sign['remember']), ['type' => 'checkbox', 'value' => '1', 'checked' => true]);
         if (null !== $csrf && null !== $this->tokens) {
             $view->add($csrf['field'], ['type' => 'hidden', 'value' => $this->tokens->csrf($csrf['intent']), 'attr' => ['data-controller' => 'csrf-protection']]);
+        }
+        $container = \Illuminate\Container\Container::getInstance();
+        $extra = $container->bound(self::FORM_EXTRA) ? $container->make(self::FORM_EXTRA) : null;
+        $extra = $extra instanceof \Closure ? $extra($request) : '';
+        if (\is_string($extra) && '' !== $extra) {
+            $view->add('_extra', ['type' => 'html', 'html' => $extra]);
         }
 
         return self::flat($view, $name);

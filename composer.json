@@ -16,6 +16,16 @@
             "name": "Marco Meyer"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/glitchr-studio/omnishield.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/glitchr-studio/omnishield-altcha.git"
+        }
+    ],
     "require": {
         "php": "^8.4",
         "doctrine/dbal": "^4.2",
@@ -47,6 +57,8 @@
         "omnimap/openstreetmap": "^1.0@dev",
         "omniscient/omniauth": "1.x-dev",
         "omniscient/omnimap": "^1.0@dev",
+        "omniscient/omnishield": "1.x-dev",
+        "omnishield/altcha": "1.x-dev",
         "orchestra/testbench": "^10.0|^11.0",
         "phpunit/phpunit": "^11.5|^12.0",
         "symfony/http-client": "^7.0|^8.0"
@@ -56,7 +68,9 @@
         "omniauth/webauthn": "Passkeys through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: passkey), formerly omniauth/passkey",
         "omniauth/otp": "Authenticator applications through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: totp; totp.secret_key seals the secrets at rest), formerly omniauth/totp",
         "omniauth/google": "Google sign-in through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)",
-        "omniscient/omnimap": "Omnibridge\\Laravel\\Map\\: maps through omnimap (config/omnimap.php) - its providers, the map cache over a directory or a bound Omnimap\\Snapshot\\Storage, omnibridge/twig's MapExtension in every page's Twig, the tiles' route"
+        "omniscient/omnimap": "Omnibridge\\Laravel\\Map\\: maps through omnimap (config/omnimap.php) - its providers, the map cache over a directory or a bound Omnimap\\Snapshot\\Storage, omnibridge/twig's MapExtension in every page's Twig, the tiles' route",
+        "omniscient/omnishield": "Omnibridge\\Laravel\\Shield\\: omnishield's Registry from config/omnishield.php (the Symfony bundle's keys), ALTCHA's widget served by the application; with omnibase, its captcha after failed sign-ins (Auth\\OmnibaseEffects); not on Packagist yet - a vcs repository, https://github.com/glitchr-studio/omnishield",
+        "omnishield/altcha": "ALTCHA, the captcha omnibase asks after failed sign-ins: served and checked by the application, no third party"
     },
     "autoload": {
         "psr-4": {
