@@ -17,8 +17,8 @@ use Twig\Environment;
 /**
  * omnimap under Laravel through Omnibridge\Laravel\Map\ (config/omnimap.php):
  * a page's Twig has omnimap(); the picture is made by the server from
- * OpenStreetMap's tiles (answered here) and kept; its tiles are served by
- * the route; an administrator (the gate's ROLE_ADMIN) gets the buttons.
+ * OpenStreetMap's tiles (answered here) and kept on the omnidrive drive
+ * local.uploads (a local disk); its tiles are served by the route; an administrator (the gate's ROLE_ADMIN) gets the buttons.
  */
 final class MapTest extends TestCase
 {
@@ -28,11 +28,16 @@ final class MapTest extends TestCase
     {
         parent::defineEnvironment($app);
         (new DirectoryStorage(\dirname(self::DIR)))->deleteDirectory(basename(self::DIR));
-        $app['config']->set('omnimap', [
+        // The uploads disk as omnidrive's drive "local.uploads" (omnibridge.storages).
+        $config = $app['config'];
+        \assert($config instanceof \Illuminate\Contracts\Config\Repository);
+        $config->set('filesystems.disks.omnimap-uploads', ['driver' => 'local', 'root' => self::DIR]);
+        $config->set('omnibridge.storages', ['local.uploads' => 'omnimap-uploads']);
+        $config->set('omnimap', [
             'provider' => 'openstreetmap',
             'secret' => 'c2VjcmV0',
             'providers' => ['openstreetmap' => ['user_agent' => 'omnibridge-tests/1.0 (+https://github.com/glitchr-studio/omnibridge-laravel)']],
-            'cache' => ['storage' => self::DIR, 'directory' => 'google', 'size' => '600x400'],
+            'cache' => ['drive' => 'local.uploads', 'directory' => 'google', 'size' => '600x400'],
             'html' => ['class' => 'google-tilemap', 'suffix' => '_html2canvas'],
             'routes' => ['tile' => ['path' => '/google/{signature}/{id}.webp', 'name' => 'gm_show']],
         ]);
@@ -65,6 +70,7 @@ final class MapTest extends TestCase
         $this->assertStringContainsString('<div class="google-tilemap" id="myMap_html2canvas" data-omnimap="snapshot" data-src="/google/%7Bsignature%7D/%7Bid%7D.webp" data-signature="'.$signature.'" data-tilesize="512" data-xtiles="2" data-ytiles="1"', $html);
         $this->assertStringNotContainsString('data-omnimap-export', $html);
         $this->assertNotNull($this->app->make(Snapshots::class)->find($view), 'made by the server and kept');
+        $this->assertFileExists(self::DIR."/google/$signature/metadata.txt", 'on the drive, the disk behind it');
 
         $tile = $this->get("/google/$signature/1.webp");
         $tile->assertOk();

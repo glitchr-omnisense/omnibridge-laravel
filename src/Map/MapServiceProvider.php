@@ -18,7 +18,9 @@ use Omnimap\Model\Size;
 use Omnimap\ProviderFactoryInterface;
 use Omnimap\Registry;
 use Omnimap\Signer;
+use Omnidrive\Drives;
 use Omnimap\Snapshot\DirectoryStorage;
+use Omnimap\Snapshot\DriveStorage;
 use Omnimap\Snapshot\Snapshots;
 use Omnimap\Snapshot\SnapshotStore;
 use Omnimap\Snapshot\Storage;
@@ -42,8 +44,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  *         'routes' => ['tile' => ['path' => '/omnimap/{signature}/{id}.webp', 'name' => 'omnimap_tile', 'register' => true]],
  *     ];
  *
- * cache.storage is a directory (DirectoryStorage) or the container's name
- * of an Omnimap\Snapshot\Storage. Binds Registry, Snapshots, MapPrinter and
+ * The cache is on cache.drive, an omnidrive drive of the bound
+ * Omnidrive\Drives (a storage's name: "local.uploads"), or on cache.storage,
+ * a directory (DirectoryStorage) or the container's name of an
+ * Omnimap\Snapshot\Storage. Binds Registry, Snapshots, MapPrinter and
  * omnibridge/twig's MapExtension, which omnibridge/laravel's Twig adds to a
  * page's environment; routes the tiles (GET) unless routes.tile.register is
  * false - a host whose web server serves the tiles from the public folder,
@@ -99,8 +103,13 @@ final class MapServiceProvider extends ServiceProvider
             $config = self::config($app);
             $cache = $config['cache'];
             $registry = $app->make(Registry::class);
+            $drive = self::string($cache['drive'] ?? null, '');
             $storage = self::string($cache['storage'] ?? null, '');
-            $storage = '' !== $storage && $app->bound($storage) ? $app->make($storage) : new DirectoryStorage('' === $storage ? $app->storagePath('app/omnimap') : $storage);
+            if ('' !== $drive) {
+                $storage = new DriveStorage($app->make(Drives::class)->get($drive));
+            } else {
+                $storage = '' !== $storage && $app->bound($storage) ? $app->make($storage) : new DirectoryStorage('' === $storage ? $app->storagePath('app/omnimap') : $storage);
+            }
             \assert($storage instanceof Storage);
             $make = $cache['make'] ?? 'auto';
             $static = null;

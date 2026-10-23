@@ -295,8 +295,9 @@ return [
 
 It binds `Omnimap\Registry` (omnimap/google and omnimap/openstreetmap when installed,
 over Symfony's HTTP client or the one bound as `omnimap.http_client`, a PSR-16 cache in
-`storage/framework/cache/omnimap`), `Omnimap\Snapshot\Snapshots` (the map cache over a
-directory or a bound `Omnimap\Snapshot\Storage`; `cache.make` false for a host reading
+`storage/framework/cache/omnimap`), `Omnimap\Snapshot\Snapshots` (the map cache on an omnidrive
+drive - `cache.drive`, of the bound `Omnidrive\Drives` - or over a directory or a bound
+`Omnimap\Snapshot\Storage`; `cache.make` false for a host reading
 another host's cache read only), `Omnimap\MapPrinter` and omnibridge/twig's
 `MapExtension`, which every page's Twig gets (`omnimap()`, `omnimap_export()`,
 `omnimap_suppress()`), and routes the tiles (`routes.tile.register` false when the web
