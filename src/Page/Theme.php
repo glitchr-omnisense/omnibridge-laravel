@@ -26,6 +26,23 @@ final class Theme implements ThemizerInterface
     ) {
     }
 
+    /**
+     * The visitor's theme among those omnibridge.theme offers (its modes, filters, no_filter),
+     * their cookies THEME/MODE and THEME/FILTER read from the request; none without modes.
+     *
+     * @param array{modes?: array<string, array<string, string>>, filters?: array<string, array<string, string>>, no_filter?: array<string, mixed>} $config
+     */
+    public static function of(array $config, ?\Illuminate\Http\Request $request): ?self
+    {
+        if (empty($config['modes'])) {
+            return null;
+        }
+        $mode = $request?->cookie('THEME/MODE');
+        $filter = $request?->cookie('THEME/FILTER');
+
+        return new self($config['modes'], $config['filters'] ?? [], \is_string($mode) ? $mode : null, \is_string($filter) ? $filter : null, $config['no_filter'] ?? []);
+    }
+
     /** @return array<string, string>|null */
     public function mode(): ?array
     {

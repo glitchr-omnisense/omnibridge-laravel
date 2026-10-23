@@ -554,5 +554,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             [],
             ['cache' => $app['config']->get('omnibridge.twig.cache') ?? $app->storagePath('framework/twig')],
         ));
+        // omnibase's own Twig extensions (View\OmnibaseExtensions, audit R24), as the core registers them under Symfony.
+        $this->app->singleton(View\OmnibaseExtensions::class, fn (Application $app) => new View\OmnibaseExtensions($app));
+        $this->app->afterResolving(Environment::class, static function (Environment $twig, Application $app): void {
+            $app->make(View\OmnibaseExtensions::class)->extend($twig);
+        });
     }
 }

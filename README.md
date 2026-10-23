@@ -128,6 +128,25 @@ which its theme menus read: `Base\Twig\Extension\MenuTwigExtension`), `Form\Form
 `RouterUrlGenerator` (Symfony's `UrlGeneratorInterface` over the Urls contract, for
 a library that asks for one).
 
+omnibase's own Twig extensions in every page (`View\OmnibaseExtensions`, with
+omniscient/omnibase 4 from its framework-free extensions): the container's
+`Twig\Environment` gets the classes the core registers under Symfony - the menus,
+`EnumTwigExtension` (`enum()`, `|colorify`, `|trans_enum`), `PictureTwigExtension`
+(`image()`, `|thumbnail`, `|soundify`, `|mimetype`... with `omnibridge.media` on),
+`LinkTwigExtension` (`|urlify`), `IconTwigExtension` (`|iconify`, omnibase's
+adapters and the Routes contract's icons), `TextsTwigExtension` (`|wysiwyg`),
+`NotificationTwigExtension` (the bell; push on `omnibridge.push`),
+`SecurityPolicyTwigExtension`, `DeployVersionExtension`, `DemoTwigExtension`, and
+omnibase/consent's panel on `omnibridge.consent.config` - plus `View\HostExtension`,
+what the templates take from Symfony's bundles (Encore's tags on
+`omnibridge.encore`, `stimulus_controller()`, `absolute_url()`, `|url`). An
+application rendering a page in an environment of its own calls
+`OmnibaseExtensions::extend($twig, $translations, $theme)`; `admin()` is `app.admin`
+(`Base\Twig\Variable\AdminLinks`); `Form\FormExtension` gives the `form_*()`
+functions over a page's `FormView`s. `Contract\RouterRoutes::elsewhere()` answers
+the routes Laravel does not have (their pattern, a route's icons) by another
+Routes, as `RouterUrls::elsewhere()` their addresses.
+
 ## Signing in through omniauth
 
 ```php
