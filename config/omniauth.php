@@ -117,7 +117,20 @@ return [
 
     // The tries, counted on a Laravel cache store (null: the default one) by omniauth's
     // CacheThrottle, its limits by scope ([tries, seconds]: ['password' => [5, 60]]); false: none.
-    'throttle' => ['store' => null, 'limits' => []],
+    // pool: a PSR-6 pool's binding instead of the store - another host's own (the Symfony site's
+    // Redis pool), so that both count the same tries; the TOTP codes already used are kept there too.
+    'throttle' => ['store' => null, 'pool' => null, 'limits' => []],
+
+    // With omnibase's stores and omnibase 4.x (Auth\OmnibaseEffects): the captcha after failed
+    // sign-ins from an address (Base\Security\SignInCaptcha, its gateway config/omnishield.php's),
+    // its failures counted in that pool's binding (Laravel's cache store without one), for these
+    // sign-ins (omniauth's Context firewall); and the e-mails of signing in (Base\Notifier\Mail\
+    // SignInMails, sent by config/mail.php's mailer): from the settings' address, else `from`;
+    // `loopback` sends them all to that address ("Test: ...", the Notifier's technical_loopback),
+    // `test_recipients` (patterns) in debug; `project_dir` is where the e-mails' pictures are
+    // (its public/, the templates' @Public).
+    'captcha' => ['pool' => null, 'firewalls' => ['main']],
+    'mail' => ['mailer' => null, 'from' => null, 'loopback' => false, 'test_recipients' => [], 'project_dir' => null],
 
     // The page's words for a refusal, by omniauth's failure or "failure:reason" ("%reason%"
     // replaced), as the page translates them (the "security" domain).

@@ -35,6 +35,8 @@ final class FormRenderer
         $vars['attr'] = array_replace($field->vars['attr'], $options['attr'] ?? []);
 
         return match ($vars['type']) {
+            // Markup given whole (a captcha's widget: Auth\Controllers\SignIn's FORM_EXTRA), printed as it is.
+            'html' => \is_string($vars['html'] ?? null) ? $vars['html'] : '',
             'checkbox' => $this->checkbox($vars),
             'choice' => $this->choices($field, $vars),
             default => $this->input($vars),

@@ -3,6 +3,7 @@
 namespace Omnibridge\Laravel;
 
 use Omnibridge\Contract\Translations;
+use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Translator;
@@ -39,13 +40,47 @@ final class CatalogueTranslations implements Translations
         $this->translator = new Translator($locale ?? $fallback);
         $this->translator->setFallbackLocales([$fallback]);
         $this->translator->addLoader('yaml', new YamlFileLoader());
+        // XLIFF too: Symfony's own components ship theirs so (security-core's "security" domain, the
+        // sign-in's refusals: "Invalid credentials.", "Too many failed login attempts..."), read here
+        // without symfony/config (whose XmlUtils Symfony's XliffFileLoader needs): source and target.
+        $this->translator->addLoader('array', new ArrayLoader());
         foreach ((array) $directories as $directory) {
-            foreach (glob(rtrim($directory, '/').'/*.yaml') ?: [] as $file) {
-                if (preg_match('~/([^/+.]+)(\+intl-icu)?\.([a-zA-Z_]+)\.yaml$~', $file, $m)) {
+            foreach ([...(glob(rtrim($directory, '/').'/*.yaml') ?: []), ...(glob(rtrim($directory, '/').'/*.xlf') ?: [])] as $file) {
+                if (!preg_match('~/([^/+.]+)(\+intl-icu)?\.([a-zA-Z_]+)\.(yaml|xlf)$~', $file, $m)) {
+                    continue;
+                }
+                if ('xlf' === $m[4]) {
+                    $this->translator->addResource('array', self::xliff($file), $m[3], $m[1].$m[2]);
+                } else {
                     $this->translator->addResource('yaml', $file, $m[3], $m[1].$m[2]);
                 }
             }
         }
+    }
+
+    /**
+     * An XLIFF file's messages (each trans-unit's source and target, XLIFF 1.2 and 2.0), as Symfony's XliffFileLoader reads them.
+     *
+     * @return array<string, string>
+     */
+    private static function xliff(string $file): array
+    {
+        $document = new \DOMDocument();
+        if (!@$document->load($file, \LIBXML_NONET | \LIBXML_NOBLANKS)) {
+            return [];
+        }
+        $messages = [];
+        foreach (['trans-unit', 'segment'] as $unit) {
+            foreach ($document->getElementsByTagName($unit) as $element) {
+                $source = $element->getElementsByTagName('source')->item(0)?->textContent;
+                $target = $element->getElementsByTagName('target')->item(0)?->textContent;
+                if (null !== $source && '' !== $source) {
+                    $messages[$source] = $target ?? $source;
+                }
+            }
+        }
+
+        return $messages;
     }
 
     public function translator(): Translator

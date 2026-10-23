@@ -2,6 +2,8 @@
 
 namespace Omnibridge\Laravel\Auth;
 
+use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\StatefulGuard;
@@ -51,6 +53,7 @@ final class OmniauthGuard implements StatefulGuard
         private readonly Session $session,
         private readonly Cookies $cookies,
         private readonly ?RememberMe $rememberMe = null,
+        private readonly ?Dispatcher $events = null,
     ) {
         $this->provider = $provider;
     }
@@ -82,8 +85,12 @@ final class OmniauthGuard implements StatefulGuard
         if (null === $account) {
             return null;
         }
+        $this->user = $this->wrap($account);
+        // A request of a visitor signed in (SessionGuard fires it too; Symfony refreshes its user then):
+        // omnibase's ConnectionTracker notes the browser's address, agent and host.
+        $this->events?->dispatch(new Authenticated($this->name, $this->user));
 
-        return $this->user = $this->wrap($account);
+        return $this->user;
     }
 
     /** The account signed in, the application's own object (the wrapper's account). */

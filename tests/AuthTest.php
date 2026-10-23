@@ -230,6 +230,24 @@ final class AuthTest extends TestCase
         $this->get('/login')->assertRedirect('/');
     }
 
+    /** A request of a visitor signed in fires Laravel's Authenticated, as SessionGuard does (omnibase's ConnectionTracker listens to it). */
+    public function testASignedInRequestFiresAuthenticated(): void
+    {
+        $user = $this->account();
+        $this->signIn($user->email);
+        $heard = [];
+        $this->container()->make(\Illuminate\Contracts\Events\Dispatcher::class)->listen(\Illuminate\Auth\Events\Authenticated::class, static function (\Illuminate\Auth\Events\Authenticated $event) use (&$heard): void {
+            $heard[] = $event->user;
+        });
+        $this->container()->make(AuthManager::class)->forgetGuards();
+
+        $this->get('/member')->assertOk();
+
+        $this->assertCount(1, $heard);
+        $this->assertInstanceOf(AccountUser::class, $heard[0]);
+        $this->assertSame($user, $heard[0]->account);
+    }
+
     public function testAWrongPasswordAnUnknownAddressAndAForgedTokenAreRefused(): void
     {
         $user = $this->account();

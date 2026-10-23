@@ -83,6 +83,8 @@ final class DoctrinePageTest extends TestCase
         $this->assertSame('<link rel="stylesheet" href="/assets/app-async.css" >'."\n".'<link rel="stylesheet" href="/assets/app-async-mobile.css" media="all and (max-width: 470px)">'."\n", $encore->linkTags('app'));
         $this->assertSame('<script src="/assets/runtime.js" defer=""></script>'."\n".'<script src="/assets/app-async.js" defer=""></script>'."\n".'<script src="/assets/app-defer.js" defer=""></script>'."\n", $encore->scriptTags('app'));
         $this->assertSame('', $encore->scriptTags('app'), 'a file is printed once per page');
+        $this->assertSame((string) file_get_contents(self::FIXTURES.'/public/assets/app-async.css'), $encore->cssSource('app-async'), 'an entry\'s stylesheets themselves (encore_entry_css_source)');
+        $this->assertSame('', $encore->cssSource('nowhere'));
 
         $html = Breakpoints::inject('<html><head><link rel="stylesheet" href="/a.css"></head></html>', ['mobile' => 'all and (max-width: 470px)']);
         $this->assertStringStartsWith('<html><head><style>body:before {', $html);
