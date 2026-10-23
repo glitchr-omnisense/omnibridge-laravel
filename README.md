@@ -145,11 +145,14 @@ AU8), from `config/omniauth.php` (`php artisan vendor:publish --tag=omniauth-con
 the same keys as `config/packages/omniauth.yaml` there, so one site says the same thing
 under both hosts: each method's key turns it on (the password, the sign-in link, the
 e-mailed code, the backup codes, the trusted devices; passkeys, the authenticator
-application and the identity providers with their package, omniauth/passkey,
-omniauth/totp, omniauth/oauth and omniauth/google), the stores (`"omnibase"`: the core's
+application and the identity providers with their package, omniauth/webauthn,
+omniauth/otp and omniauth/google - the providers' mechanics are omniauth's own `Omniauth\OAuth\`), the stores (`"omnibase"`: the core's
 `Base\Auth\` on the entity manager - the user, userToken, userPasskey and userIdentity
 tables -, or the container's bindings by key), the throttle on a Laravel cache store, the
-messages.
+messages. `totp.secret_key` (`env('OMNIAUTH_TOTP_KEY')`: base64 of 32 bytes, the Symfony
+site's very key, never in the repository) wraps the `TotpSecrets` store in omniauth/otp's
+`SealedTotpSecrets` over a `SodiumSecretBox`: the secrets sealed at rest, as omnibridge/symfony
+decorates its store.
 
 - `Auth\OmniauthGuard` (`StatefulGuard`, driver `omniauth`) keeps the account's handle
   in the session, reads the account back through omniauth's `Accounts` at each request,

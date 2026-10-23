@@ -103,7 +103,7 @@ final class Settings
         $backupCodes = self::section($config, 'backup_codes');
         $this->backupCodes = null === $backupCodes ? null : $backupCodes + ['count' => 8];
         $totp = self::section($config, 'totp');
-        $this->totp = null === $totp ? null : $totp + ['leeway' => 0, 'period' => 30, 'digits' => 6, 'issuer' => null, 'server_name' => null];
+        $this->totp = null === $totp ? null : $totp + ['leeway' => 0, 'period' => 30, 'digits' => 6, 'issuer' => null, 'server_name' => null, 'secret_key' => null];
         $trusted = self::section($config, 'trusted_device');
         $this->trustedDevice = null === $trusted ? null : $trusted + ['lifetime' => 2592000, 'cookie' => 'trusted_device', 'firewall' => 'main'];
         $passkey = self::section($config, 'passkey');

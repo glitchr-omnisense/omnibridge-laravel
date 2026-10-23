@@ -2,20 +2,22 @@
 
 namespace Omnibridge\Laravel\Tests;
 
+use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
 use Illuminate\Testing\TestResponse;
-use Illuminate\Auth\AuthManager;
 use Omniauth\Factor;
 use Omniauth\Link\LinkMethod;
 use Omniauth\OAuth\Testing\FakeProvider;
 use Omniauth\Omniauth;
-use Omniauth\Passkey\PasskeyRecord;
-use Omniauth\Passkey\Testing\InMemoryPasskeys;
-use Omniauth\Passkey\Testing\SoftwareAuthenticator;
+use Omniauth\Otp\SealedTotpSecrets;
+use Omniauth\Otp\SodiumSecretBox;
 use Omniauth\Testing\RecordingSender;
+use Omniauth\WebAuthn\PasskeyRecord;
+use Omniauth\WebAuthn\Testing\InMemoryPasskeys;
+use Omniauth\WebAuthn\Testing\SoftwareAuthenticator;
 use Omnibridge\Contract\Access;
 use Omnibridge\Laravel\Auth\AccountUser;
 use Omnibridge\Laravel\Auth\Controllers\SignIn;
@@ -38,6 +40,8 @@ use OTPHP\TOTP;
 final class AuthTest extends TestCase
 {
     public const SECRET = 'omnibridge-auth-test-secret-0123456789abcdef';
+    /** The test's own key for the TOTP secrets at rest (base64 of 32 bytes): a fixed test value, no real one. */
+    public const TOTP_KEY = 'b21uaWJyaWRnZS10ZXN0LXRvdHAta2V5LTMyLWJ5dGU=';
 
     /** @param Application $app */
     protected function defineEnvironment($app): void
@@ -70,7 +74,7 @@ final class AuthTest extends TestCase
             'email_code' => [],
             'backup_codes' => [],
             'trusted_device' => [],
-            'totp' => [],
+            'totp' => ['secret_key' => self::TOTP_KEY],
             'passkey' => [],
             'oauth' => ['providers' => [
                 'google' => ['service' => 'test.google'],
@@ -279,6 +283,29 @@ final class AuthTest extends TestCase
         $this->newBrowser();
         $this->withUnencryptedCookie('REMEMBERME', (string) $cookie->getValue());
         $this->assertSame('signed-out', $this->state(), 'a new password forgets every browser');
+    }
+
+    /**
+     * totp.secret_key: TotpSecrets wrapped in omniauth/otp's SealedTotpSecrets
+     * (whoever writes it seals), the account's secret kept sealed under the
+     * key, the sign-in verified against the opened secret; a secret kept in
+     * clear before (the other tests' accounts) still signs in.
+     */
+    public function testTotpSecretsAreSealedAtRestWhenAKeyIsSet(): void
+    {
+        $store = $this->container()->make(\Omniauth\Contract\TotpSecrets::class);
+        $this->assertInstanceOf(SealedTotpSecrets::class, $store, 'the store wrapped');
+        $user = $this->account();
+        $secret = TOTP::generate()->getSecret();
+        $store->enable($user, $secret);
+
+        $this->assertTrue(SodiumSecretBox::isSealed((string) $user->totpSecret), 'kept sealed');
+        $this->assertSame($secret, SodiumSecretBox::fromBase64(self::TOTP_KEY)->open((string) $user->totpSecret), 'under the configured key');
+        $this->assertSame($secret, $store->secret($user));
+
+        $this->signIn($user->email)->assertRedirect('/login/2fa');
+        $this->secondFactor(TOTP::createFromSecret($secret)->now());
+        $this->assertSame('signed-in', $this->state());
     }
 
     public function testAnAccountWithTotpIsAskedItsCodeAndOnlyItsPageOpens(): void
