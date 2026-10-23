@@ -8,7 +8,7 @@ use Omniauth\OAuth\Provider\ProviderFactory;
 use Omniauth\OAuth\Provider\Providers;
 
 /**
- * omniauth/oauth's providers from config/omniauth.php: Providers::configured()
+ * omniauth's identity providers from config/omniauth.php: Providers::configured()
  * through the provider packages' factories (omniauth/google's GoogleFactory;
  * a provider without client id is not served), and a provider given as a
  * binding ("service") as it is.

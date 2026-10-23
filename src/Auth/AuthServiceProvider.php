@@ -37,9 +37,9 @@ use Omniauth\EmailCode\EmailCodeMethod;
 use Omniauth\EnrolledSecondFactors;
 use Omniauth\Link\LinkMethod;
 use Omniauth\Method\Method;
-use Omniauth\OAuth\Provider\ProviderFactory;
 use Omniauth\Method\Methods;
 use Omniauth\Method\SecondFactor;
+use Omniauth\OAuth\Provider\ProviderFactory;
 use Omniauth\Omniauth;
 use Omniauth\Password\PasswordMethod;
 use Omniauth\TrustedDevice\TrustedDevices;
@@ -78,6 +78,8 @@ final class AuthServiceProvider extends ServiceProvider
 {
     public const SECOND_FACTORS = 'omniauth.second_factors';
     public const PROVIDER_FACTORY = 'omniauth.oauth_provider_factory';
+    /** The TOTP secrets sealed at rest (totp.secret_key), TotpSecrets' binding then. */
+    public const SEALED_TOTP_SECRETS = 'omniauth.totp.sealed_secrets';
 
     /** omnibase's stores by config/omniauth.php's keys, and the contract each answers. */
     private const OMNIBASE_STORES = [
@@ -89,7 +91,7 @@ final class AuthServiceProvider extends ServiceProvider
         'trusted_version' => ['Base\Auth\UserTrustedVersion', TrustedVersion::class],
         'totp_secrets' => ['Base\Auth\UserTotpSecrets', TotpSecrets::class],
         'identities' => ['Base\Auth\UserIdentities', Identities::class],
-        'passkeys' => ['Base\Auth\UserPasskeys', 'Omniauth\Passkey\Contract\Passkeys'],
+        'passkeys' => ['Base\Auth\UserPasskeys', 'Omniauth\WebAuthn\Contract\Passkeys'],
     ];
 
     /** The contract each key of config/omniauth.php's "stores" names. */
@@ -102,7 +104,7 @@ final class AuthServiceProvider extends ServiceProvider
         'trusted_version' => TrustedVersion::class,
         'totp_secrets' => TotpSecrets::class,
         'identities' => Identities::class,
-        'passkeys' => 'Omniauth\Passkey\Contract\Passkeys',
+        'passkeys' => 'Omniauth\WebAuthn\Contract\Passkeys',
         'sender' => Sender::class,
     ];
 
@@ -204,6 +206,7 @@ final class AuthServiceProvider extends ServiceProvider
         }
         // The stores first: the configuration is complete once every provider has registered.
         $this->registerStores();
+        $this->sealTotpSecrets();
         $settings = $this->app->make(Settings::class);
 
         $auth = $this->app->make(AuthFactory::class);
@@ -324,6 +327,40 @@ final class AuthServiceProvider extends ServiceProvider
     }
 
     /**
+     * config/omniauth.php's totp.secret_key (env('OMNIAUTH_TOTP_KEY'): base64
+     * of 32 bytes, the Symfony site's very key): the TotpSecrets store, whatever
+     * binds it, wrapped in omniauth/otp's SealedTotpSecrets over a
+     * SodiumSecretBox - the secrets sealed at rest, the base32 secret for its
+     * readers -, as omnibridge/symfony decorates its store from omniauth.yaml.
+     * No key, nothing wrapped: a sealed secret then reads as no base32 secret
+     * and the code is refused ("unreadable-secret"), the second factor still asked.
+     */
+    private function sealTotpSecrets(): void
+    {
+        $totp = $this->app->make(Settings::class)->totp;
+        $key = Settings::string($totp['secret_key'] ?? null);
+        if (null === $totp || '' === $key || !$this->app->bound(TotpSecrets::class)) {
+            return;
+        }
+        self::needs('Omniauth\Otp\SealedTotpSecrets', 'omniauth/otp', 'totp.secret_key');
+        $sealed = 'Omniauth\Otp\SealedTotpSecrets';
+        $box = 'Omniauth\Otp\SodiumSecretBox';
+        $inner = $this->app instanceof \Illuminate\Container\Container ? $this->app->getAlias(TotpSecrets::class) : TotpSecrets::class;
+        if ($inner === TotpSecrets::class) {
+            $this->app->extend(TotpSecrets::class, static fn (TotpSecrets $store) => $store instanceof $sealed ? $store : new $sealed($store, $box::fromBase64($key)));
+
+            return;
+        }
+        $this->app->singleton(self::SEALED_TOTP_SECRETS, static function (Application $app) use ($inner, $sealed, $box, $key) {
+            $store = $app->make($inner);
+            \assert($store instanceof TotpSecrets);
+
+            return new $sealed($store, $box::fromBase64($key));
+        });
+        $this->app->alias(self::SEALED_TOTP_SECRETS, TotpSecrets::class);
+    }
+
+    /**
      * The methods config/omniauth.php turns on (omnibridge/symfony's
      * OmniauthExtension::load() under Symfony): the first factors and the
      * trusted devices, and the second factors already built (SECOND_FACTORS).
@@ -383,10 +420,10 @@ final class AuthServiceProvider extends ServiceProvider
     /** @param array<string, mixed> $totp */
     private function totp(Application $app, Settings $settings, array $totp, ClockInterface $clock): SecondFactor
     {
-        self::needs('Omniauth\Totp\TotpMethod', 'omniauth/totp', 'totp');
+        self::needs('Omniauth\Otp\TotpMethod', 'omniauth/otp', 'totp');
         $store = $app->make(CacheFactory::class)->store(Settings::string($settings->throttle['store'] ?? null) ?: null);
-        $used = 'Omniauth\Totp\CacheUsedSteps';
-        $method = 'Omniauth\Totp\TotpMethod';
+        $used = 'Omniauth\Otp\CacheUsedSteps';
+        $method = 'Omniauth\Otp\TotpMethod';
         return new $method(
             $app->make(Accounts::class),
             $app->make(TotpSecrets::class),
@@ -404,13 +441,13 @@ final class AuthServiceProvider extends ServiceProvider
     /** @param array<string, mixed> $passkey */
     private function passkey(Application $app, array $passkey): Method
     {
-        self::needs('Omniauth\Passkey\PasskeyMethod', 'omniauth/passkey', 'passkey');
-        $rp = 'Omniauth\Passkey\RelyingParty';
-        $method = 'Omniauth\Passkey\PasskeyMethod';
+        self::needs('Omniauth\WebAuthn\PasskeyMethod', 'omniauth/webauthn', 'passkey');
+        $rp = 'Omniauth\WebAuthn\RelyingParty';
+        $method = 'Omniauth\WebAuthn\PasskeyMethod';
         $origins = array_values(array_map(Settings::string(...), (array) ($passkey['origins'] ?? [])));
         return new $method(
             $app->make(Accounts::class),
-            $app->make('Omniauth\Passkey\Contract\Passkeys'),
+            $app->make('Omniauth\WebAuthn\Contract\Passkeys'),
             new $rp(Settings::string($passkey['rp_id'] ?? null) ?: null, Settings::string($passkey['rp_name'] ?? null) ?: null, $origins),
             isset($passkey['timeout']) ? Settings::int($passkey['timeout']) : null,
         );
@@ -419,7 +456,7 @@ final class AuthServiceProvider extends ServiceProvider
     /** @param array<string, mixed> $oauth */
     private function oauth(Application $app, array $oauth, ClockInterface $clock): Method
     {
-        self::needs('Omniauth\OAuth\OAuthMethod', 'omniauth/oauth', 'oauth');
+        self::needs('Omniauth\OAuth\OAuthMethod', 'omniscient/omniauth 1.x with Omniauth\\OAuth\\ (2026-10-23)', 'oauth');
         $byEmail = $oauth['link_by_email'] ?? null;
         if (null === $byEmail) {
             $class = 'Omniauth\OAuth\NoSecondFactorLinking';

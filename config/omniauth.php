@@ -4,7 +4,7 @@
 // step AU8), on when config/omnibridge.php says 'auth' => true and omniscient/omniauth is
 // installed. The same keys as omnibridge/symfony's config/packages/omniauth.yaml, so one site
 // says the same thing under both hosts: each method's key turns it on (null: off); a method
-// whose package is missing (omniauth/passkey, omniauth/totp, omniauth/oauth) cannot be.
+// whose package is missing (omniauth/webauthn, omniauth/otp, an identity provider's own: omniauth/google) cannot be.
 // php artisan vendor:publish --tag=omniauth-config
 
 return [
@@ -51,24 +51,25 @@ return [
     'link' => null,          // ['route' => 'security_loginWithToken', 'path' => '/login/token/{token?}', 'parameter' => 'token', 'lifetime' => 900, 'template' => 'security/login_token.html.twig', 'form' => 'login_token', 'email' => 'email', 'csrf' => ['field' => '_csrf_token', 'intent' => 'login_token']]
 
     // The second factors: a code by e-mail (kept hashed; needs a Sender), backup codes, the
-    // authenticator application (omniauth/totp: scheb/2fa's parameters), and the trusted
+    // authenticator application (omniauth/otp: scheb/2fa's parameters; its secrets sealed at rest
+    // with 'secret_key' - base64 of 32 bytes, from the environment, the Symfony site's very key), and the trusted
     // devices in scheb/2fa's very cookie (its "fwl" claim: 'firewall', "main" by default).
     'email_code' => null,    // ['digits' => 6, 'lifetime' => 600]
     'backup_codes' => null,  // ['count' => 8]
-    'totp' => null,          // ['leeway' => 0, 'period' => 30, 'digits' => 6, 'issuer' => null, 'server_name' => null]
+    'totp' => null,          // ['leeway' => 0, 'period' => 30, 'digits' => 6, 'issuer' => null, 'server_name' => null, 'secret_key' => env('OMNIAUTH_TOTP_KEY')]
     'trusted_device' => null, // ['lifetime' => 2592000, 'cookie' => 'trusted_device', 'firewall' => 'main']
 
-    // Passkeys (omniauth/passkey): the relying party (its id: the registrable domain both hosts
+    // Passkeys (omniauth/webauthn): the relying party (its id: the registrable domain both hosts
     // share, decision QA9; the request's host when null), the addresses the site's script posts
     // to (web-auth's JSON: {"status": "ok", "errorMessage": "", ...}), their route names, whether
     // the browser is remembered after one.
     'passkey' => null,       // ['rp_id' => null, 'rp_name' => null, 'origins' => [], 'timeout' => null, 'remember' => true, 'options_path' => '/login/passkey/options', 'options_route' => 'passkey_login_options', 'path' => '/login/passkey', 'route' => 'passkey_login']
 
-    // Identity providers (omniauth/oauth, each provider a package: omniauth/google). Each one's
+    // Identity providers (omniauth's Omniauth\OAuth\, each provider a package: omniauth/google). Each one's
     // return address is the PATH of its check route unless it sets one (redirect_uri): omniauth
     // puts it on the host of each trip's request, so that under a long-running worker the
     // visitor comes back to the host they left from. link_by_email: true, false, or a binding
-    // (omniauth/oauth's EmailLinking; null: never an account with a second factor);
+    // (omniauth's EmailLinking; null: never an account with a second factor);
     // sign_up_route: where an identity no account is linked to goes (its PendingIdentity in the
     // session, Omnibridge\Laravel\Auth\Controllers\SignIn::PENDING_IDENTITY).
     'oauth' => null,         // ['link_by_email' => null, 'sign_up_route' => null, 'providers' => ['google' => ['client_id' => ..., 'client_secret' => ..., 'scopes' => ['openid', 'email', 'profile'], 'hosted_domain' => null, 'start_path' => '/connect/google', 'start_route' => 'oauth_google', 'check_path' => '/connect/google/check', 'check_route' => 'oauth_google_check', 'redirect_uri' => null, 'service' => null]]
