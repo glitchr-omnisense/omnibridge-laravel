@@ -70,7 +70,8 @@
         "omniauth/google": "Google sign-in through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)",
         "omniscient/omnimap": "Omnibridge\\Laravel\\Map\\: maps through omnimap (config/omnimap.php) - its providers, the map cache over a directory or a bound Omnimap\\Snapshot\\Storage, omnibridge/twig's MapExtension in every page's Twig, the tiles' route",
         "omniscient/omnishield": "Omnibridge\\Laravel\\Shield\\: omnishield's Registry from config/omnishield.php (the Symfony bundle's keys), ALTCHA's widget served by the application; with omnibase, its captcha after failed sign-ins (Auth\\OmnibaseEffects); not on Packagist yet - a vcs repository, https://github.com/glitchr-studio/omnishield",
-        "omnishield/altcha": "ALTCHA, the captcha omnibase asks after failed sign-ins: served and checked by the application, no third party"
+        "omnishield/altcha": "ALTCHA, the captcha omnibase asks after failed sign-ins: served and checked by the application, no third party",
+        "omnibase/consent": "omnibase/consent's cookie answer in the pages (View\\OmnibaseExtensions: consent_options(), consent_settings() on config/omnibridge.php's consent.config)"
     },
     "autoload": {
         "psr-4": {

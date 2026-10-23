@@ -96,4 +96,26 @@ return [
     // the Symfony site's addresses, the second factor's page, the sign-out - on
     // config/omniauth.php (the same keys as omnibridge/symfony's omniauth.yaml).
     'auth' => false,
+
+    // What omnibase's Twig extensions take from the application in its pages
+    // (View\OmnibaseExtensions, audit R24; omniscient/omnibase 4 from R24):
+    // - encore: the Encore builds encore_entry_link_tags() and _script_tags()
+    //   read (a list of {entrypoints, manifest} files, in the order they are
+    //   looked into), the breakpoints (name => media query) a stylesheet has
+    //   versions for, the entries a page loads with another ({form: [form.editor]});
+    //   no Encore tags without builds;
+    // - consent: omnibase/consent's configuration (a YAML file with a consent:
+    //   key, the Symfony site's config/packages/consent.yaml, or the array),
+    //   none when null;
+    // - push: the VAPID keys of omnibase's WebPushService (public_key,
+    //   private_key, subject); no push without them;
+    // - deploy.project_dir: the folder deploy_version() reads the git heads of
+    //   (base_path() when null);
+    // - icons.metadata: the folder of the icons' metadata (icons.yml,
+    //   bootstrap-icons.json: public/bundles/base/metadata when null).
+    'encore' => ['builds' => [], 'breakpoints' => [], 'optional' => []],
+    'consent' => ['config' => null],
+    'push' => ['public_key' => null, 'private_key' => null, 'subject' => null],
+    'deploy' => ['project_dir' => null],
+    'icons' => ['metadata' => null],
 ];

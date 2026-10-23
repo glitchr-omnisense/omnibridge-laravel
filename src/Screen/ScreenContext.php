@@ -114,14 +114,12 @@ class ScreenContext implements ContextProvider
     /** @return array{scheme?: string} */
     protected function theme(): array
     {
-        $config = $this->app['config']->get('omnibridge.theme', []);
-        if (empty($config['modes'])) {
-            return [];
-        }
+        /** @var array{modes?: array<string, array<string, string>>, filters?: array<string, array<string, string>>, no_filter?: array<string, mixed>} $config */
+        $config = (array) $this->app['config']->get('omnibridge.theme', []);
         $request = $this->app->bound('request') ? $this->app->make('request') : null;
-        $theme = new Theme($config['modes'], $config['filters'] ?? [], $request?->cookie('THEME/MODE'), $request?->cookie('THEME/FILTER'), $config['no_filter'] ?? []);
+        $theme = Theme::of($config, $request instanceof \Illuminate\Http\Request ? $request : null);
 
-        return ['scheme' => $theme->color_scheme()];
+        return null === $theme ? [] : ['scheme' => $theme->color_scheme()];
     }
 
     /** A route's address, null when neither Laravel nor elsewhere() answers it. */
