@@ -7,6 +7,7 @@ use Omnibridge\Contract\Access;
 use Omnibridge\Contract\Tokens;
 use Omnibridge\Contract\Translations;
 use Omnibridge\Contract\Urls;
+use Omnibridge\Laravel\Map;
 use Omnibridge\Twig\AccessExtension;
 use Omnibridge\Twig\ContractExtension;
 use Omnibridge\Twig\HelperExtension;
@@ -40,6 +41,10 @@ final class Twig
         $twig->addExtension(new ContractExtension($urls, $translations));
         $twig->addExtension(new AccessExtension(self::bound(Access::class), self::bound(Tokens::class)));
         $twig->addExtension(new HelperExtension($locale, $timezone));
+        // omnimap's map, where config/omnimap.php names a provider (Map\MapServiceProvider).
+        if (null !== ($map = Map\MapServiceProvider::extension())) {
+            $twig->addExtension($map);
+        }
         foreach ($extensions as $extension) {
             $twig->addExtension($extension);
         }
