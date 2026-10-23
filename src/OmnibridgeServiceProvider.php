@@ -25,6 +25,8 @@ use Base\Service\Model\Wysiwyg\MediaEnhancer;
 use Base\Service\Model\Wysiwyg\MediaEnhancerInterface;
 use Imagine\Image\Metadata\ExifMetadataReader;
 use Omnibridge\Laravel\Media\DiskStorages;
+use Omnidrive\Drives;
+use Omnidrive\Flysystem\OperatorDrives;
 use Omnibridge\Laravel\Media\ImageController;
 use Omnibridge\Laravel\Media\LaravelMediaRouter;
 use Omnibridge\Laravel\Media\ServiceMedia;
@@ -32,6 +34,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Filesystem\Factory as DiskFactory;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Omnibridge\Contract as Host;
@@ -125,6 +129,12 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         ));
         $this->app->singleton(Host\Routes::class, fn (Application $app) => new RouterRoutes($app->make('router')));
         $this->app->singleton(Host\Files::class, fn (Application $app) => new DiskFiles($app->make('filesystem'), $app['config']->get('omnibridge.storages', [])));
+        // The storages as omniscient/omnidrive's drives: each disk's Flysystem operator, by the name
+        // omnibridge.storages maps to it, else by the disk's own name.
+        if (class_exists(OperatorDrives::class)) {
+            $this->app->singleton(OperatorDrives::class, fn (Application $app) => new OperatorDrives(self::diskStorages($app)));
+            $this->app->alias(OperatorDrives::class, Drives::class);
+        }
         $this->app->singleton(ClockInterface::class, DateClock::class);
         $this->app->singleton(EventDispatcherInterface::class, fn (Application $app) => new DispatcherEvents($app->make('events')));
         $this->app->singleton(MailerInterface::class, fn (Application $app) => new TransportMailer($app));
@@ -337,6 +347,18 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         return $flat;
     }
 
+    /** Laravel's disks by omnibase's storage names (omnibridge.storages), as a container of Flysystem operators. */
+    private static function diskStorages(Application $app): DiskStorages
+    {
+        $disks = $app->make('filesystem');
+        $config = $app->make('config');
+        \assert($disks instanceof DiskFactory && $config instanceof ConfigRepository);
+        /** @var array<string, string> $storages */
+        $storages = (array) $config->get('omnibridge.storages', []);
+
+        return new DiskStorages($disks, $storages);
+    }
+
     /**
      * omnibase's media rule hosted by Laravel (audit "lesringostars face au
      * master plan", R6), when omnibridge.media is on: MediaService - the
@@ -345,7 +367,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
      * omnibase's Obfuscator (its identifiers' map in base.obfuscator.cache_dir,
      * the Symfony site's to read the addresses it wrote), omnibase's Flysystem
      * over Laravel's disks (DiskStorages: omnibridge.storages, local.cache
-     * required) and Imagine; Base\Contract\Media bound to it (ServiceMedia),
+     * required; Omnidrive\Drives over them where omnidrive is installed) and Imagine; Base\Contract\Media bound to it (ServiceMedia),
      * Pictures' thumbnails made by it; the image routes declared under their
      * Symfony names (ImageRoute::ROUTES, boot()) and answered by
      * Base\Service\ImageRoute (ImageController). The parameters are the
@@ -366,7 +388,13 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
             return $obfuscator;
         });
-        $this->app->singleton(Flysystem::class, fn (Application $app) => new Flysystem(new DiskStorages($app->make('filesystem'), $app['config']->get('omnibridge.storages', []))));
+        // The same drives as Omnidrive\Drives where the core reads them (omnibase feb6fa08 on); an earlier
+        // core, or no omnidrive installed yet, takes the disks' container as before.
+        $this->app->singleton(Flysystem::class, fn (Application $app) => new Flysystem(
+            $app->bound(Drives::class) && method_exists(Flysystem::class, 'getDrives') // @phpstan-ignore function.alreadyNarrowedType (an earlier core has none)
+                ? $app->make(Drives::class)
+                : self::diskStorages($app),
+        ));
         $this->app->singleton(MediaService::class, fn (Application $app) => new MediaService(
             $app->make(Environment::class),
             $app->make(LaravelMediaRouter::class),
