@@ -1799,3 +1799,45 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: tests/UrlsTranslationsTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/MapTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Cannot call method start\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset ''session'' might not exist on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset 2 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset 3 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php

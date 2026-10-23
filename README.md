@@ -277,6 +277,32 @@ unserializes no object (`cache.serializable_classes`).
 First used by lesringostars' Laravel twin, which renders the Symfony site's blog
 and articles from the same database and templates.
 
+## Maps through omnimap
+
+Where omniscient/omnimap is installed (suggested), `Map\MapServiceProvider` reads
+`config/omnimap.php` - the keys of omnibridge/symfony's `omnimap.yaml` - and wires
+nothing unless it names a `provider`:
+
+```php
+return [
+    'provider' => 'openstreetmap',
+    'secret' => env('MAP_SECRET'),
+    'providers' => ['openstreetmap' => ['user_agent' => 'MySite/1.0 (+https://example.org)']],
+    'cache' => ['storage' => storage_path('app/omnimap'), 'directory' => 'omnimap'],
+    'routes' => ['tile' => ['path' => '/omnimap/{signature}/{id}.webp', 'name' => 'omnimap_tile']],
+];
+```
+
+It binds `Omnimap\Registry` (omnimap/google and omnimap/openstreetmap when installed,
+over Symfony's HTTP client or the one bound as `omnimap.http_client`, a PSR-16 cache in
+`storage/framework/cache/omnimap`), `Omnimap\Snapshot\Snapshots` (the map cache over a
+directory or a bound `Omnimap\Snapshot\Storage`; `cache.make` false for a host reading
+another host's cache read only), `Omnimap\MapPrinter` and omnibridge/twig's
+`MapExtension`, which every page's Twig gets (`omnimap()`, `omnimap_export()`,
+`omnimap_suppress()`), and routes the tiles (`routes.tile.register` false when the web
+server serves them). Capturing and deleting a picture is omnibridge/symfony's
+(`routes.export.name`, `routes.suppress.name` name them for the buttons).
+
 ## Tests
 
 ```sh
@@ -292,7 +318,9 @@ database in UTC, omnibase's mapping (an `App\` class over a `Base\` one, another
 alias, the metadata of 94 classes equal to Symfony's), omnibase's images (a thumbnail's
 address made and read back, redirected to its extension, served at its size, in webp and
 without the local cache, a missing one a 404, Pictures' thumbnails; Imagick in the image),
-the settings of the site, Encore tags, the breakpoints, a form.
+the settings of the site, Encore tags, the breakpoints, a form; a page's map through
+omnimap (`MapTest`: the picture made from OpenStreetMap's tiles answered in the test,
+its tiles served, the buttons for the gate's ROLE_ADMIN; GD in the image).
 
 ## Licence
 

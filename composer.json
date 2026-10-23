@@ -43,15 +43,19 @@
         "omniauth/google": "1.x-dev",
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
+        "omnimap/openstreetmap": "^1.0@dev",
         "omniscient/omniauth": "1.x-dev",
+        "omniscient/omnimap": "^1.0@dev",
         "orchestra/testbench": "^10.0|^11.0",
-        "phpunit/phpunit": "^11.5|^12.0"
+        "phpunit/phpunit": "^11.5|^12.0",
+        "symfony/http-client": "^7.0|^8.0"
     },
     "suggest": {
         "omniscient/omniauth": "Omnibridge\\Laravel\\Auth\\: Laravel's guard and user provider over omniauth, one controller for every way of signing in (password, sign-in link, e-mailed code, backup codes, trusted devices), the second factor's page, the routes; config/omnibridge.php 'auth' => true and config/omniauth.php (nothing of Auth\\ without it)",
         "omniauth/webauthn": "Passkeys through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: passkey), formerly omniauth/passkey",
         "omniauth/otp": "Authenticator applications through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: totp; totp.secret_key seals the secrets at rest), formerly omniauth/totp",
-        "omniauth/google": "Google sign-in through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)"
+        "omniauth/google": "Google sign-in through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)",
+        "omniscient/omnimap": "Omnibridge\\Laravel\\Map\\: maps through omnimap (config/omnimap.php) - its providers, the map cache over a directory or a bound Omnimap\\Snapshot\\Storage, omnibridge/twig's MapExtension in every page's Twig, the tiles' route"
     },
     "autoload": {
         "psr-4": {

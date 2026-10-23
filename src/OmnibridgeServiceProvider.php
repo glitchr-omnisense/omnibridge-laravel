@@ -161,6 +161,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         if (class_exists(\Omniauth\Omniauth::class)) {
             $this->app->register(Auth\AuthServiceProvider::class);
         }
+        // Maps through omnimap, where omniscient/omnimap is installed: Map\MapServiceProvider, which
+        // wires nothing unless config/omnimap.php names a provider.
+        if (class_exists(\Omnimap\Registry::class)) {
+            $this->app->register(Map\MapServiceProvider::class);
+        }
     }
 
     /**
