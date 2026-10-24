@@ -25,10 +25,8 @@ final class ContractsTest extends TestCase
         $contracts = [
             Host\Urls::class, Host\Translations::class, Host\Locales::class, Host\Access::class, Host\Sessions::class,
             Host\Tokens::class, Host\Environment::class, Host\Routes::class, Host\Files::class,
-            // Their former names, omnibase's and omnibridge/twig's (aliases until omnibase 4's final pass):
-            Contract\Urls::class, \Omnibridge\Twig\Contract\Urls::class, Contract\Translations::class, \Omnibridge\Twig\Contract\Translations::class,
-            Contract\Locales::class, Contract\Nouns::class, Contract\Access::class, Contract\Sessions::class, Contract\Tokens::class,
-            Contract\Environment::class, Contract\Routes::class, Contract\Files::class, Contract\Pictures::class, Contract\Texts::class, ParameterBagInterface::class,
+            // omnibase's own:
+            Contract\Nouns::class, Contract\Pictures::class, Contract\Texts::class, ParameterBagInterface::class,
             ClockInterface::class, EventDispatcherInterface::class, MailerInterface::class,
         ];
         foreach ($contracts as $contract) {
@@ -37,22 +35,14 @@ final class ContractsTest extends TestCase
             $this->assertSame($this->app->make($contract), Runtime::get($contract), $contract);
         }
         $this->assertInstanceOf(RouterUrls::class, Runtime::urls());
-        $this->assertSame(Runtime::urls(), $this->app->make(\Omnibridge\Twig\Contract\Urls::class));
+        $this->assertSame(Runtime::urls(), $this->app->make(Host\Urls::class));
         $this->assertInstanceOf(CatalogueTranslations::class, Runtime::translations());
         $this->assertFalse(Runtime::has(Contract\Media::class), 'Media is not bound unless omnibridge.media is on (MediaTest)');
     }
 
-    /** A former name is a Laravel alias of the contract's own: the binding made under the new name, an extension of it seen under the old. */
-    public function testTheFormerNamesAreAliasesOfTheContracts(): void
+    /** An extension of a contract's binding is what the registry gives, once it is handed the container again. */
+    public function testAnExtensionOfAContractIsWhatTheRegistryGives(): void
     {
-        foreach ([Host\Urls::class => [Contract\Urls::class, \Omnibridge\Twig\Contract\Urls::class], Host\Translations::class => [Contract\Translations::class, \Omnibridge\Twig\Contract\Translations::class], Host\Locales::class => [Contract\Locales::class], Host\Files::class => [Contract\Files::class]] as $contract => $formers) {
-            foreach ($formers as $former) {
-                $this->assertContains($former, Runtime::formerNames($contract));
-                $this->assertTrue($this->app->isAlias($former), $former);
-                $this->assertSame($this->app->make($contract), $this->app->make($former), $former);
-            }
-        }
-
         $this->app->extend(Host\Locales::class, fn (Host\Locales $locales) => new class($locales) implements Host\Locales {
             public function __construct(private Host\Locales $locales)
             {
@@ -75,7 +65,7 @@ final class ContractsTest extends TestCase
         });
         Runtime::setContainer(null);
         Runtime::setContainer($this->app);
-        $this->assertSame('de-DE', $this->app->make(Contract\Locales::class)->getLocale());
+        $this->assertSame('de-DE', $this->app->make(Host\Locales::class)->getLocale());
         $this->assertSame('de-DE', Runtime::locales()->getLocale());
     }
 

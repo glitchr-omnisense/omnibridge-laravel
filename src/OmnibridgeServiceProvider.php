@@ -70,13 +70,12 @@ use Twig\Environment;
  * app(Urls::class) are one object.
  *
  * The host's contracts are omniscient/omnibridge's (Omnibridge\Contract\*), bound
- * under their own names; their former names (Base\Contract\Urls...,
- * omnibridge/twig's) are Laravel aliases of them, whichever the registry knows
- * (Runtime::formerNames()): the same binding under either. omnibase's own
+ * under their own names (their former names, Base\Contract\Urls... and
+ * omnibridge/twig's, were removed at omnibase 4's final pass). omnibase's own
  * (Nouns, Pictures, Texts, the parameters, the screen context) keep Base\.
  *
- * Bound: Urls (and omnibridge/twig's) on the router and the asset manifest,
- * Translations (and omnibridge/twig's) on the ICU catalogues, Locales,
+ * Bound: Urls on the router and the asset manifest,
+ * Translations on the ICU catalogues, Locales,
  * Nouns, Access (the gate), Sessions (the guard), Tokens (the session's),
  * Environment, Routes, Files (the disks), the parameters (Laravel's config,
  * the database settings laid over it), PSR-20's clock, PSR-14's dispatcher,
@@ -163,8 +162,6 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->registerParameters();
         $this->registerDoctrine();
         $this->registerTwig();
-        $this->registerFormerNames();
-
         // Signing in through omniauth (plan "omniauth", step AU8), where omniscient/omniauth is
         // installed: Auth\AuthServiceProvider, which wires nothing unless omnibridge.auth is on
         // (the configuration may be set after the providers register: Testbench's defineEnvironment).
@@ -180,20 +177,6 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         // Shield\ShieldServiceProvider, which wires nothing unless config/omnishield.php names a gateway.
         if (class_exists(\Omnishield\Registry::class)) {
             $this->app->register(Shield\ShieldServiceProvider::class);
-        }
-    }
-
-    /**
-     * The former names of the host's contracts, Laravel aliases of their own
-     * (until omnibase 4's final pass): an application or a package that makes
-     * Base\Contract\Urls gets the bound Urls, the same object.
-     */
-    private function registerFormerNames(): void
-    {
-        foreach ([Host\Urls::class, Host\Translations::class, Host\Locales::class, Host\Access::class, Host\Sessions::class, Host\Tokens::class, Host\Environment::class, Host\Routes::class, Host\Files::class] as $contract) {
-            foreach (Runtime::formerNames($contract) as $former) {
-                $this->app->alias($contract, $former);
-            }
         }
     }
 
