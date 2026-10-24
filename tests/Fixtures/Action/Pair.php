@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Tests\Fixtures\Action;
 use Base\Screen\Json;
 use Symfony\Component\Routing\Attribute\Route;
 
-/** Routes on methods, and one for an environment only. */
+/** Routes on methods, and some for an environment only (one posted to: its body, R29). */
 #[Route('/pair')]
 final class Pair
 {
@@ -19,5 +19,12 @@ final class Pair
     public function dev(): Json
     {
         return new Json('dev');
+    }
+
+    /** @param array<string, mixed> $body */
+    #[Route('/posted', name: 'pair_posted', methods: ['POST'], env: 'dev')]
+    public function posted(array $body = []): Json
+    {
+        return new Json($body);
     }
 }

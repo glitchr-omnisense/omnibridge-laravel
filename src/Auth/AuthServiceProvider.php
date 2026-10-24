@@ -44,6 +44,7 @@ use Omniauth\Omniauth;
 use Omniauth\Password\PasswordMethod;
 use Omniauth\TrustedDevice\TrustedDevices;
 use Omnibridge\Laravel\Auth\Listener\WelcomeFlash;
+use Omnibridge\Laravel\Auth\Middleware\EnrolmentPrompt;
 use Omnibridge\Laravel\Auth\Middleware\SecondFactorPending;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -271,6 +272,10 @@ final class AuthServiceProvider extends ServiceProvider
         if (OmnibaseEffects::on($this->app)) {
             OmnibaseEffects::register($this->app);
             OmnibaseEffects::boot($this->app, $this->app->make(Dispatcher::class));
+            // The second factor's enrolment a signed-in account is sent to (omnibase's EnrolmentPrompt, R29).
+            if (method_exists($kernel, 'appendMiddlewareToGroup')) {
+                $kernel->appendMiddlewareToGroup('web', EnrolmentPrompt::class);
+            }
         } elseif ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {
             $events = $this->app->make(Dispatcher::class);
             $events->listen('Omniauth\Event\SignedIn', ['Base\Auth\Listener\UpdateAccount', 'onSignedIn']);
