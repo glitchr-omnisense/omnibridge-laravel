@@ -29,13 +29,13 @@ use Symfony\Component\Routing\RouteCollection;
  */
 final class ActionRoutesTest extends TestCase
 {
-    private const ACTIONS = self::FIXTURES.'/Action';
+    private const FOLDERS = ['Omnibridge\\Laravel\\Tests\\Fixtures\\Action\\' => self::FIXTURES.'/Action'];
 
     private function routes(string $env = 'prod'): void
     {
         $router = app('router');
         $this->assertInstanceOf(Router::class, $router);
-        $router->middleware(Localize::class)->group(static fn () => ActionRoutes::register($router, ActionRoutes::load([self::ACTIONS], $env)));
+        $router->middleware(Localize::class)->group(static fn () => ActionRoutes::register($router, ActionRoutes::load(self::FOLDERS, $env)));
         $router->getRoutes()->refreshNameLookups();
     }
 
@@ -46,13 +46,16 @@ final class ActionRoutesTest extends TestCase
 
     public function testTheRoutesAreSymfonysInSymfonysOrder(): void
     {
-        $routes = ActionRoutes::load([self::ACTIONS], 'prod');
+        $routes = ActionRoutes::load(self::FOLDERS, 'prod');
 
         $this->assertSame(['home.default', 'pair_one', 'travels.en', 'travels.fr', 'travels.default.en', 'travels.default.fr', 'home'], array_keys($routes->all()), 'by file, then priority: the catch-all last; the dev route left out');
         $this->assertSame([Home::class, '__invoke'], ActionRoutes::action($this->route($routes, 'home')));
         $this->assertSame([Pair::class, 'one'], ActionRoutes::action($this->route($routes, 'pair_one')));
         $this->assertSame('fr', $this->route($routes, 'travels.fr')->getDefault('_locale'));
-        $this->assertArrayHasKey('pair_dev', ActionRoutes::load([self::ACTIONS], 'dev')->all());
+        $this->assertSame('travels', $this->route($routes, 'travels.fr')->getDefault('_canonical_route'));
+        $this->assertSame('/pair/one', $this->route($routes, 'pair_one')->getPath(), 'under the class\'s prefix');
+        $this->assertNull($this->route($routes, 'home')->getDefault('place'), 'the action\'s default on its variable, as Symfony sets it');
+        $this->assertArrayHasKey('pair_dev', ActionRoutes::load(self::FOLDERS, 'dev')->all());
         $this->assertSame('dev', ActionRoutes::environment('local'));
         $this->assertSame('test', ActionRoutes::environment('testing'));
     }
@@ -71,6 +74,10 @@ final class ActionRoutesTest extends TestCase
         $this->assertSame('one', $this->getJson('/pair/one')->json());
         $this->get('/pair/dev')->assertNotFound();
         $this->post('/japon/voyages')->assertStatus(405);
+        $router = app('router');
+        $this->assertInstanceOf(Router::class, $router);
+        $this->assertSame('{place}/voyages', $router->getRoutes()->getByName('travels.fr')?->uri(), 'a variable followed by more of the path is required');
+        $this->assertSame('{place?}', $router->getRoutes()->getByName('home')?->uri(), 'one at the end with a default is optional');
     }
 
     public function testAnEnvironmentsRoutesAreThere(): void

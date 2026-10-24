@@ -28,6 +28,9 @@ use Symfony\Component\Translation\Translator;
  */
 final class CatalogueTranslations implements Translations
 {
+    /** A translation key, as omnibase's Translator tells one (STRUCTURE_DOT): "@domain.a.b", "a.b". */
+    private const KEY = '^@?[a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*(?:[.][a-zA-Z0-9_]+(?:-[a-zA-Z0-9_]+)*)+$';
+
     private const NESTED_DEPTH = 5;
 
     private Translator $translator;
@@ -111,7 +114,9 @@ final class CatalogueTranslations implements Translations
 
         $catalogue = $this->translator->getCatalogue($locale);
         if (!$this->defined($catalogue, $id, $domain)) {
-            return $asked;
+            // A key no catalogue holds ("@controllers.thread_search.excerpt") is nothing, as omnibase's
+            // Translator answers it (its default language's quiet lookup); a text that is no key is itself.
+            return preg_match('/'.self::KEY.'/', $asked) ? '' : $asked;
         }
         $text = $this->translator->trans($id, $this->icu($named), $domain, $locale);
         // A message that is itself a key - "@notifications.login.success.day.back" under

@@ -296,7 +296,8 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         });
         // The core's repositories by their interfaces, as Symfony aliases them: omnibase's own list
         // (Base\Repository\Aliases, R27; an application's own are its #[AsAlias], Container\Aliases).
-        if (class_exists(\Base\Repository\Aliases::class)) {
+        // Only with omnibase's mapping (omnibridge.doctrine.omnibase): its entities name those repositories.
+        if (class_exists(\Base\Repository\Aliases::class) && null !== self::omnibase($this->app)) {
             Container\Aliases::bind($this->app, \Base\Repository\Aliases::INTERFACES);
         }
         // What the mapping registered (its registry, reader, repositories), once the entity manager is built.
@@ -398,6 +399,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
             return $obfuscator;
         });
+        $this->app->alias(Obfuscator::class, \Base\Service\ObfuscatorInterface::class);
         // The same drives as Omnidrive\Drives where the core reads them (omnibase feb6fa08 on); an earlier
         // core, or no omnidrive installed yet, takes the disks' container as before.
         $this->app->singleton(Flysystem::class, fn (Application $app) => new Flysystem(
