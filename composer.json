@@ -54,6 +54,7 @@
         "omniauth/google": "1.x-dev",
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
+        "omnibridge/static": "1.x-dev",
         "omnimap/openstreetmap": "^1.0@dev",
         "omniscient/omniauth": "1.x-dev",
         "omniscient/omnimap": "^1.0@dev",
@@ -65,6 +66,7 @@
         "symfony/http-client": "^7.0|^8.0"
     },
     "suggest": {
+        "omnibridge/static": "Static\\BuildCommand: php artisan omnibridge:static:build, omnibridge/static's export of the site a static.php declares, rendered by the application's HTTP kernel",
         "omniscient/omniauth": "Omnibridge\\Laravel\\Auth\\: Laravel's guard and user provider over omniauth, one controller for every way of signing in (password, sign-in link, e-mailed code, backup codes, trusted devices), the second factor's page, the routes; config/omnibridge.php 'auth' => true and config/omniauth.php (nothing of Auth\\ without it)",
         "omniauth/webauthn": "Passkeys through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: passkey), formerly omniauth/passkey",
         "omniauth/otp": "Authenticator applications through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: totp; totp.secret_key seals the secrets at rest), formerly omniauth/totp",
