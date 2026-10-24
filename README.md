@@ -99,8 +99,8 @@ JSON answer) and `ALONE` (a page whole, its own markup only) each its way.
 
 **Routes and bindings from the attributes.** The routes an application's actions declare -
 symfony/routing's `#[Route]` on the action, the declaration Symfony's router reads on the same
-class - are registered here by `Routing\ActionRoutes`, through symfony/routing's own attribute
-loader: the same names, localized paths (`app_timeline.fr` and its `_locale`, which
+class - are registered here by `Routing\ActionRoutes`, by symfony/routing's attribute loader's
+rules (not the loader itself, which stands on symfony/config): the same names, localized paths (`app_timeline.fr` and its `_locale`, which
 `Http\Localize` takes for the page's language), requirements, optional parameters, priorities
 (registered in the order Symfony matches them) and environments (Laravel's `local`, `testing`,
 `production` are Symfony's `dev`, `test`, `prod`). A route naming no method answers GET and
@@ -115,10 +115,21 @@ omnibase's own list (`Base\Repository\Aliases`):
 use Omnibridge\Laravel\Routing\ActionRoutes;
 
 // routes/web.php: the application's actions and omnibase's.
-ActionRoutes::register(app('router'), ActionRoutes::load([base_path('src/Action'), base_path('vendor/omniscient/omnibase/src/Controller/Action')], ActionRoutes::environment(app()->environment())));
+ActionRoutes::register(app('router'), ActionRoutes::load([
+    'App\\Action\\' => base_path('src/Action'),
+    'Base\\Controller\\Action\\' => base_path('vendor/omniscient/omnibase/src/Controller/Action'),
+], ActionRoutes::environment(app()->environment())));
 
 // a service provider: Aliases::bind($this->app, Aliases::read(['App\\Repository\\' => base_path('src/Repository')]));
 ```
+
+**What omnibase's pages ask more.** `app.theme.layout(1)` (`omnibridge.theme.layouts`: the folder
+of the site's `layoutN.html.twig`, as omnibase's Themizer finds them); `app.request.attributes` as
+Symfony's (the route's name and parameters) and its `uri` as Symfony writes it; a template's
+companions (`page.css.twig`, `page.mobile.css.twig`, `page.js.twig`: `View\Companions`, as omnibase's
+HtmlTagRenderer adds them); `get_short_class()` (omnibase's ClassTwigExtension), `|trans_entity` and
+`|obfuscate` (`View\OmnibaseFilters`); a key no catalogue holds translated as nothing, as omnibase's
+Translator answers it; an action's `Base\Screen\Redirect`.
 
 **Language.** omnibase's language under Laravel, as its LocalizerSubscriber and
 LocalizerController give it under Symfony: `Http\Localize` (the web group's middleware: the

@@ -10,7 +10,9 @@ use Base\Service\MediaService;
 use Base\Service\Model\IconProvider\Adapter\BootstrapTwitterAdapter;
 use Base\Service\Model\IconProvider\Adapter\FontAwesomeAdapter;
 use Base\Service\Push\WebPushService;
+use Base\Service\Obfuscator;
 use Base\Service\ThemizerInterface;
+use Base\Twig\Extension\ClassTwigExtension;
 use Base\Twig\Extension\DemoTwigExtension;
 use Base\Twig\Extension\DeployVersionExtension;
 use Base\Twig\Extension\EnumTwigExtension;
@@ -123,6 +125,10 @@ final class OmnibaseExtensions
             $app->make(EntityManagerInterface::class);
         }
         $extensions[] = new EnumTwigExtension($translations);
+        // get_class(), class_exists(), get_short_class(): omnibase's, framework-free; |trans_entity and
+        // |obfuscate by omnibase's rules over what Laravel binds (OmnibaseFilters, R27).
+        $extensions[] = new ClassTwigExtension();
+        $extensions[] = new OmnibaseFilters($translations, $app->bound(Obfuscator::class) ? static fn (): Obfuscator => $app->make(Obfuscator::class) : null);
         $extensions[] = new LinkTwigExtension();
         $extensions[] = new IconTwigExtension($this->icons());
         if ($app->bound(MediaService::class)) {

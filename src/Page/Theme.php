@@ -9,13 +9,16 @@ use Base\Service\ThemizerInterface;
  * visitor chose (their cookies THEME/MODE and THEME/FILTER), among those the
  * site offers. omnibase's ThemizerInterface too, which its theme menus read
  * (Base\Twig\Extension\MenuTwigExtension: render_theme_modes()...): no
- * widths, events nor audiences offered here.
+ * widths, events nor audiences offered here. Its layouts too (app.theme.layout(1),
+ * Themizer::getLayout()): the layoutN.html.twig of omnibridge.theme.layouts, a folder
+ * (the site's templates/layout).
  */
 final class Theme implements ThemizerInterface
 {
     /**
      * @param array<string, array<string, string>> $modes
      * @param array<string, array<string, string>> $filters
+     * @param array<int, string>                   $layouts  layoutN.html.twig by N
      */
     public function __construct(
         private readonly array $modes,
@@ -23,6 +26,7 @@ final class Theme implements ThemizerInterface
         private readonly ?string $modeId,
         private readonly ?string $filterId,
         private readonly array $noFilter,
+        private readonly array $layouts = [],
     ) {
     }
 
@@ -30,7 +34,7 @@ final class Theme implements ThemizerInterface
      * The visitor's theme among those omnibridge.theme offers (its modes, filters, no_filter),
      * their cookies THEME/MODE and THEME/FILTER read from the request; none without modes.
      *
-     * @param array{modes?: array<string, array<string, string>>, filters?: array<string, array<string, string>>, no_filter?: array<string, mixed>} $config
+     * @param array{modes?: array<string, array<string, string>>, filters?: array<string, array<string, string>>, no_filter?: array<string, mixed>, layouts?: string} $config
      */
     public static function of(array $config, ?\Illuminate\Http\Request $request): ?self
     {
@@ -40,7 +44,33 @@ final class Theme implements ThemizerInterface
         $mode = $request?->cookie('THEME/MODE');
         $filter = $request?->cookie('THEME/FILTER');
 
-        return new self($config['modes'], $config['filters'] ?? [], \is_string($mode) ? $mode : null, \is_string($filter) ? $filter : null, $config['no_filter'] ?? []);
+        return new self($config['modes'], $config['filters'] ?? [], \is_string($mode) ? $mode : null, \is_string($filter) ? $filter : null, $config['no_filter'] ?? [], self::layouts($config['layouts'] ?? null));
+    }
+
+    /**
+     * The layout of that number (layout1.html.twig), else the first there is, as omnibase's
+     * Themizer::getLayout() answers it.
+     */
+    public function getLayout(int|string $id = 0): string
+    {
+        return $this->layouts[(int) $id] ?? (array_values($this->layouts)[0] ?? throw new \RuntimeException('No layout: omnibridge.theme.layouts names no folder of layoutN.html.twig.'));
+    }
+
+    /**
+     * A folder's layouts, as omnibase's Themizer finds them: layoutN.html.twig by N.
+     *
+     * @return array<int, string>
+     */
+    private static function layouts(?string $folder): array
+    {
+        $layouts = [];
+        foreach (null !== $folder && is_dir($folder) ? (scandir($folder) ?: []) : [] as $file) {
+            if (is_file($folder.'/'.$file) && preg_match('/^layout(\d+)\.html\.twig$/', $file, $match)) {
+                $layouts[(int) $match[1]] = $file;
+            }
+        }
+
+        return $layouts;
     }
 
     /** @return array<string, string>|null */

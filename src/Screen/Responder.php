@@ -7,6 +7,7 @@ use Base\Screen\File;
 use Base\Screen\Frame;
 use Base\Screen\Json;
 use Base\Screen\Negotiation;
+use Base\Screen\Redirect;
 use Base\Screen\Shell;
 use Base\Screen\Template;
 use Base\Screen\View;
@@ -24,7 +25,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Base\Screen\Negotiation (step R10 of the audit "lesringostars face au
  * master plan"; Base\Bridge\Symfony\ScreenResponder is Symfony's). What an
  * application's action hands back - a View, a Template, Json, a Shell, a
- * File, or null for no such page (404) - becomes Laravel's response: the
+ * File, a Redirect, or null for no such page (404) - becomes Laravel's response: the
  * request read as a Visit, the Answer made a Response (a JsonResponse for
  * JSON data, a BinaryFileResponse for a file), its caching set.
  *
@@ -47,7 +48,7 @@ final class Responder
     }
 
     /** @param array<string, mixed> $legacy a View's variables of before, for a site's own template */
-    public function respond(Request $request, View|Template|Json|Shell|File|null $result, array $legacy = [], ?Frame $frame = null): HttpResponse
+    public function respond(Request $request, View|Template|Json|Shell|File|Redirect|null $result, array $legacy = [], ?Frame $frame = null): HttpResponse
     {
         if (null === $result) {
             throw new NotFoundHttpException();
@@ -69,7 +70,10 @@ final class Responder
             $app = Container::getInstance();
             $parameters = ($request->route()?->parameters() ?? []) + ['query' => $request->query()];
 
-            return $app->make(self::class)->respond($request, $app->call([$app->make($class), $method], $parameters));
+            /** @var View|Template|Json|Shell|File|Redirect|null $result an action's result, as its signature declares it */
+            $result = $app->call([$app->make($class), $method], $parameters);
+
+            return $app->make(self::class)->respond($request, $result);
         };
     }
 
