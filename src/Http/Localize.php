@@ -25,10 +25,13 @@ final class Localize
     public function handle(Request $request, Closure $next): Response
     {
         $languages = array_map(static fn (string $locale) => substr($locale, 0, 2), (array) config('omnibridge.locales.available', []));
+        // A route of one language (a localized action's "app_timeline.fr", Routing\ActionRoutes) is that
+        // language's, whatever the visitor chose, as omnibase's LocalizerSubscriber decides.
+        $declared = $request->route('_locale');
         $chosen = substr((string) $request->cookies->get(self::COOKIE), 0, 2);
-        $language = \in_array($chosen, $languages, true)
+        $language = \is_string($declared) && '' !== $declared ? $declared : (\in_array($chosen, $languages, true)
             ? $chosen
-            : ($request->getPreferredLanguage($languages) ?? (string) config('omnibridge.locales.default', config('app.locale')));
+            : ($request->getPreferredLanguage($languages) ?? (string) config('omnibridge.locales.default', config('app.locale'))));
         app()->setLocale(substr($language, 0, 2));
 
         return $next($request);

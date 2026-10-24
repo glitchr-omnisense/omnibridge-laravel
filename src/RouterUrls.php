@@ -4,6 +4,7 @@ namespace Omnibridge\Laravel;
 
 use Illuminate\Support\Facades\Route;
 use Omnibridge\Contract\Urls;
+use Omnibridge\Laravel\Routing\LocalizedNames;
 
 /**
  * Addresses answered by Laravel: a route by its name through Laravel's
@@ -15,6 +16,11 @@ use Omnibridge\Contract\Urls;
  * A route Laravel does not have may be answered elsewhere (elsewhere()): an
  * application that serves part of a site gives the other part's addresses.
  * Without that, an unknown route is Laravel's error.
+ *
+ * Names may be read as omnibase's router reads them (localized()): a route
+ * declared once per language, or in a version without a destination, by its
+ * name alone (Routing\LocalizedNames: "app_timeline" is "app_timeline.fr" on
+ * a French page).
  *
  * omniscient/omnibridge's Urls (omnibase's Base\Contract\Urls and omnibridge/twig's
  * by their former names): one object answers the templates' path(), url(), asset()
@@ -31,6 +37,7 @@ final class RouterUrls implements Urls
     public function __construct(
         private readonly ?\Closure $elsewhere = null,
         private readonly ?string $manifestFile = null,
+        private readonly ?string $fallbackLocale = null,
     ) {
     }
 
@@ -41,14 +48,24 @@ final class RouterUrls implements Urls
      */
     public function elsewhere(\Closure $elsewhere): self
     {
-        return new self($elsewhere, $this->manifestFile);
+        return new self($elsewhere, $this->manifestFile, $this->fallbackLocale);
+    }
+
+    /**
+     * The same addresses, a name read as omnibase's router reads it (in the
+     * page's language, then without a destination, then in $fallbackLocale).
+     */
+    public function localized(string $fallbackLocale = 'en'): self
+    {
+        return new self($this->elsewhere, $this->manifestFile, $fallbackLocale);
     }
 
     public function path(string $name, array $parameters = []): string
     {
         $parameters = array_filter($parameters, static fn ($value) => null !== $value);
-        if (Route::has($name) || null === $this->elsewhere) {
-            return route($name, $parameters, false);
+        $resolved = $this->resolve($name);
+        if (null !== $resolved || null === $this->elsewhere) {
+            return route($resolved ?? $name, $parameters, false);
         }
 
         return ($this->elsewhere)($name, $parameters, app()->getLocale());
@@ -60,6 +77,19 @@ final class RouterUrls implements Urls
         $path = $this->path($name, $parameters);
 
         return str_starts_with($path, '/') ? request()->getSchemeAndHttpHost().$path : $path;
+    }
+
+    /** The route a name means here, null for none. */
+    public function resolve(string $name): ?string
+    {
+        if (Route::has($name)) {
+            return $name;
+        }
+        if (null === $this->fallbackLocale) {
+            return null;
+        }
+
+        return LocalizedNames::resolve($name, app()->getLocale(), array_keys(Route::getRoutes()->getRoutesByName()), $this->fallbackLocale);
     }
 
     public function asset(string $path): string

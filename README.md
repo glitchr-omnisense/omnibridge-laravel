@@ -97,10 +97,33 @@ whose pages carry more (a page context, what it adds once rendered) binds its ow
 `Base\Screen\Negotiation`, rendering `Negotiation::PAGE` (a page), `PART` (a value of a
 JSON answer) and `ALONE` (a page whole, its own markup only) each its way.
 
+**Routes and bindings from the attributes.** The routes an application's actions declare -
+symfony/routing's `#[Route]` on the action, the declaration Symfony's router reads on the same
+class - are registered here by `Routing\ActionRoutes`, through symfony/routing's own attribute
+loader: the same names, localized paths (`app_timeline.fr` and its `_locale`, which
+`Http\Localize` takes for the page's language), requirements, optional parameters, priorities
+(registered in the order Symfony matches them) and environments (Laravel's `local`, `testing`,
+`production` are Symfony's `dev`, `test`, `prod`). A route naming no method answers GET and
+HEAD. `RouterUrls::localized()` reads a name as omnibase's router does (`app_timeline` is
+`app_timeline.fr` on a French page, a version without a destination `name.default`, a language
+the routes lack the fallback's). The services an application aliases with Symfony's
+`#[AsAlias]` are bound by `Container\Aliases` (read by the attribute's name: no
+symfony/dependency-injection needed), the core's repositories by their interfaces from
+omnibase's own list (`Base\Repository\Aliases`):
+
+```php
+use Omnibridge\Laravel\Routing\ActionRoutes;
+
+// routes/web.php: the application's actions and omnibase's.
+ActionRoutes::register(app('router'), ActionRoutes::load([base_path('src/Action'), base_path('vendor/omniscient/omnibase/src/Controller/Action')], ActionRoutes::environment(app()->environment())));
+
+// a service provider: Aliases::bind($this->app, Aliases::read(['App\\Repository\\' => base_path('src/Repository')]));
+```
+
 **Language.** omnibase's language under Laravel, as its LocalizerSubscriber and
 LocalizerController give it under Symfony: `Http\Localize` (the web group's middleware: the
 LANG cookie, else the browser's language among `omnibridge.locales.available`, else
-`omnibridge.locales.default`) and `Http\SwitchLocale` (`Route::get('/locale/{_locale?}',
+`omnibridge.locales.default`; a route of one language is that language's) and `Http\SwitchLocale` (`Route::get('/locale/{_locale?}',
 SwitchLocale::class)->name('_switch_locale')`: the choice kept as Symfony writes it, en_GB, and
 back to the page it came from on the site). Leave LANG out of the encrypted cookies.
 

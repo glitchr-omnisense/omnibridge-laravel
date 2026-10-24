@@ -294,6 +294,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
                 $app->singleton($abstract, static fn (Application $app) => self::repository($app->make(EntityManagerInterface::class), $abstract));
             }
         });
+        // The core's repositories by their interfaces, as Symfony aliases them: omnibase's own list
+        // (Base\Repository\Aliases, R27; an application's own are its #[AsAlias], Container\Aliases).
+        if (class_exists(\Base\Repository\Aliases::class)) {
+            Container\Aliases::bind($this->app, \Base\Repository\Aliases::INTERFACES);
+        }
         // What the mapping registered (its registry, reader, repositories), once the entity manager is built.
         $this->app->singleton(Mapping::class, function (Application $app) {
             $app->make(EntityManagerInterface::class);
