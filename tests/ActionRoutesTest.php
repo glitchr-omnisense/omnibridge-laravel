@@ -87,6 +87,23 @@ final class ActionRoutesTest extends TestCase
         $this->assertSame('dev', $this->getJson('/pair/dev')->json());
     }
 
+    /**
+     * An action posted to is given what was posted (R29: `$body`, the JSON object, else the form's fields, as
+     * omnibase's ActionArguments gives it under Symfony), and checks its token itself: Laravel's CSRF middleware
+     * is not on its route (it is on the others).
+     */
+    public function testAnActionPostedToGetsItsBodyAndChecksItsOwnToken(): void
+    {
+        $this->routes('dev');
+
+        $this->assertSame(['token' => 'abc', 'id' => 3], $this->postJson('/pair/posted', ['token' => 'abc', 'id' => 3])->json());
+        $this->assertSame(['_token' => 'abc'], $this->post('/pair/posted', ['_token' => 'abc'])->json());
+        $router = app('router');
+        $this->assertInstanceOf(Router::class, $router);
+        $this->assertContains('Illuminate\\Foundation\\Http\\Middleware\\PreventRequestForgery', $router->getRoutes()->getByName('pair_posted')?->excludedMiddleware() ?? []);
+        $this->assertSame([], $router->getRoutes()->getByName('pair_one')?->excludedMiddleware());
+    }
+
     public function testANameIsReadAsOmnibasesRouterReadsIt(): void
     {
         $this->routes();

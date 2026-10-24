@@ -2,7 +2,9 @@
 
 namespace Omnibridge\Laravel\View;
 
+use Base\Bridge\Symfony\AccountScreens;
 use Base\Contract\Texts;
+use Base\Screen\Builder\Accounts;
 use Base\Demo\DemoMode;
 use Base\Repository\User\Notifications;
 use Base\Service\Icons;
@@ -12,6 +14,7 @@ use Base\Service\Model\IconProvider\Adapter\FontAwesomeAdapter;
 use Base\Service\Push\WebPushService;
 use Base\Service\Obfuscator;
 use Base\Service\ThemizerInterface;
+use Base\Twig\Extension\AccountTwigExtension;
 use Base\Twig\Extension\ClassTwigExtension;
 use Base\Twig\Extension\DemoTwigExtension;
 use Base\Twig\Extension\DeployVersionExtension;
@@ -38,6 +41,7 @@ use Omnibridge\Laravel\Screen\WysiwygTexts;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Extension\ExtensionInterface;
+use Twig\RuntimeLoader\FactoryRuntimeLoader;
 
 /**
  * omnibase's own Twig extensions in a Laravel page (audit "lesringostars face
@@ -98,6 +102,17 @@ final class OmnibaseExtensions
             if (!$twig->hasExtension($extension::class)) {
                 $twig->addExtension($extension);
             }
+        }
+        // account_profile(user) (AccountTwigExtension): a member's profile as its view model, by omnibase's builder
+        // over the contracts (AccountScreens, the extension's runtime), for a page rendering the core's profile template.
+        if (self::available() && class_exists(AccountTwigExtension::class) && !$twig->hasExtension(AccountTwigExtension::class)) {
+            $app = $this->app;
+            $twig->addExtension(new AccountTwigExtension());
+            $twig->addRuntimeLoader(new FactoryRuntimeLoader([AccountScreens::class => static fn (): AccountScreens => new AccountScreens(
+                new Accounts($app->bound(self::POLICY) ? $app->make(self::POLICY) : null, $app->make(Urls::class), $app->make(Tokens::class)),
+                $twig,
+                $app->make(Access::class),
+            )]));
         }
 
         return $twig;

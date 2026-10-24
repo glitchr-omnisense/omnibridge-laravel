@@ -19,6 +19,7 @@ use Omnibridge\Contract\Urls;
 use Omnibridge\Laravel\Auth\Controllers\SignIn;
 use Omnibridge\Laravel\Auth\Listener\WelcomeFlash;
 use Omnibridge\Laravel\Mail\LaravelMailer;
+use Omnibridge\Laravel\Page\SessionView;
 use Omnibridge\Laravel\Parameters\DatabaseSettings;
 use Omnibridge\Laravel\Shield\ShieldServiceProvider;
 use Psr\Cache\CacheItemPoolInterface;
@@ -187,6 +188,30 @@ final class OmnibaseEffects
             static fn (): bool => (bool) self::request($app)?->cookies->has('base_2fa_offer'),
             $app->make(self::MAILS),
         ));
+        // The account's actions that tell the account what they did (omnibase's, R29: the enrolment page's "not now",
+        // the e-mailed code turned on or off): by a flash, as omnibase's Notifier flashes it under Symfony, in the
+        // visitor's language.
+        $notice = static function (string $label, string $message) use ($app): void {
+            SessionView::add($app->make(Session::class), $label, $app->make(Translations::class)->trans($message, [], null, $app->getLocale()));
+        };
+        if (class_exists('Base\Controller\Action\Settings\EnrolmentSkip')) {
+            $app->bind('Base\Controller\Action\Settings\EnrolmentSkip', static fn (Application $app) => new \Base\Controller\Action\Settings\EnrolmentSkip(
+                $app->make(\Omnibridge\Contract\Access::class),
+                $app->make(\Omnibridge\Contract\Tokens::class),
+                $app->make(self::POLICY),
+                $app->make(Urls::class),
+                $app->make(State::class),
+                $notice,
+            ));
+            $app->bind('Base\Controller\Action\Settings\EmailCodeToggle', static fn (Application $app) => new \Base\Controller\Action\Settings\EmailCodeToggle(
+                $app->make(\Omnibridge\Contract\Access::class),
+                $app->make(\Omnibridge\Contract\Tokens::class),
+                $app->make(self::POLICY),
+                $app->make(Urls::class),
+                $app->make('Base\Repository\Users'),
+                $notice,
+            ));
+        }
         $app->singleton('Base\Auth\Listener\WelcomeBack', static fn (Application $app) => new \Base\Auth\Listener\WelcomeBack($app->make(EntityManagerInterface::class), null, $app->make(self::MAILS)));
         if (class_exists(self::CAPTCHA) && class_exists('Omnishield\Registry')) {
             $app->singleton('Base\Auth\Listener\GuardSignIn', static fn (Application $app) => new \Base\Auth\Listener\GuardSignIn(
@@ -261,11 +286,35 @@ final class OmnibaseEffects
         if (!\is_string($uniqid) || '' === $uniqid) {
             $uniqid = uniqid('', true);
             $session->put('PHPUSERID', $uniqid);
-            // As Symfony's setcookie(): for the browser's session, the whole site, readable by the page.
-            $app->make(Cookies::class)->queue(Cookie::create('PHPUSERID', $uniqid, 0, '/', null, false, false, false, null));
+            // As Symfony's setcookie(): for the browser's session, the whole site, readable by the page, and the
+            // domain omnibase's router gives its cookies (base.router's host fallbacks: CookieDomain).
+            $app->make(Cookies::class)->queue(Cookie::create('PHPUSERID', $uniqid, 0, '/', self::cookieDomain($app, $request), false, false, false, null));
         }
 
         return $uniqid;
+    }
+
+    /**
+     * The domain of omnibase's site-wide cookies for this request: Base\Routing\CookieDomain's rule (AdvancedRouter::getDomain()
+     * under Symfony) on base.router.use_fallbacks and base.router.host_fallbacks, as the application's config gives them;
+     * the request's host alone (no Domain attribute) where the application configures no router (no base.router.use_fallbacks)
+     * or with a core that has no such rule.
+     */
+    public static function cookieDomain(Application $app, ?Request $request): ?string
+    {
+        if (!class_exists('Base\Routing\CookieDomain') || null === $request) {
+            return null;
+        }
+        $config = $app->make(Config::class);
+        if (!$config->has('base.router.use_fallbacks')) {
+            return null;
+        }
+        $fallbacks = $config->get('base.router.host_fallbacks', []);
+        $locale = $app->getLocale();
+        $default = $config->get('app.locale');
+        $locales = array_values(array_filter([$locale, explode('-', str_replace('_', '-', $locale))[0], $default, \is_string($default) ? explode('-', str_replace('_', '-', $default))[0] : null], 'is_string'));
+
+        return \Base\Routing\CookieDomain::of($request->getUri(), \Base\Routing\CookieDomain::domains((bool) $config->get('base.router.use_fallbacks', false), \is_array($fallbacks) ? $fallbacks : [], $locales));
     }
 
     private static function twig(Application $app, Environment $twig): void

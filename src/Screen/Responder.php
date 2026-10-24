@@ -39,7 +39,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *     Route::get('/{destination}/articles/{slug}', Responder::action(Article::class))->name('app_article');
  *
  * The action's parameters are the route's by name, `$query` the query
- * string's values, its services the container's.
+ * string's values, `$body` what a POST sent (its JSON object, else its form
+ * fields: step R29), its services the container's.
  */
 final class Responder
 {
@@ -59,7 +60,8 @@ final class Responder
 
     /**
      * A route's action: the class (or a method of it) called with the route's
-     * parameters by name, `query` the query string's values, its other
+     * parameters by name, `query` the query string's values, `body` the
+     * posted values, its other
      * parameters from the container; its result answered.
      *
      * @param class-string $class
@@ -68,13 +70,26 @@ final class Responder
     {
         return static function (Request $request) use ($class, $method): HttpResponse {
             $app = Container::getInstance();
-            $parameters = ($request->route()?->parameters() ?? []) + ['query' => $request->query()];
+            $parameters = ($request->route()?->parameters() ?? []) + ['query' => $request->query(), 'body' => self::body($request)];
 
             /** @var View|Template|Json|Shell|File|Redirect|null $result an action's result, as its signature declares it */
             $result = $app->call([$app->make($class), $method], $parameters);
 
             return $app->make(self::class)->respond($request, $result);
         };
+    }
+
+    /**
+     * What a request's body carries, as omnibase's ActionArguments gives it under Symfony: its JSON object
+     * (a script's request), else its form fields.
+     *
+     * @return array<string, mixed>
+     */
+    public static function body(Request $request): array
+    {
+        $values = json_decode((string) $request->getContent(), true);
+
+        return array_filter(\is_array($values) ? $values : $request->request->all(), '\is_string', \ARRAY_FILTER_USE_KEY);
     }
 
     /** What the client asked, off Laravel's request. */

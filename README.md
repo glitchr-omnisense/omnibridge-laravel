@@ -91,8 +91,10 @@ use Omnibridge\Laravel\Screen\Responder;
 Route::get('/{destination}/articles/{slug}', Responder::action(App\Action\Blog\Article::class))->name('app_article');
 ```
 
-The action's parameters are the route's by name, `$query` the query string's values, the
-rest the container's. The templates are rendered by the container's Twig; an application
+The action's parameters are the route's by name, `$query` the query string's values, `$body`
+what a POST sent (its JSON object, else its form fields), the rest the container's. An action
+that changes something checks its form's token itself, through the `Tokens` contract, as under
+Symfony: Laravel's CSRF middleware is left off the routes of the actions that are not GET. The templates are rendered by the container's Twig; an application
 whose pages carry more (a page context, what it adds once rendered) binds its own
 `Base\Screen\Negotiation`, rendering `Negotiation::PAGE` (a page), `PART` (a value of a
 JSON answer) and `ALONE` (a page whole, its own markup only) each its way.
@@ -231,7 +233,12 @@ decorates its store.
   `oauth_google_check`, `security_logout`, `security_logoutRequest`...), in the web
   group; `omniauth.routes` false to declare them yourself.
 - `Auth\Middleware\SecondFactorPending` (appended to the web group, before `auth`)
-  keeps a visitor between two factors on the second factor's page; `Auth\Roles`
+  keeps a visitor between two factors on the second factor's page; with omnibase's sign-in
+  effects, `Auth\Middleware\EnrolmentPrompt` sends a signed-in account to the second factor's
+  enrolment page as omnibase's `SecurityEnrolmentSubscriber` does under Symfony (its rule,
+  `Base\Auth\EnrolmentPrompt`: the offer after a new device, a required second factor until
+  "not now"), and the browser's PHPUSERID is written for the domain omnibase's router gives its
+  cookies (`Base\Routing\CookieDomain` on `base.router.use_fallbacks` and `host_fallbacks`); `Auth\Roles`
   answers Security's attributes through `Gate::before()` - `ROLE_*` with
   `omniauth.role_hierarchy`, `IS_AUTHENTICATED_FULLY`, `IS_AUTHENTICATED_REMEMBERED`,
   `IS_AUTHENTICATED_2FA_IN_PROGRESS`, `PUBLIC_ACCESS` - so `is_granted()` and the

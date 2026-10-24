@@ -59,6 +59,9 @@ final class ActionRoutes
         return self::ENVIRONMENTS[$laravel] ?? $laravel;
     }
 
+    /** Laravel's CSRF middleware, by the names its versions give it (PreventRequestForgery in the web group of recent versions). */
+    private const CSRF = ['Illuminate\Foundation\Http\Middleware\PreventRequestForgery', 'Illuminate\Foundation\Http\Middleware\ValidateCsrfToken', 'Illuminate\Foundation\Http\Middleware\VerifyCsrfToken'];
+
     /** Each route of the collection in Laravel's router, in the collection's order. */
     public static function register(Router $router, RouteCollection $routes): void
     {
@@ -123,6 +126,12 @@ final class ActionRoutes
         }
         if ('' !== $route->getHost()) {
             $laravel->domain($route->getHost());
+        }
+        // An action that changes something checks its form's token itself, through the Tokens contract (the session's
+        // token here), as it must under Symfony, which has no CSRF middleware: Laravel's would answer 419 first - to a
+        // visitor the action sends to sign in, to a script that sends its token in a JSON body (the bell's marks, R29).
+        if ([] !== array_diff($route->getMethods(), ['GET', 'HEAD', 'OPTIONS'])) {
+            $laravel->withoutMiddleware(self::CSRF);
         }
     }
 
