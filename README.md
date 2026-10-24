@@ -357,6 +357,23 @@ another host's cache read only), `Omnimap\MapPrinter` and omnibridge/twig's
 server serves them). Capturing and deleting a picture is omnibridge/symfony's
 (`routes.export.name`, `routes.suppress.name` name them for the buttons).
 
+## Static export (omnibridge/static)
+
+Where omnibridge/static is installed, `OmnibridgeServiceProvider` registers
+the artisan command `omnibridge:static:build`: omnibridge/static's own command
+line (`Console\Cli`), handed a renderer through the application's HTTP kernel
+(each page a visitor's GET, at `--render-origin`, by default `app.url`), the
+container, `public/` and, with `--actions`, the routes the actions of those
+folders declare (`Routing\ActionRoutes`).
+
+```sh
+php artisan omnibridge:static:build static.php --out=storage/static --actions='App\Action\=src/Action'
+```
+
+Run on lesringostars-laravel (2026-10-24, the working copy loaded by hand): the
+twin's home, intro, destinations, two articles and the travels pages rendered
+by Laravel and written, the routes read from lesringostars' actions.
+
 ## Tests
 
 ```sh

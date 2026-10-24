@@ -213,6 +213,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         }
 
         $this->publishes([__DIR__.'/../config/omnibridge.php' => config_path('omnibridge.php')], 'omnibridge-config');
+
+        // omnibridge/static's build as an artisan command, where it is installed (php artisan omnibridge:static:build).
+        if ($this->app->runningInConsole() && class_exists(\Omnibridge\Static\Console\Cli::class)) {
+            $this->commands([Static\BuildCommand::class]);
+        }
     }
 
     /**
