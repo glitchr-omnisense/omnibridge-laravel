@@ -29,6 +29,13 @@ final class LocaleTest extends TestCase
         $this->assertSame('fr', $this->withUnencryptedCookie(Localize::COOKIE, 'ja_JP')->get('/page', ['Accept-Language' => 'ja'])->getContent(), 'a choice the site does not speak: not a choice');
     }
 
+    public function testTheLanguageShownIsRememberedForTheNextPage(): void
+    {
+        $this->get('/page', ['Accept-Language' => 'de-DE'])->assertPlainCookie(Localize::COOKIE, 'de-DE');
+        $kept = $this->withUnencryptedCookie(Localize::COOKIE, 'de-DE')->get('/page', ['Accept-Language' => 'de-DE']);
+        $this->assertSame([], $kept->headers->getCookies(), 'already remembered: nothing written');
+    }
+
     public function testTheLanguageMenuKeepsTheChoiceAndGoesBack(): void
     {
         $this->withHeader('Referer', 'http://localhost/japon/articles?page=2')->get('/locale/en')

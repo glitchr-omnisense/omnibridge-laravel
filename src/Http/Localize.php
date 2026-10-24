@@ -4,6 +4,7 @@ namespace Omnibridge\Laravel\Http;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -11,7 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
  * under Symfony: the visitor's choice (the LANG cookie SwitchLocale sets),
  * else the browser's preferred language among the site's
  * (omnibridge.locales.available), else the site's default
- * (omnibridge.locales.default) - Laravel's locale, its language (fr).
+ * (omnibridge.locales.default) - Laravel's locale, its language (fr); a
+ * route of one language is that language's. The language shown is
+ * remembered in LANG for the next page, as Symfony writes it (en-GB).
  *
  * In the web group of an omnibase site under Laravel (bootstrap/app.php:
  * $middleware->web(append: [Localize::class])), the LANG cookie left
@@ -34,6 +37,45 @@ final class Localize
             : ($request->getPreferredLanguage($languages) ?? (string) config('omnibridge.locales.default', config('app.locale'))));
         app()->setLocale(substr($language, 0, 2));
 
-        return $next($request);
+        $response = $next($request);
+        if (!$response instanceof Response) {
+            throw new \LogicException('The page gave no response.');
+        }
+        // The language the page was shown in, remembered for the next one, as LocalizerSubscriber's
+        // onKernelResponse() writes it (the site's locale, en-GB) - unless the page set it itself (a
+        // change of language): after a page of one language (/japon/travels) the next is in it too.
+        $displayed = self::locale(substr($language, 0, 2), (array) config('omnibridge.locales.available', []));
+        if ($request->cookies->get(self::COOKIE) !== $displayed && !self::sets($response)) {
+            $response->headers->setCookie(Cookie::create(self::COOKIE, $displayed, 0, '/', null, $request->isSecure(), false, false, Cookie::SAMESITE_LAX));
+        }
+
+        return $response;
+    }
+
+    /**
+     * The site's locale of a language (en-GB for en), as omnibridge.locales.available names it.
+     *
+     * @param array<array-key, mixed> $available
+     */
+    private static function locale(string $language, array $available): string
+    {
+        foreach ($available as $locale) {
+            if (\is_string($locale) && str_starts_with($locale, $language)) {
+                return $locale;
+            }
+        }
+
+        return $language;
+    }
+
+    private static function sets(Response $response): bool
+    {
+        foreach ($response->headers->getCookies() as $cookie) {
+            if (self::COOKIE === $cookie->getName()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
