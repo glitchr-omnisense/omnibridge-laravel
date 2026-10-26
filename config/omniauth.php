@@ -1,7 +1,7 @@
 <?php
 
 // omnibridge/laravel's sign-in through omniauth (Omnibridge\Laravel\Auth\, plan "omniauth" §3.2,
-// step AU8), on when config/omnibridge.php says 'auth' => true and omniscient/omniauth is
+// step AU8), on when config/omnibridge.php says 'auth' => true and omnisense/omniauth is
 // installed. The same keys as omnibridge/symfony's config/packages/omniauth.yaml, so one site
 // says the same thing under both hosts: each method's key turns it on (null: off); a method
 // whose package is missing (omniauth/webauthn, omniauth/otp, an identity provider's own: omniauth/google) cannot be.

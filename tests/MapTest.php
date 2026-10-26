@@ -36,7 +36,7 @@ final class MapTest extends TestCase
         $config->set('omnimap', [
             'provider' => 'openstreetmap',
             'secret' => 'c2VjcmV0',
-            'providers' => ['openstreetmap' => ['user_agent' => 'omnibridge-tests/1.0 (+https://github.com/glitchr-studio/omnibridge-laravel)']],
+            'providers' => ['openstreetmap' => ['user_agent' => 'omnibridge-tests/1.0 (+https://github.com/glitchr-omnisense/omnibridge-laravel)']],
             'cache' => ['drive' => 'local.uploads', 'directory' => 'google', 'size' => '600x400'],
             'html' => ['class' => 'google-tilemap', 'suffix' => '_html2canvas'],
             'routes' => ['tile' => ['path' => '/google/{signature}/{id}.webp', 'name' => 'gm_show']],

@@ -36,7 +36,7 @@ final class OmnibaseTwigTest extends TestCase
         $config = $app['config'];
         \assert($config instanceof \Illuminate\Contracts\Config\Repository);
         $config->set('omnibridge.theme', ['modes' => ['auto' => ['id' => 'auto'], 'dark' => ['id' => 'dark']], 'filters' => [], 'no_filter' => ['id' => null]]);
-        $config->set('omnibridge.icons.metadata', \dirname(__DIR__).'/vendor/omniscient/omnibase/public/metadata');
+        $config->set('omnibridge.icons.metadata', \dirname(__DIR__).'/vendor/omnisense/omnibase/public/metadata');
     }
 
     private function application(): \Illuminate\Foundation\Application
@@ -49,7 +49,7 @@ final class OmnibaseTwigTest extends TestCase
     public function testTheContainersEnvironmentHasOmnibasesExtensions(): void
     {
         if (!OmnibaseExtensions::available()) {
-            self::markTestSkipped('omniscient/omnibase before R24: no framework-free Twig extensions.');
+            self::markTestSkipped('omnisense/omnibase before R24: no framework-free Twig extensions.');
         }
         $twig = $this->application()->make(Environment::class);
 
@@ -73,7 +73,7 @@ final class OmnibaseTwigTest extends TestCase
     public function testTheCookieAnswerOnTheSitesConfiguration(): void
     {
         if (!OmnibaseExtensions::available() || !class_exists(\Base\Consent\ConsentConfig::class)) {
-            self::markTestSkipped('omniscient/omnibase before R24, or omnibase/consent not installed.');
+            self::markTestSkipped('omnisense/omnibase before R24, or omnibase/consent not installed.');
         }
         $config = $this->application()->make('config');
         \assert($config instanceof \Illuminate\Contracts\Config\Repository);
@@ -101,7 +101,7 @@ final class OmnibaseTwigTest extends TestCase
     public function testARecordsBackOfficePageWhereTheRoutesAreAnswered(): void
     {
         if (!OmnibaseExtensions::available()) {
-            self::markTestSkipped('omniscient/omnibase before R24: no AdminLinks.');
+            self::markTestSkipped('omnisense/omnibase before R24: no AdminLinks.');
         }
         $elsewhere = new class implements Routes {
             public function pattern(string $name): ?string { return 'admin_crud_articles_edit' === $name ? '/admin/articles/{entityId}/edit' : null; }

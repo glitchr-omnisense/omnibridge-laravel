@@ -15,7 +15,7 @@ final class CookieDomainTest extends TestCase
     public function testTheRulesDomainOnTheConfiguredDomains(): void
     {
         if (!class_exists('Base\\Routing\\CookieDomain')) {
-            self::markTestSkipped('omniscient/omnibase without Base\\Routing\\CookieDomain (before 4.x of R29).');
+            self::markTestSkipped('omnisense/omnibase without Base\\Routing\\CookieDomain (before 4.x of R29).');
         }
         $app = $this->app;
         $this->assertNotNull($app);

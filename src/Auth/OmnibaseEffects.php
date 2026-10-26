@@ -68,7 +68,7 @@ final class OmnibaseEffects
     /** The cookies omnibase writes and reads plain (UserTracker::PHPUSERID, SecurityPolicy::COOKIE_NEW_DEVICE_PROMPT_DISMISSED). */
     public const PLAIN_COOKIES = ['PHPUSERID', 'base_2fa_offer'];
 
-    /** Whether the stores are omnibase's and its sign-in's classes are there (omniscient/omnibase 4.x with AU8b). */
+    /** Whether the stores are omnibase's and its sign-in's classes are there (omnisense/omnibase 4.x with AU8b). */
     public static function on(Application $app): bool
     {
         return 'omnibase' === $app->make(Settings::class)->stores && class_exists(self::TRACKER) && class_exists('Base\Auth\Listener\TrackConnections');

@@ -2,16 +2,16 @@
 
 ```sh
 composer config allow-plugins.omnibridge/composer true
-composer require omniscient/omnibase:4.x-dev omnibridge/laravel:1.x-dev
+composer require omnisense/omnibase:4.x-dev omnibridge/laravel:1.x-dev
 php artisan vendor:publish --tag=omnibridge-config
 ```
 
-That hosts [omniscient/omnibase](https://github.com/glitchr-studio/omnibase) in a
+That hosts [omnisense/omnibase](https://github.com/glitchr-omnisense/omnibase) in a
 Laravel application: the provider is discovered by Laravel, binds each contract of
 omnibase's Foundation to Laravel's services, and hands Laravel's container to the
-Foundation's registry, `Base\Contract\Runtime` (omniscient/omnibridge's
+Foundation's registry, `Base\Contract\Runtime` (omnisense/omnibridge's
 `Omnibridge\Runtime` with omnibase's accessors). The host's contracts are
-[omniscient/omnibridge](https://github.com/glitchr-studio/omnibridge)'s
+[omnisense/omnibridge](https://github.com/glitchr-omnisense/omnibridge)'s
 (`Omnibridge\Contract\*`), bound under their own names; their former names
 (`Base\Contract\Urls`..., omnibridge/twig's) are Laravel aliases of them until
 omnibase 4's final pass, the same binding under either. omnibase's framework-free code -
@@ -119,7 +119,7 @@ use Omnibridge\Laravel\Routing\ActionRoutes;
 // routes/web.php: the application's actions and omnibase's.
 ActionRoutes::register(app('router'), ActionRoutes::load([
     'App\\Action\\' => base_path('src/Action'),
-    'Base\\Controller\\Action\\' => base_path('vendor/omniscient/omnibase/src/Controller/Action'),
+    'Base\\Controller\\Action\\' => base_path('vendor/omnisense/omnibase/src/Controller/Action'),
 ], ActionRoutes::environment(app()->environment())));
 
 // a service provider: Aliases::bind($this->app, Aliases::read(['App\\Repository\\' => base_path('src/Repository')]));
@@ -165,7 +165,7 @@ which its theme menus read: `Base\Twig\Extension\MenuTwigExtension`), `Form\Form
 a library that asks for one).
 
 omnibase's own Twig extensions in every page (`View\OmnibaseExtensions`, with
-omniscient/omnibase 4 from its framework-free extensions): the container's
+omnisense/omnibase 4 from its framework-free extensions): the container's
 `Twig\Environment` gets the classes the core registers under Symfony - the menus,
 `EnumTwigExtension` (`enum()`, `|colorify`, `|trans_enum`), `PictureTwigExtension`
 (`image()`, `|thumbnail`, `|soundify`, `|mimetype`... with `omnibridge.media` on),
@@ -193,7 +193,7 @@ Routes, as `RouterUrls::elsewhere()` their addresses.
 'providers' => ['omnibase' => ['driver' => 'omniauth']],
 ```
 
-With `omnibridge.auth` on and [omniscient/omniauth](https://github.com/glitchr-studio/omniauth)
+With `omnibridge.auth` on and [omnisense/omniauth](https://github.com/glitchr-omnisense/omniauth)
 installed (it is only suggested), `Auth\AuthServiceProvider` wires omniauth's sign-in
 under Laravel as omnibridge/symfony wires it under Symfony (plan "omniauth", §3.2, step
 AU8), from `config/omniauth.php` (`php artisan vendor:publish --tag=omniauth-config`) -
@@ -293,7 +293,7 @@ name, the vault's: `prod`, `dev`, `test` for Laravel's `production`, `local`,
 the entities read `base.uploader.storage`...), `types`, `enumerations`,
 `attribute_paths`, `resolve_target_entities`, `entity_listeners`. `app(Mapping::class)`
 gives what it registered. `OmnibaseMappingTest` checks the metadata against those
-omniscient/omnibase records from its Symfony harness, class by class.
+omnisense/omnibase records from its Symfony harness, class by class.
 
 ### omnibase's images
 
@@ -339,7 +339,7 @@ and articles from the same database and templates.
 
 ## Maps through omnimap
 
-Where omniscient/omnimap is installed (suggested), `Map\MapServiceProvider` reads
+Where omnisense/omnimap is installed (suggested), `Map\MapServiceProvider` reads
 `config/omnimap.php` - the keys of omnibridge/symfony's `omnimap.yaml` - and wires
 nothing unless it names a `provider`:
 
@@ -387,7 +387,7 @@ by Laravel and written, the routes read from lesringostars' actions.
 docker compose run --rm test
 ```
 
-PHPUnit on Orchestra Testbench (Laravel 13), PHP 8.4, omniscient/omnibase 4.x
+PHPUnit on Orchestra Testbench (Laravel 13), PHP 8.4, omnisense/omnibase 4.x
 installed from Packagist: every contract reached through `Runtime` and the
 container as one object, each answer (routes, ICU messages and `exists()`, locales,
 the gate, sign-out, the CSRF token, the clock under `travel()`, events, disks, the

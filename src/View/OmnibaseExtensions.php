@@ -73,7 +73,7 @@ use Twig\RuntimeLoader\FactoryRuntimeLoader;
  * - HostExtension: what the templates take from Symfony's bundles (Encore's
  *   tags over omnibridge.encore, stimulus_controller(), absolute_url(), |url).
  *
- * Each where the core has it (omniscient/omnibase 4 from R24) and what it
+ * Each where the core has it (omnisense/omnibase 4 from R24) and what it
  * stands on is bound. The container's Environment gets them all
  * (OmnibridgeServiceProvider); an application that renders a page in an
  * environment of its own (its globals, its forms) extends it with extend().
@@ -84,7 +84,7 @@ final class OmnibaseExtensions
     {
     }
 
-    /** Whether the core has its framework-free Twig extensions (omniscient/omnibase 4 from R24). */
+    /** Whether the core has its framework-free Twig extensions (omnisense/omnibase 4 from R24). */
     public static function available(): bool
     {
         return class_exists(EnumTwigExtension::class);

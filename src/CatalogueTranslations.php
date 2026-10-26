@@ -23,7 +23,7 @@ use Symfony\Component\Translation\Translator;
  * Without a locale given, each message is in Laravel's current one
  * (app()->getLocale()), which a middleware sets per request.
  *
- * omniscient/omnibridge's Translations (trans() and exists()), omnibase's and
+ * omnisense/omnibridge's Translations (trans() and exists()), omnibase's and
  * omnibridge/twig's by their former names.
  */
 final class CatalogueTranslations implements Translations

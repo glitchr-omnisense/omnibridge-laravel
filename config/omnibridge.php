@@ -90,7 +90,7 @@ return [
     // the "entities" catalogues (Base\Marketplace\Entity\ => marketplace\).
     'entity_namespaces' => [],
 
-    // Signing in through omniauth (plan "omniauth", step AU8; omniscient/omniauth
+    // Signing in through omniauth (plan "omniauth", step AU8; omnisense/omniauth
     // installed): true turns on Omnibridge\Laravel\Auth\ - the guard and the user
     // provider (config/auth.php: driver "omniauth"), the routes of every way in at
     // the Symfony site's addresses, the second factor's page, the sign-out - on
@@ -98,7 +98,7 @@ return [
     'auth' => false,
 
     // What omnibase's Twig extensions take from the application in its pages
-    // (View\OmnibaseExtensions, audit R24; omniscient/omnibase 4 from R24):
+    // (View\OmnibaseExtensions, audit R24; omnisense/omnibase 4 from R24):
     // - encore: the Encore builds encore_entry_link_tags() and _script_tags()
     //   read (a list of {entrypoints, manifest} files, in the order they are
     //   looked into), the breakpoints (name => media query) a stylesheet has

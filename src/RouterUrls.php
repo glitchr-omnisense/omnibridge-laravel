@@ -22,7 +22,7 @@ use Omnibridge\Laravel\Routing\LocalizedNames;
  * name alone (Routing\LocalizedNames: "app_timeline" is "app_timeline.fr" on
  * a French page).
  *
- * omniscient/omnibridge's Urls (omnibase's Base\Contract\Urls and omnibridge/twig's
+ * omnisense/omnibridge's Urls (omnibase's Base\Contract\Urls and omnibridge/twig's
  * by their former names): one object answers the templates' path(), url(), asset()
  * and Runtime::urls().
  */

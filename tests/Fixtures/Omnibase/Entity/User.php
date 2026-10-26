@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * An application's own App\Entity\User over omnibase's Base\Entity\User: the
- * omnibase harness's (docker/app/src/Entity/User.php of omniscient/omnibase),
+ * omnibase harness's (docker/app/src/Entity/User.php of omnisense/omnibase),
  * whose Symfony metadata the core records in
  * tests/Bridge/Doctrine/fixtures/doctrine-metadata.json - the class that
  * overrides a Base\ one.
