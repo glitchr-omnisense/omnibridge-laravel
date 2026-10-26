@@ -1,5 +1,5 @@
 # The test suite: docker compose run --rm test
-# omniscient/omnibase asks for extensions (imagick, igbinary, gd...) that nothing here loads: the
+# omnisense/omnibase asks for extensions (imagick, igbinary, gd...) that nothing here loads: the
 # install does without them.
 services:
   test:

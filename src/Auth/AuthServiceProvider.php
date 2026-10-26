@@ -55,7 +55,7 @@ use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 /**
  * omniauth wired into a Laravel application (plan "omniauth", §3.2, step
  * AU8), from config/omniauth.php - registered by OmnibridgeServiceProvider
- * when config/omnibridge.php says 'auth' => true and omniscient/omniauth is
+ * when config/omnibridge.php says 'auth' => true and omnisense/omniauth is
  * installed; nothing of Auth\ without both.
  *
  * The conductor (Omniauth\Omniauth) with the methods present - each key
@@ -472,7 +472,7 @@ final class AuthServiceProvider extends ServiceProvider
     /** @param array<string, mixed> $oauth */
     private function oauth(Application $app, array $oauth, ClockInterface $clock): Method
     {
-        self::needs('Omniauth\OAuth\OAuthMethod', 'omniscient/omniauth 1.x with Omniauth\\OAuth\\ (2026-10-23)', 'oauth');
+        self::needs('Omniauth\OAuth\OAuthMethod', 'omnisense/omniauth 1.x with Omniauth\\OAuth\\ (2026-10-23)', 'oauth');
         $byEmail = $oauth['link_by_email'] ?? null;
         if (null === $byEmail) {
             $class = 'Omniauth\OAuth\NoSecondFactorLinking';

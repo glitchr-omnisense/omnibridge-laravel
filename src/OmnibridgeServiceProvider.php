@@ -63,13 +63,13 @@ use Symfony\Component\Mailer\MailerInterface;
 use Twig\Environment;
 
 /**
- * omniscient/omnibase hosted by Laravel: each contract of its Foundation bound
+ * omnisense/omnibase hosted by Laravel: each contract of its Foundation bound
  * to Laravel's services under the contract's interface, and the Foundation's
- * registry (Base\Contract\Runtime, omniscient/omnibridge's Omnibridge\Runtime)
+ * registry (Base\Contract\Runtime, omnisense/omnibridge's Omnibridge\Runtime)
  * on Laravel's container, so that Runtime::urls(), ::parameters()... and
  * app(Urls::class) are one object.
  *
- * The host's contracts are omniscient/omnibridge's (Omnibridge\Contract\*), bound
+ * The host's contracts are omnisense/omnibridge's (Omnibridge\Contract\*), bound
  * under their own names (their former names, Base\Contract\Urls... and
  * omnibridge/twig's, were removed at omnibase 4's final pass). omnibase's own
  * (Nouns, Pictures, Texts, the parameters, the screen context) keep Base\.
@@ -128,7 +128,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         ));
         $this->app->singleton(Host\Routes::class, fn (Application $app) => new RouterRoutes($app->make('router')));
         $this->app->singleton(Host\Files::class, fn (Application $app) => new DiskFiles($app->make('filesystem'), $app['config']->get('omnibridge.storages', [])));
-        // The storages as omniscient/omnidrive's drives: each disk's Flysystem operator, by the name
+        // The storages as omnisense/omnidrive's drives: each disk's Flysystem operator, by the name
         // omnibridge.storages maps to it, else by the disk's own name.
         if (class_exists(OperatorDrives::class)) {
             $this->app->singleton(OperatorDrives::class, fn (Application $app) => new OperatorDrives(self::diskStorages($app)));
@@ -162,13 +162,13 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->registerParameters();
         $this->registerDoctrine();
         $this->registerTwig();
-        // Signing in through omniauth (plan "omniauth", step AU8), where omniscient/omniauth is
+        // Signing in through omniauth (plan "omniauth", step AU8), where omnisense/omniauth is
         // installed: Auth\AuthServiceProvider, which wires nothing unless omnibridge.auth is on
         // (the configuration may be set after the providers register: Testbench's defineEnvironment).
         if (class_exists(\Omniauth\Omniauth::class)) {
             $this->app->register(Auth\AuthServiceProvider::class);
         }
-        // Maps through omnimap, where omniscient/omnimap is installed: Map\MapServiceProvider, which
+        // Maps through omnimap, where omnisense/omnimap is installed: Map\MapServiceProvider, which
         // wires nothing unless config/omnimap.php names a provider.
         if (class_exists(\Omnimap\Registry::class)) {
             $this->app->register(Map\MapServiceProvider::class);

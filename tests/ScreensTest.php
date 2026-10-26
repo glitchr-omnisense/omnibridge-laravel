@@ -28,7 +28,7 @@ final class ScreensTest extends TestCase
     protected function defineEnvironment($app): void
     {
         parent::defineEnvironment($app);
-        $app['config']->set('omnibridge.twig.paths', [[self::FIXTURES.'/templates', null], [\dirname(__DIR__).'/vendor/omniscient/omnibase/src/Resources/views', 'Base']]);
+        $app['config']->set('omnibridge.twig.paths', [[self::FIXTURES.'/templates', null], [\dirname(__DIR__).'/vendor/omnisense/omnibase/src/Resources/views', 'Base']]);
     }
 
     public function testRuntimeGivesTheScreensContracts(): void

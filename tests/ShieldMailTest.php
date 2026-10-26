@@ -66,7 +66,7 @@ final class ShieldMailTest extends TestCase
     public function testTheGatewaysOfConfigOmnishieldAndAltchasScript(): void
     {
         if (!class_exists(Registry::class)) {
-            self::markTestSkipped('omniscient/omnishield is not installed.');
+            self::markTestSkipped('omnisense/omnishield is not installed.');
         }
         $registry = $this->container()->make(Registry::class);
         self::assertTrue($registry->has('forms'));

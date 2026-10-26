@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * under Symfony, keeps omnibase's Base/App invariants (master plan §5):
  *
  * 1. an application's own App\ class wins over the convention's alias;
- * 4. the metadata are Symfony's, overrides included - those omniscient/omnibase
+ * 4. the metadata are Symfony's, overrides included - those omnisense/omnibase
  *    records from its harness's Symfony application (its
  *    tests/Bridge/Doctrine/fixtures/doctrine-metadata.json, kept equal to
  *    DoctrineBundle's by its HandBuiltEntityManagerTest), whose App\Entity\User

@@ -57,7 +57,7 @@ final class EntitiesHostTest extends TestCase
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
         $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         $app['config']->set('omnibridge.media', true);
-        $app['config']->set('omnibridge.twig.paths', [[self::FIXTURES.'/templates', null], [\dirname(__DIR__).'/vendor/omniscient/omnibase/src/Resources/views', 'Base']]);
+        $app['config']->set('omnibridge.twig.paths', [[self::FIXTURES.'/templates', null], [\dirname(__DIR__).'/vendor/omnisense/omnibase/src/Resources/views', 'Base']]);
         $app['config']->set('filesystems.disks.omnibase-cache', ['driver' => 'local', 'root' => $this->root.'/cache']);
         $app['config']->set('filesystems.disks.omnibase-wysiwyg', ['driver' => 'local', 'root' => $this->root.'/wysiwyg']);
         $app['config']->set('omnibridge.storages', ['local.cache' => 'omnibase-cache', 'local.wysiwyg' => 'omnibase-wysiwyg']);

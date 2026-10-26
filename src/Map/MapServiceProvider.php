@@ -33,7 +33,7 @@ use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * omniscient/omnimap wired into a Laravel application, from config/omnimap.php
+ * omnisense/omnimap wired into a Laravel application, from config/omnimap.php
  * - the same keys as omnibridge/symfony's omnimap.yaml:
  *
  *     return [
