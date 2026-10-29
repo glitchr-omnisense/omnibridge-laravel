@@ -29,6 +29,14 @@ final class LocaleTest extends TestCase
         $this->assertSame('fr', $this->withUnencryptedCookie(Localize::COOKIE, 'ja_JP')->get('/page', ['Accept-Language' => 'ja'])->getContent(), 'a choice the site does not speak: not a choice');
     }
 
+    /** No language of the site's configured, none from the browser, no default: Laravel's own app.locale. */
+    public function testWithoutLocalesConfiguredTheLanguageIsLaravels(): void
+    {
+        config(['omnibridge.locales.available' => [], 'omnibridge.locales.default' => null, 'app.locale' => 'it']);
+
+        $this->assertSame('it', $this->get('/page', ['Accept-Language' => ''])->getContent());
+    }
+
     public function testTheLanguageShownIsRememberedForTheNextPage(): void
     {
         $this->get('/page', ['Accept-Language' => 'de-DE'])->assertPlainCookie(Localize::COOKIE, 'de-DE');

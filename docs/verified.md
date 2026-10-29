@@ -27,8 +27,11 @@ day and its output pasted.
 
 - Laravel 12: composer.json admits it, the suite runs on Laravel 13.
 - A real identity provider, a real passkey authenticator: simulated in the tests.
-- omnimap providers other than OpenStreetMap through this wiring; the map's export and suppression
+- omnimap providers other than OpenStreetMap drawn through this wiring (MapLibre and a tagged
+  factory are resolved as renderers in `MapTest`, not drawn); the map's export and suppression
   (omnibridge/symfony's).
 - The bindings under a long-running worker (Octane, FrankenPHP's worker mode): singletons such as
-  `RouterUrls`' manifest, the Twig environment and omnishield's `WidgetPrinter` live for the worker.
+  `RouterUrls`' manifest and the Twig environment live for the worker. omnishield's `WidgetPrinter`
+  is scoped, and `ShieldMailTest` forgets the scoped instances as Octane does between two requests;
+  no Octane worker was run.
 - PostgreSQL and SQL Server connections: `Doctrine\Connections` maps them, the suite uses SQLite.

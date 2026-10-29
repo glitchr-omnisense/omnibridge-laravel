@@ -12,9 +12,9 @@ omnibase's Foundation to Laravel's services, and hands Laravel's container to th
 Foundation's registry, `Base\Contract\Runtime` (omnisense/omnibridge's
 `Omnibridge\Runtime` with omnibase's accessors). The host's contracts are
 [omnisense/omnibridge](https://github.com/glitchr-omnisense/omnibridge)'s
-(`Omnibridge\Contract\*`), bound under their own names; their former names
-(`Base\Contract\Urls`..., omnibridge/twig's) are Laravel aliases of them until
-omnibase 4's final pass, the same binding under either. omnibase's framework-free code -
+(`Omnibridge\Contract\*`), bound under their own names (their former names,
+`Base\Contract\Urls`... and omnibridge/twig's, were removed at omnibase 4's final
+pass: no former name is bound). omnibase's framework-free code -
 an entity's link, its noun, a translatable's language, a screen's builder - then
 runs under Laravel as it runs under Symfony:
 
@@ -24,7 +24,7 @@ use Base\Contract\Runtime;
 Runtime::urls()->path('article', ['slug' => 'le-fuji']);   // Laravel's router
 Runtime::translations()->trans('@messages.menu.home');      // omnibase's ICU catalogues
 Runtime::parameters()->get('base.user.delay');              // Laravel's config, the database settings over it
-app(Omnibridge\Contract\Urls::class) === Runtime::urls();   // one object, also app(Base\Contract\Urls::class)
+app(Omnibridge\Contract\Urls::class) === Runtime::urls();   // one object
 ```
 
 omnibase asks for PHP 8.4 and the extensions its own packages need (bcmath, intl,
@@ -36,16 +36,16 @@ for its templates: this package opens Doctrine on one of Laravel's connections
 
 | Contract | Answered by | Class |
 |---|---|---|
-| `Omnibridge\Contract\Urls` (formerly `Base\Contract\Urls` and omnibridge/twig's) | Laravel's router (`route()`), the build's asset manifest; a route Laravel does not have may be answered elsewhere | `RouterUrls` |
-| `Omnibridge\Contract\Translations` (formerly `Base\Contract\Translations` and omnibridge/twig's) | the ICU catalogues of the folders configured, read by symfony/translation, in Laravel's current locale; `exists()` | `CatalogueTranslations` |
-| `Omnibridge\Contract\Locales` (formerly `Base\Contract\Locales`) | Laravel's locale (`fr`) as the site's locale (`fr-FR`), the default first | `Contract\AppLocales` |
+| `Omnibridge\Contract\Urls` | Laravel's router (`route()`), the build's asset manifest; a route Laravel does not have may be answered elsewhere | `RouterUrls` |
+| `Omnibridge\Contract\Translations` | the ICU catalogues of the folders configured, read by symfony/translation, in Laravel's current locale; `exists()` | `CatalogueTranslations` |
+| `Omnibridge\Contract\Locales` | Laravel's locale (`fr`) as the site's locale (`fr-FR`), the default first | `Contract\AppLocales` |
 | `Base\Contract\Nouns` | omnibase's own rule (`EntityNouns`) on those catalogues | - |
-| `Omnibridge\Contract\Access` (formerly `Base\Contract\Access`) | the gate (`Gate::allows()`), the default guard's user | `Contract\GateAccess` |
-| `Omnibridge\Contract\Sessions` (formerly `Base\Contract\Sessions`) | the guard's `logout()` for the user signed in | `Contract\GuardSessions` |
-| `Omnibridge\Contract\Tokens` (formerly `Base\Contract\Tokens`) | the session's CSRF token (one for every intent) | `Contract\SessionTokens` |
-| `Omnibridge\Contract\Environment` (formerly `Base\Contract\Environment`) | `APP_ENV`, `app.debug`, `app.key` | `Contract\AppEnvironment` |
-| `Omnibridge\Contract\Routes` (formerly `Base\Contract\Routes`) | a route's declared path, the route of an address; no icons | `Contract\RouterRoutes` |
-| `Omnibridge\Contract\Files` (formerly `Base\Contract\Files`) | the disks (omnibase's storage names mapped to disks) | `Contract\DiskFiles` |
+| `Omnibridge\Contract\Access` | the gate (`Gate::allows()`), the default guard's user | `Contract\GateAccess` |
+| `Omnibridge\Contract\Sessions` | the guard's `logout()` for the user signed in | `Contract\GuardSessions` |
+| `Omnibridge\Contract\Tokens` | the session's CSRF token (one for every intent) | `Contract\SessionTokens` |
+| `Omnibridge\Contract\Environment` | `APP_ENV`, `app.debug`, `app.key` | `Contract\AppEnvironment` |
+| `Omnibridge\Contract\Routes` | a route's declared path, the route of an address; no icons | `Contract\RouterRoutes` |
+| `Omnibridge\Contract\Files` | the disks (omnibase's storage names mapped to disks) | `Contract\DiskFiles` |
 | `Base\Service\ParameterBagInterface` | Laravel's config, the settings linked to a parameter laid over it (omnibase's `HotParameters`) | `Parameters\ConfigParameters`, `Parameters\DatabaseSettings` |
 | `Psr\Clock\ClockInterface` | Laravel's dates (`Date::setTestNow()`, `travel()` move it) | `Contract\DateClock` |
 | `Psr\EventDispatcher\EventDispatcherInterface` | Laravel's dispatcher | `Contract\DispatcherEvents` |
@@ -353,15 +353,20 @@ return [
 ];
 ```
 
-It binds `Omnimap\Registry` (omnimap/google and omnimap/openstreetmap when installed,
-over Symfony's HTTP client or the one bound as `omnimap.http_client`, a PSR-16 cache in
-`storage/framework/cache/omnimap`), `Omnimap\Snapshot\Snapshots` (the map cache on an omnidrive
+It binds `Omnimap\Registry` (omnimap/google, omnimap/openstreetmap and omnimap/maplibre
+when installed, and the application's factories tagged `omnimap.provider_factory`, over
+Symfony's HTTP client or the one bound as `omnimap.http_client`, the PSR-16 cache of
+`cache.pool` - a store of Laravel's cache - or one in `storage/framework/cache/omnimap`),
+`Omnimap\GeocoderInterface` (the provider `geocoder` names, the page's by default),
+`Omnimap\Snapshot\Snapshots` (the map cache on an omnidrive
 drive - `cache.drive`, of the bound `Omnidrive\Drives` - or over a directory or a bound
 `Omnimap\Snapshot\Storage`; `cache.make` false for a host reading
 another host's cache read only), `Omnimap\MapPrinter` and omnibridge/twig's
 `MapExtension`, which every page's Twig gets (`omnimap()`, `omnimap_export()`,
-`omnimap_suppress()`), and routes the tiles (`routes.tile.register` false when the web
-server serves them). Capturing and deleting a picture is omnibridge/symfony's
+`omnimap_suppress()`), and routes the tiles as omnibridge/symfony serves them (WebP at a
+`.webp` path fitted within `cache.public_size`, `cache.max_age`, written in
+`cache.public_directory` when set; `routes.tile.register` false when the web server serves
+them). Capturing and deleting a picture is omnibridge/symfony's
 (`routes.export.name`, `routes.suppress.name` name them for the buttons).
 
 ## Static export (omnibridge/static)

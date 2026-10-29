@@ -26,11 +26,16 @@ return [
 | `provider` | `''` (nothing wired) | the page's provider, a key of `providers` |
 | `secret` | `''` | signs the pictures' names |
 | `providers.<name>` | - | the provider's options, its factory's; `factory` names another factory than the key |
+| `geocoder` | the page's provider | the provider `Omnimap\GeocoderInterface` is |
 | `cache.drive` | none | an omnidrive drive of the bound `Omnidrive\Drives` (a storage's name) |
 | `cache.storage` | `storage/app/omnimap` | a directory (`DirectoryStorage`), or the container's binding of an `Omnimap\Snapshot\Storage` |
 | `cache.directory`, `.pattern`, `.format` | `omnimap`, `{signature}/image-{id}`, `png` | omnimap's `SnapshotStore` |
 | `cache.make` | `auto` | the server makes a missing picture: `auto` when the provider makes static maps, true, false (a host reading another host's cache read only) |
 | `cache.size`, `.scale`, `.tilesize` | `1512x938`, 1, 512 | the picture made, its tiles (0: not cut) |
+| `cache.pool` | none: omnimap's files in `storage/framework/cache/omnimap` | a store of Laravel's cache (`config/cache.php`'s `stores`): the providers' cache (tiles fetched, geocoder answers) |
+| `cache.max_age` | 86400 | a tile's `max-age`, in seconds |
+| `cache.public_directory` | none | a directory (the public folder) where each tile served is written at the route's path, for the web server to serve it next |
+| `cache.public_size` | none | the tile served as WebP fitted within this size, in pixels |
 | `html` | `[]` | omnimap's `MapHtml` options (`class`, `suffix`, `missing`); `src` is the tile route's path |
 | `cache_only` | true | a visitor never gets the live map |
 | `control` | `ROLE_ADMIN` | who may change the map (the Access contract) |
@@ -39,27 +44,18 @@ return [
 
 | Binding | What it is |
 |---|---|
-| `Omnimap\Registry` | omnimap/google's and omnimap/openstreetmap's factories when installed, over the HTTP client bound as `omnimap.http_client` (else Symfony's `HttpClient::create()`), a PSR-18 client when nyholm/psr7 or php-http/discovery is installed, a PSR-16 cache in `storage/framework/cache/omnimap` |
+| `Omnimap\Registry` | omnimap/google's, omnimap/openstreetmap's and omnimap/maplibre's factories when installed (`MapServiceProvider::FACTORIES`), and every binding tagged `omnimap.provider_factory` (`MapServiceProvider::FACTORY_TAG`), over the HTTP client bound as `omnimap.http_client` (else Symfony's `HttpClient::create()`), a PSR-18 client when nyholm/psr7 or php-http/discovery is installed, the PSR-16 cache of `cache.pool` |
+| `Omnimap\GeocoderInterface` (bind) | the registry's geocoder named by `geocoder`, the page's provider by default |
 | `Omnimap\Snapshot\Snapshots` | the page's renderer, the signer, the store, the static map per `cache.make` |
 | `Omnimap\MapRendererInterface` (bind) | the snapshots' renderer |
 | `Omnimap\MapPrinter` | a picture that could not be made logged as a warning |
 | `Omnibridge\Twig\MapExtension` | `omnimap()`, `omnimap_export()`, `omnimap_suppress()`, `omnimap_signature()` in every page's Twig ([Pages](views.md)) |
 
-The tile route (`Map\TileController::tile`, `signature` `[A-Za-z0-9_-]{1,128}`, `id` digits): the tile's
-bytes as kept, `Content-Type` of the store's format, public, `max-age` 86400, an ETag, 404 "No such map
-tile." when none. Capturing and deleting a picture is omnibridge/symfony's.
-
-> [!WARNING]
-> Known defect: `config/omnimap.php` is said to hold "the keys of omnibridge/symfony's `omnimap.yaml`",
-> where `geocoder` (no `Omnimap\GeocoderInterface` is bound), `cache.pool`, `cache.max_age`,
-> `cache.public_directory` and `cache.public_size` are read by nothing, and the tile at its `.webp`
-> address is served in the store's format (`image/png` by default) with no conversion to WebP, where
-> Symfony's controller converts it, fits it and writes it in the public folder.
-
-> [!WARNING]
-> Known defect: only omnimap/google's and omnimap/openstreetmap's factories are made
-> (`MapServiceProvider::FACTORIES`), where every installed provider is expected: omnimap/maplibre needs
-> the application to rebind `Omnimap\Registry`.
+The tile route (`Map\TileController::tile`, `signature` `[A-Za-z0-9_-]{1,128}`, `id` digits), as
+omnibridge/symfony's controller serves it: at a path ending in `.webp`, the tile as WebP (fitted
+within `cache.public_size`; GD with WebP, else Imagick, else as kept in the store's format), written
+in `cache.public_directory` at the route's path when one is set, public, `max-age` `cache.max_age`,
+`must-revalidate`, an ETag; 404 "No such map tile." when none. Capturing and deleting a picture is omnibridge/symfony's.
 
 ## Shields: omnishield
 
@@ -71,16 +67,14 @@ the Symfony bundle's `omnishield.yaml`, and wires nothing without a gateway:
 |---|---|---|
 | `gateways.<name>` | `[]` | `{factory, options}`; the factories made here are those needing no HTTP client: `altcha`, the disposable domains, the tests' fixed one |
 | `challenge.gateway` | null: the first gateway | the captcha a form asks by default (`ShieldServiceProvider::defaultChallenge()`) |
-| `challenge.unreachable` | `accept` | whether a captcha that does not answer lets a form through (`reject` refuses) |
+| `challenge.unreachable` | `reject` | whether a captcha that does not answer lets a form through (`accept`), or refuses it, as the bundle's default |
 | `serve_scripts` | true | ALTCHA's widget served by the application (route `omnishield_altcha_script`, cached a year), the gateways' default `script` then |
 | `replay.pool` | null: in memory | a PSR-6 pool's binding keeping the tokens already used |
 
-Bindings: `Omnishield\Replay\ReplayStoreInterface`, `Omnishield\Registry`, `Omnishield\WidgetPrinter`.
+Bindings: `Omnishield\Replay\ReplayStoreInterface`, `Omnishield\Registry`, `Omnishield\WidgetPrinter`
+(scoped: one per request, as the bundle resets its own - a long-running worker such as Octane forgets
+it between two requests, so each page prints a provider's script).
 With omnibase's sign-in effects, the captcha after failed sign-ins uses it ([Signing in](omniauth.md)).
-
-> [!WARNING]
-> Known defect: `challenge.unreachable` defaults to `accept`, where the bundle's default is `reject`;
-> and `WidgetPrinter` is a plain singleton, never reset between requests under a long-running worker.
 
 ## Static export: omnibridge/static
 

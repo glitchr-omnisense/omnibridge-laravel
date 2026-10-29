@@ -7,7 +7,7 @@
 // used are remembered (a PSR-6 pool's binding; in memory otherwise).
 return [
     'gateways' => [],
-    'challenge' => ['gateway' => null, 'unreachable' => 'accept'],
+    'challenge' => ['gateway' => null, 'unreachable' => 'reject'],
     'serve_scripts' => true,
     'replay' => ['pool' => null],
 ];

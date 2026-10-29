@@ -8,8 +8,10 @@ use Omnibridge\Contract\Translations;
 use Omnibridge\Laravel\Form\FormRenderer;
 use Omnibridge\Laravel\Form\FormView;
 use Omnibridge\Laravel\Mail\LaravelMailer;
+use Omnibridge\Laravel\Shield\ShieldServiceProvider;
 use Omnishield\Registry;
 use Omnishield\Testing\FixedGateway;
+use Omnishield\WidgetPrinter;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -80,6 +82,39 @@ final class ShieldMailTest extends TestCase
         $response = $this->get($widget->script);
         $response->assertOk();
         self::assertStringStartsWith('text/javascript', (string) $response->headers->get('Content-Type'));
+    }
+
+    /** The keys of the bundle's omnishield.yaml with its defaults: a provider that does not answer refuses the form. */
+    public function testAnUnreachableCaptchaRefusesByDefault(): void
+    {
+        if (!class_exists(Registry::class)) {
+            self::markTestSkipped('omnisense/omnishield is not installed.');
+        }
+        self::assertFalse(ShieldServiceProvider::acceptsUnreachable($this->container()), 'challenge.unreachable: reject, the bundle\'s default');
+        $this->container()->make(Config::class)->set('omnishield.challenge.unreachable', 'accept');
+        self::assertTrue(ShieldServiceProvider::acceptsUnreachable($this->container()));
+    }
+
+    /**
+     * One WidgetPrinter per request, as the bundle resets its own (kernel.reset): a long-running
+     * worker (Octane) forgets the scoped instances between two requests, and the next page prints
+     * a provider's script again.
+     */
+    public function testTheWidgetPrinterIsOnePerRequest(): void
+    {
+        if (!class_exists(Registry::class)) {
+            self::markTestSkipped('omnisense/omnishield is not installed.');
+        }
+        $widget = $this->container()->make(Registry::class)->challenge('altcha')->widget('login');
+        $first = $this->container()->make(WidgetPrinter::class);
+        self::assertSame($first, $this->container()->make(WidgetPrinter::class), 'one printer for the page');
+        self::assertStringContainsString('<script', $first->print($widget));
+        self::assertStringNotContainsString('<script', $first->print($widget), 'the script once a page');
+
+        $this->container()->forgetScopedInstances();
+        $next = $this->container()->make(WidgetPrinter::class);
+        self::assertNotSame($first, $next, 'the next request: a printer of its own');
+        self::assertStringContainsString('<script', $next->print($widget), 'the next page has its script');
     }
 
     /** Symfony's own catalogues are XLIFF (security-core's "security" domain: a refused sign-in's words), read without symfony/config. */

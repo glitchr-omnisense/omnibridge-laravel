@@ -34,7 +34,7 @@ final class Localize
         $chosen = substr((string) $request->cookies->get(self::COOKIE), 0, 2);
         $language = \is_string($declared) && '' !== $declared ? $declared : (\in_array($chosen, $languages, true)
             ? $chosen
-            : ($request->getPreferredLanguage($languages) ?? (string) config('omnibridge.locales.default', config('app.locale'))));
+            : ($request->getPreferredLanguage($languages) ?? self::fallback()));
         app()->setLocale(substr($language, 0, 2));
 
         $response = $next($request);
@@ -50,6 +50,15 @@ final class Localize
         }
 
         return $response;
+    }
+
+    /** The site's default (omnibridge.locales.default), else Laravel's app.locale: the merged configuration always holds the first key, null when unset. */
+    private static function fallback(): string
+    {
+        $default = config('omnibridge.locales.default');
+        $default = \is_string($default) && '' !== $default ? $default : config('app.locale');
+
+        return \is_string($default) ? $default : '';
     }
 
     /**
