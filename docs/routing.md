@@ -96,17 +96,11 @@ Symfony.
 1. a route of one language (`_locale`) is that language's;
 2. else the `LANG` cookie's language when it is one of `omnibridge.locales.available`;
 3. else the browser's preferred language among them (`getPreferredLanguage()`);
-4. else `omnibridge.locales.default`.
+4. else `omnibridge.locales.default`, else (null or empty) Laravel's `app.locale`.
 
 Laravel's locale is set to the two letters. After the page, the language shown is written back to
 `LANG` as the site names it (`en-GB`), session cookie, not HTTP only, SameSite Lax - unless the page set
 `LANG` itself.
-
-> [!WARNING]
-> Known defect: the fourth step reads `config('omnibridge.locales.default', config('app.locale'))`, but
-> the merged configuration always has the key (null by default), so `app.locale` is never the fallback:
-> with no available locale configured and no browser language, Laravel's locale is set to `''`, where
-> `app.locale` is expected.
 
 `Http\SwitchLocale`, the language menu's links:
 

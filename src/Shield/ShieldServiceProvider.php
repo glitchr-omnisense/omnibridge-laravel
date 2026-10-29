@@ -64,7 +64,9 @@ final class ShieldServiceProvider extends ServiceProvider
 
             return new Registry($factories, self::gateways($app));
         });
-        $this->app->singleton(WidgetPrinter::class, static fn () => new WidgetPrinter());
+        // One printer per request (the bundle tags its own kernel.reset): scoped, so that a long-running
+        // worker (Octane) forgets it between two requests and each page prints a provider's script.
+        $this->app->scoped(WidgetPrinter::class, static fn () => new WidgetPrinter());
     }
 
     public function boot(): void
@@ -92,12 +94,12 @@ final class ShieldServiceProvider extends ServiceProvider
         return null !== $first ? (string) $first : null;
     }
 
-    /** Whether a captcha that does not answer lets a form through (challenge.unreachable: accept). */
+    /** Whether a captcha that does not answer lets a form through (challenge.unreachable: accept; reject by default, as the bundle). */
     public static function acceptsUnreachable(Application $app): bool
     {
         $challenge = self::config($app)['challenge'] ?? null;
 
-        return 'reject' !== (\is_array($challenge) ? ($challenge['unreachable'] ?? 'accept') : 'accept');
+        return 'accept' === (\is_array($challenge) ? ($challenge['unreachable'] ?? 'reject') : 'reject');
     }
 
     /**

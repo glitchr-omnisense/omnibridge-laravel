@@ -55,6 +55,7 @@
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
         "omnibridge/static": "1.x-dev",
+        "omnimap/maplibre": "^1.0@dev",
         "omnimap/openstreetmap": "^1.0@dev",
         "omnisense/omniauth": "1.x-dev",
         "omnisense/omnimap": "^1.0@dev",
