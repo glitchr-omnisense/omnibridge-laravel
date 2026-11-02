@@ -236,6 +236,12 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->callAfterResolving('blade.compiler', self::formDirectives(...));
 
         Runtime::setContainer($this->app);
+        // omnibase's services an account's pages need (its Notifier, its entity events...), with its mapping on:
+        // bound once the configuration is final, what an application bound before kept.
+        if (self::omnibaseServices($this->app)) {
+            Omnibase\OmnibaseServices::register($this->app);
+            Omnibase\OmnibaseServices::boot($this->app);
+        }
 
         if (self::media($this->app)) {
             $this->registerMedia();
@@ -372,6 +378,12 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         }
 
         return $app->make(ParameterBagInterface::class)->get($name);
+    }
+
+    /** Whether omnibase's services are given here: omnibase installed, its mapping on (omnibridge.doctrine.omnibase). */
+    private static function omnibaseServices(Application $app): bool
+    {
+        return class_exists(\Base\Services::class) && class_exists(Mapping::class) && null !== self::omnibase($app);
     }
 
     /** Laravel's environments by omnibase's names (the vault filter's, the rows Symfony wrote). */

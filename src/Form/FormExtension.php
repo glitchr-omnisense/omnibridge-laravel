@@ -33,6 +33,7 @@ final class FormExtension extends AbstractExtension
             new TwigFunction('form_row', $this->renderer->row(...), $safe),
             new TwigFunction('form_label', $this->renderer->fieldLabel(...), $safe),
             new TwigFunction('form_errors', $this->renderer->errors(...), $safe),
+            new TwigFunction('form_help', $this->renderer->help(...), $safe),
             new TwigFunction('form_rest', $this->renderer->rest(...), $safe),
             new TwigFunction('form_end', $this->renderer->end(...), $safe),
         ];

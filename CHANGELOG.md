@@ -4,6 +4,27 @@
 
 ### Added
 
+- **`Omnibase\OmnibaseServices`** (omnisense/omnibase's plan "omnibase agnostic", step F5c), with omnibase's mapping on: Symfony's
+  `Translator` in the page's language, `Localizer`, `SettingBag`, the entity hydrator, `SpamChecker`, the mentions' enhancer;
+  omnibase's entity dispatchers and `ThreadSubscriber`/`UserSubscriber`'s Doctrine hooks (`LazyListener`), their events heard by
+  name, what they leave flushed after the page (`FlushEntityEvents`); with `omnibridge.notifier.channel_policy`, omnibase's
+  `Notifier` on Symfony's with its channels (`email`, `email+` by Laravel's transport, `browser+`, `inapp`, `push`). Bound at boot,
+  once the configuration is final, where nothing is bound yet. See docs/doctrine-media.md.
+- **`Auth\Middleware\Presence`**: the account signed in poked (its `activeAt`), before the page and on the answer, as omnibase's
+  SecuritySubscriber does; in the web group with omnibase's sign-in effects.
+- `form_help()` in Twig (`FormRenderer::help()`): a field's help, the tooltip of omnibase's theme.
+
+### Fixed
+
+- `FormRenderer::rest()` printed a field typed twice again whole once its two parts were printed (a sign-up's password).
+- `LaravelValidation` left an ICU catalogue's `{value}` as it was ("\"{value}\" est déjà utilisé."): a validator's `{{ value }}`
+  is its `{value}` too, unquoted as omnibase's own validators give it.
+- omnibase's `UpdateAccount` listener (a sign-in) could not be built: its constructor takes the unit of work or the entity
+  manager, a union Laravel's container cannot choose for; bound.
+- The e-mails' `|url` filter took a block's blank lines for a route's name (an e-mail's `action_url`): trimmed.
+- A sign-in without a page to go back to redirected to the default target without its last slash (Laravel's generator):
+  `"/"` as written, as Symfony's success handler sends it.
+
 - **`Contract\LaravelRequests`**: omnisense/omnibridge's `Contract\Requests` on Laravel's request and session (none in a command): the
   visitor's address, headers, address, route and its parameters, the session's values, and the flashes where omnibase's templates read
   them (`SessionView`). Bound to `Omnibridge\Contract\Requests`.

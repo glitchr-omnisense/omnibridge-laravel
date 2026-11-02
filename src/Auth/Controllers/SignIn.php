@@ -378,7 +378,11 @@ final class SignIn
             return new RedirectResponse($posted);
         }
 
-        return $this->redirector->intended($this->defaultTarget());
+        // The page asked before the sign-in, else the default target as it is written ("/"), as Symfony's
+        // DefaultAuthenticationSuccessHandler sends it: Laravel's generator would drop its last slash.
+        $intended = $request->hasSession() ? $request->session()->pull('url.intended') : null;
+
+        return new RedirectResponse(\is_string($intended) && '' !== $intended ? $intended : $this->defaultTarget());
     }
 
     private function defaultTarget(): string
