@@ -4,6 +4,14 @@
 
 ### Added
 
+- **`Contract\LaravelValidation`** (omnibase's plan "omnibase agnostic", step F5b): omnibridge's `Validation` under Laravel - the kept
+  constraints by omnibridge's `Validator`, so that their verdict and message are every host's, Laravel's own rules (a string, a Rule)
+  by its validator; Symfony's messages from the `validators` catalogue, read from symfony/validator where it is installed.
+
+### Fixed
+
+- With media off, omnibase's list of services no longer binds MediaService and the obfuscator, which could not be built and failed every page (OmnibaseExtensions asks whether MediaService is bound).
+
 - omnisense/omnibase's list of services (`Base\Services::definitions()`, its step F5a) bound at boot by
   `Container\Definitions`: what this provider or the application does not bind is a singleton of its class,
   its contracts aliases, its arguments read with `Omnibridge\Container`'s syntax, union types resolved by the
