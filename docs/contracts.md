@@ -34,7 +34,7 @@ accessors) is handed Laravel's application at boot: `Runtime::urls()` is `app(Ur
 | `Omnibridge\Laravel\Screen\Responder` (bind) | | the Negotiation |
 | `Symfony\Component\Cache\Adapter\FilesystemAdapter` (aliases `Psr\Cache\CacheItemPoolInterface`, `Symfony\Contracts\Cache\CacheInterface`) | | namespace `omnibase`, in `storage/framework/cache/omnibase-pool` |
 | `Base\Service\ParameterBagInterface` | `Base\Service\HotParameters` over `Parameters\ConfigParameters` | Laravel's config, the settings laid over it ([Parameters](#parameters)) |
-| `Doctrine\DBAL\Connection`, `Parameters\DatabaseSettings`, `Doctrine\ORM\EntityManagerInterface`, `Base\Bridge\Doctrine\Mapping` | | [Doctrine and images](doctrine-media.md) |
+| `Doctrine\DBAL\Connection`, `Parameters\DatabaseSettings`, `Doctrine\ORM\EntityManagerInterface`, `Omnibridge\Doctrine\Omnibase\Mapping` (and its former name `Base\Bridge\Doctrine\Mapping`) | | [Doctrine and images](doctrine-media.md) |
 | `Twig\Environment`, `View\OmnibaseExtensions` | | [Pages](views.md) |
 
 With `omnibridge.media` on, at boot: `Media\LaravelMediaRouter`, `Base\Service\Obfuscator` (alias
