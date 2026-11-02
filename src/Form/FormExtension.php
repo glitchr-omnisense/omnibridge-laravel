@@ -16,7 +16,7 @@ use Twig\TwigFunction;
  */
 final class FormExtension extends AbstractExtension
 {
-    /** @param array<string, FormView> $views the page's forms, by name */
+    /** @param array<string, object> $views the page's forms, by name: this package's FormView or omnibase's neutral one */
     public function __construct(private readonly FormRenderer $renderer, private readonly array $views = [])
     {
     }
@@ -38,7 +38,7 @@ final class FormExtension extends AbstractExtension
         ];
     }
 
-    public function view(string $name): ?FormView
+    public function view(string $name): ?object
     {
         return $this->views[$name] ?? null;
     }

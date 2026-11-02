@@ -154,6 +154,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Host\Access::class, fn (Application $app) => new GateAccess($app->make(\Illuminate\Contracts\Auth\Access\Gate::class), $app->make('auth')));
         $this->app->singleton(Host\Sessions::class, fn (Application $app) => new GuardSessions($app->make('auth')));
         $this->app->singleton(Host\Tokens::class, fn (Application $app) => new SessionTokens($app));
+        // omnibase's unit of work on the entity manager this package gives, where omnibridge/doctrine's adapter is installed.
+        if (class_exists(\Omnibridge\Doctrine\Omnibase\DoctrineUnitOfWork::class)) {
+            $this->app->singleton(\Omnibridge\Persistence\UnitOfWork::class, fn (Application $app) => new \Omnibridge\Doctrine\Omnibase\DoctrineUnitOfWork($app->make(\Doctrine\ORM\EntityManagerInterface::class)));
+        }
         $this->app->singleton(Host\Validation::class, fn (Application $app) => new LaravelValidation(
             $app->make('validator'),
             $app->make(Host\Translations::class),
