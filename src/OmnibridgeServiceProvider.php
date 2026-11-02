@@ -48,6 +48,7 @@ use Omnibridge\Laravel\Contract\DispatcherEvents;
 use Omnibridge\Laravel\Contract\GateAccess;
 use Omnibridge\Laravel\Contract\GuardSessions;
 use Omnibridge\Laravel\Contract\RouterRoutes;
+use Omnibridge\Laravel\Contract\LaravelValidation;
 use Omnibridge\Laravel\Contract\SessionTokens;
 use Omnibridge\Laravel\Contract\TransportMailer;
 use Omnibridge\Laravel\Doctrine\Connections;
@@ -100,6 +101,23 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 {
     private ?Mapping $mapping = null;
 
+    /**
+     * The catalogues' folders, Symfony's validator's first where it is installed: its messages in each
+     * language (the `validators` domain), what a kept constraint says on every host.
+     *
+     * @param list<string> $paths
+     *
+     * @return list<string>
+     */
+    private static function translationPaths(array $paths): array
+    {
+        if (class_exists(\Symfony\Component\Validator\Constraints\NotBlank::class)) {
+            array_unshift($paths, \dirname((string) (new \ReflectionClass(\Symfony\Component\Validator\Validation::class))->getFileName()).'/Resources/translations');
+        }
+
+        return $paths;
+    }
+
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/omnibridge.php', 'omnibridge');
@@ -108,7 +126,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->alias(RouterUrls::class, Host\Urls::class);
 
         $this->app->singleton(CatalogueTranslations::class, fn (Application $app) => new CatalogueTranslations(
-            $app['config']->get('omnibridge.translations.paths', []),
+            self::translationPaths($app['config']->get('omnibridge.translations.paths', [])),
             null,
             (string) ($app['config']->get('omnibridge.translations.fallback') ?? $app['config']->get('app.fallback_locale', 'en')),
         ));
@@ -122,6 +140,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Host\Access::class, fn (Application $app) => new GateAccess($app->make(\Illuminate\Contracts\Auth\Access\Gate::class), $app->make('auth')));
         $this->app->singleton(Host\Sessions::class, fn (Application $app) => new GuardSessions($app->make('auth')));
         $this->app->singleton(Host\Tokens::class, fn (Application $app) => new SessionTokens($app));
+        $this->app->singleton(Host\Validation::class, fn (Application $app) => new LaravelValidation($app->make('validator'), $app->make(Host\Translations::class)));
         $this->app->singleton(Host\Environment::class, fn (Application $app) => new AppEnvironment(
             (string) $app->environment(),
             (bool) $app['config']->get('app.debug'),
@@ -196,7 +215,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         // the plain-PHP Omnibridge\Container read it: what is not bound above (or by the application) is bound
         // from it - the paginator, the translator, the screens' builders... - its parameters omnibase's.
         if (class_exists(\Base\Services::class)) {
-            Container\Definitions::bind($this->app, \Base\Services::definitions(), fn (string $name): mixed => self::listParameter($this->app, $name));
+            // Media off, nothing of it is bound (registerMedia()): the list's would only fail when built.
+            $media = self::media($this->app);
+            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class], true));
+            Container\Definitions::bind($this->app, $definitions, fn (string $name): mixed => self::listParameter($this->app, $name));
         }
         if (self::media($this->app) && false !== ($this->app['config']->get('omnibridge.media.routes') ?? true)) {
             // omnibase's image routes under their Symfony names, in Symfony's order (ImageRoute::ROUTES).
