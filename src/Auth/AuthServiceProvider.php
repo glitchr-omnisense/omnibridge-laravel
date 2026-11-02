@@ -275,6 +275,8 @@ final class AuthServiceProvider extends ServiceProvider
             // The second factor's enrolment a signed-in account is sent to (omnibase's EnrolmentPrompt, R29).
             if (method_exists($kernel, 'appendMiddlewareToGroup')) {
                 $kernel->appendMiddlewareToGroup('web', EnrolmentPrompt::class);
+                // The account's presence (its activeAt), as omnibase's SecuritySubscriber pokes it.
+                $kernel->appendMiddlewareToGroup('web', Middleware\Presence::class);
             }
         } elseif ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {
             $events = $this->app->make(Dispatcher::class);

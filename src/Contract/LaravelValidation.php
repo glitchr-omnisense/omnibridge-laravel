@@ -55,7 +55,17 @@ final class LaravelValidation implements Validation
         $count = $parameters['%count%'] ?? null;
         unset($parameters['%count%']);
         $forms = explode('|', $this->translations->trans($template, [], 'validators'));
+        // A message of omnibase's catalogues is ICU's ("{value}" est déjà utilisé.), left as it is without its
+        // arguments: a validator's {{ value }} is its {value} too, its value as omnibase's own validators give it
+        // (unquoted). strtr() tries the longer {{ value }} first where both could match.
+        $replacements = array_map(strval(...), $parameters);
+        foreach ($parameters as $name => $value) {
+            if (preg_match('/^\{\{ ?(\w+) ?\}\}$/', (string) $name, $m)) {
+                $value = (string) $value;
+                $replacements['{'.$m[1].'}'] ??= \strlen($value) >= 2 && '"' === $value[0] && '"' === $value[-1] ? substr($value, 1, -1) : $value;
+            }
+        }
 
-        return strtr(1 === $count || 1 === \count($forms) ? $forms[0] : $forms[1], array_map(strval(...), $parameters));
+        return strtr(1 === $count || 1 === \count($forms) ? $forms[0] : $forms[1], $replacements);
     }
 }

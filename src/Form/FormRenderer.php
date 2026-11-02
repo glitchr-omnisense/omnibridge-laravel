@@ -151,6 +151,17 @@ final class FormRenderer
         return '<div class="form-errors"><ul>'.implode('', $items).'</ul></div>';
     }
 
+    /** form_help(): the field's help, the tooltip of omnibase's form theme; nothing without one. */
+    public function help(object $field): string
+    {
+        $help = $field->vars['help'] ?? null;
+        if (!\is_string($help) || '' === $help) {
+            return '';
+        }
+
+        return '<span class="data-help"><i class="fa-regular fa-question-circle" data-toggle="tooltip" data-bs-placement="right" title="'.htmlspecialchars($this->translate($help)).'"></i></span>';
+    }
+
     /**
      * form_label(): the field's label (the one given, else its own), in omnibase's form theme's markup.
      *
@@ -169,6 +180,11 @@ final class FormRenderer
     {
         $rest = '';
         foreach ($form->children as $child) {
+            // A field of several (a value typed twice) whose parts were all printed is printed, as Symfony's
+            // FormView::isRendered() says it.
+            if (!$child->rendered && [] !== $child->children && [] === array_filter($child->children, static fn (object $part): bool => !$part->rendered)) {
+                $child->rendered = true;
+            }
             if (!$child->rendered) {
                 $rest .= $this->widget($child);
             }

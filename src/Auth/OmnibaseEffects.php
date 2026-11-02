@@ -180,6 +180,9 @@ final class OmnibaseEffects
             });
         }
 
+        // The account brought up to date at its sign-in: its constructor takes the unit of work or the entity manager
+        // (a union Laravel's container cannot choose for).
+        $app->singleton('Base\Auth\Listener\UpdateAccount', static fn (Application $app) => new \Base\Auth\Listener\UpdateAccount($app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $app->make(\Omnibridge\Persistence\UnitOfWork::class) : $app->make(EntityManagerInterface::class)));
         $app->singleton('Base\Auth\Listener\TrackConnections', static fn (Application $app) => new \Base\Auth\Listener\TrackConnections($app->make(self::TRACKER), $app->make(EntityManagerInterface::class), $app->make(Accounts::class)));
         $app->singleton('Base\Auth\Listener\WarnNewDevice', static fn (Application $app) => new \Base\Auth\Listener\WarnNewDevice(
             $app->make(self::POLICY),
@@ -335,6 +338,8 @@ final class OmnibaseEffects
         }
         $class = 'Base\Twig\Extension\MailTwigExtension';
         $twig->addExtension(new $class($project, static function (string $name, array $parameters) use ($app): string {
+            // What a template's block gives (an e-mail's action_url) comes with its blank lines.
+            $name = trim($name);
             if (str_contains($name, '://') || str_starts_with($name, '//')) {
                 return $name;
             }

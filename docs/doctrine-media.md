@@ -63,6 +63,38 @@ option handed to `Mapping::register()` as it is. Beside them the provider gives 
 arguments from Laravel's container by type). With the mapping on, the core's repositories are also bound
 by their interfaces (`Base\Repository\Aliases::INTERFACES`).
 
+## omnibase's services, its Notifier and its entity events
+
+With the mapping on, `Omnibase\OmnibaseServices` binds what omnibase's Symfony configuration builds and an
+account's pages need (omnisense/omnibase's plan "omnibase agnostic", step F5c), each only where nothing is
+bound under its name:
+
+- Symfony's `Translator` under omnibase's (`Base\Services`' `Translator`): the catalogues' own, in the page's
+  language (`fr` is `fr_FR`, the country of the first of `omnibridge.locales.available` that speaks it);
+- `Localizer`, `SettingBag`, the entity hydrator over the mapping, the `SpamChecker` (the host's
+  `HttpClientInterface`, else Symfony's client), the mentions' enhancer; BaseTrait's accessors answer them
+  (they ask the registry first), and its project folder is the mapping's `project_dir`;
+- omnibase's entity dispatchers (`user.*`, `thread.*`, and `omnibridge.omnibase.entity_dispatchers`) and the
+  Doctrine hooks of `ThreadSubscriber` and `UserSubscriber` on the entity manager's events, built when their
+  first event comes (`LazyListener`); their events heard by name on Laravel's dispatcher (omnibase's
+  subscribers, and `omnibridge.omnibase.subscribers`); what they leave to flush flushed once the page is
+  answered (`FlushEntityEvents`, global);
+- with a channel policy, omnibase's `Notifier` (and `NotifierInterface`, `BaseNotifierInterface`) on Symfony's
+  Notifier, with omnibase's channels: `email` and `email+` by Laravel's mailer's transport, `browser+` (the
+  session's flashes), `inapp` (the bell's rows), `push`:
+
+```php
+// config/omnibridge.php
+'notifier' => [
+    // Symfony's framework.notifier.channel_policy: an importance's channels
+    'channel_policy' => ['default' => ['email+', 'browser+'], 'success' => ['browser+'], 'notify' => ['inapp', 'push']],
+],
+```
+
+Its parameters are the `base.notifier.*` ones (`config/base.php`: the technical address, the test
+recipients, each channel's options), as omnibase's `base.yaml` gives them. With it, omniauth's Sender is
+omnibase's `NotifierSender` on that Notifier, as under Symfony. `OmnibaseServicesTest` checks it.
+
 ## omnibase's images
 
 ```php
