@@ -43,4 +43,25 @@ final class FormThemeTest extends TestCase
         self::assertSame(1, substr_count($html, 'comment[email]'));
         self::assertStringContainsString('comment[_csrf_token]', $html);
     }
+
+    public function testAValueTypedTwiceTheButtonThatAsksAndTheTrapsRow(): void
+    {
+        $form = new FormView('sign_up', ['method' => 'POST']);
+        $password = $form->add('plainPassword', ['type' => 'repeated'])->children['plainPassword'];
+        $password->add('first', ['type' => 'password', 'required' => true, 'errors' => ['The values do not match.']]);
+        $password->add('second', ['type' => 'password', 'required' => true]);
+        $form->add('guard_website', ['type' => 'text', 'label' => false, 'row_attr' => ['class' => 'base-trap', 'aria-hidden' => 'true']]);
+        $form->add('submit', ['type' => 'submit', 'button' => true, 'confirmation' => true, 'label' => '<i></i>', 'attr' => ['class' => 'btn']]);
+
+        $html = Blade::render('@form($form)', ['form' => $form]);
+
+        self::assertStringContainsString('name="sign_up[plainPassword][first]"', $html);
+        self::assertStringContainsString('name="sign_up[plainPassword][second]"', $html);
+        self::assertStringContainsString('<div class="form-errors"><ul><li><span>The values do not match.</span>', $html);
+        self::assertStringContainsString('<div class="base-trap form-group" aria-hidden="true"><input type="text" id="sign_up_guard_website"', $html);
+        self::assertStringContainsString('data-button-confirmation="1"', $html);
+        self::assertStringContainsString('id="sign_up_submit-request"', $html);
+        self::assertStringContainsString('id="sign_up_submit-modal"', $html);
+        self::assertStringContainsString('<i></i></button>', $html);
+    }
 }

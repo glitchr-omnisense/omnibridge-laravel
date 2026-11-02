@@ -4,6 +4,9 @@
 
 ### Added
 
+- **`Form\FormRenderer`** prints what the sites' definitions hold: a value typed twice, omnibase's ButtonType and its confirmation modal, a row's
+  attributes (the guard's trap), a label humanized as Symfony's. **`Contract\LaravelValidation`** gets omnibase's `UniqueLookup`.
+
 - **The generic form theme under Laravel** (omnibase's step F5b): `Form\FormRenderer` reads omnibase's neutral `Base\Form\Definition\FormView`
   as well as this package's (any object with the same vars) and prints textareas, selects, buttons and errors, in the markup of omnibase's
   theme; `form()`; Blade directives `@form`, `@formStart`, `@formRow`, `@formWidget`, `@formLabel`, `@formErrors`, `@formRest`, `@formEnd`.
