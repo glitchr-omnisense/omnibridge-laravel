@@ -121,6 +121,22 @@ A storage name is the disk `omnibridge.storages` maps it to, else the disk of th
 (its path alone for a local disk), null for a local disk without `url` or a missing file;
 `publicPath()` that URL under `public_path()` for a local disk.
 
+## omnibase's list of services
+
+At boot, where omnisense/omnibase is installed, `Container\Definitions::bind()` reads the core's
+`Base\Services::definitions()` (its step F5a) - the list Symfony's container and the plain-PHP
+`Omnibridge\Container` read too: every listed service this provider (or the application) does not
+bind yet is a singleton of its class, every listed contract not bound an alias of it. The arguments
+the list gives are read with `Omnibridge\Container`'s syntax (`'@id'`, `'%name%'`: omnibase's
+parameters, `kernel.secret` the media's secret or `app.key`); the others are resolved where Laravel's
+autowiring stops - a union type takes the type the container binds first (`Views|Environment`,
+`Urls|RouterInterface`), then a class it can build, the default, null. The obfuscator and
+MediaService keep this provider's own bindings (the media's parameters and storages); the paginator,
+the translator (given `Symfony\Component\Translation\Translator`), `Stories` and the others come from the list.
+
+`Omnibridge\Contract\Views` is omnibridge/twig's `TwigViews` over the container's Twig environment:
+MediaService and omnibase's `EmailComposer` render through it.
+
 ## Parameters
 
 `Runtime::parameters()` (`Base\Service\ParameterBagInterface`) reads Laravel's config by the same

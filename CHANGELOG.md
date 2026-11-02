@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- omnisense/omnibase's list of services (`Base\Services::definitions()`, its step F5a) bound at boot by
+  `Container\Definitions`: what this provider or the application does not bind is a singleton of its class,
+  its contracts aliases, its arguments read with `Omnibridge\Container`'s syntax, union types resolved by the
+  type the container binds. `Omnibridge\Contract\Views` is bound to omnibridge/twig's `TwigViews` over the
+  container's Twig environment; MediaService and omnibase's `EmailComposer` take it in place of the
+  environment (which the core deprecates). Docs: contracts.md.
+
 ### Changed
 
 - omnibase's Doctrine mapping is `Omnibridge\Doctrine\Omnibase\Mapping`, where omnisense/omnibase's
