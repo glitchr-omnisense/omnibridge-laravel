@@ -47,6 +47,7 @@ use Omnibridge\Laravel\Contract\DiskFiles;
 use Omnibridge\Laravel\Contract\DispatcherEvents;
 use Omnibridge\Laravel\Contract\GateAccess;
 use Omnibridge\Laravel\Contract\GuardSessions;
+use Omnibridge\Laravel\Contract\LaravelRequests;
 use Omnibridge\Laravel\Contract\RouterRoutes;
 use Omnibridge\Laravel\Contract\LaravelValidation;
 use Illuminate\View\Compilers\BladeCompiler;
@@ -153,6 +154,9 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Contract\Nouns::class, fn (Application $app) => new EntityNouns($app->make(Host\Translations::class), $app['config']->get('omnibridge.entity_namespaces', [])));
         $this->app->singleton(Host\Access::class, fn (Application $app) => new GateAccess($app->make(\Illuminate\Contracts\Auth\Access\Gate::class), $app->make('auth')));
         $this->app->singleton(Host\Sessions::class, fn (Application $app) => new GuardSessions($app->make('auth')));
+        if (interface_exists(Host\Requests::class)) {
+            $this->app->singleton(Host\Requests::class, fn (Application $app) => new LaravelRequests($app));
+        }
         $this->app->singleton(Host\Tokens::class, fn (Application $app) => new SessionTokens($app));
         // omnibase's unit of work on the entity manager this package gives, where omnibridge/doctrine's adapter is installed.
         if (class_exists(\Omnibridge\Doctrine\Omnibase\DoctrineUnitOfWork::class)) {

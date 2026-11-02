@@ -4,6 +4,12 @@
 
 ### Added
 
+- **`Contract\LaravelRequests`**: omnisense/omnibridge's `Contract\Requests` on Laravel's request and session (none in a command): the
+  visitor's address, headers, address, route and its parameters, the session's values, and the flashes where omnibase's templates read
+  them (`SessionView`). Bound to `Omnibridge\Contract\Requests`.
+- `DispatcherEvents` gives an `Omnibridge\Event\NamedEvent` (omnibase's `user.register`...) to the listeners of its name as well,
+  `Event::listen('user.register', ...)`, as Symfony's subscribers listen by name.
+
 - **`Form\FormRenderer`** prints what the sites' definitions hold: a value typed twice, omnibase's ButtonType and its confirmation modal, a row's
   attributes (the guard's trap), a label humanized as Symfony's. **`Contract\LaravelValidation`** gets omnibase's `UniqueLookup`.
 

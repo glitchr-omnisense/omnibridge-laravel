@@ -90,6 +90,60 @@ final class ContractsTest extends TestCase
         $this->assertSame([$event], $heard);
     }
 
+    public function testANamedEventGoesToTheListenersOfItsNameToo(): void
+    {
+        $heard = [];
+        Event::listen('user.register', function (object $event) use (&$heard) {
+            $heard[] = $event;
+        });
+        $event = new class implements \Omnibridge\Event\NamedEvent {
+            public function eventName(): string
+            {
+                return 'user.register';
+            }
+        };
+
+        $this->assertSame($event, \Omnibridge\Event\Events::dispatch(Runtime::events(), $event, 'user.register'));
+        $this->assertSame([$event], $heard);
+    }
+
+    public function testRequestsAreTheRequestAndItsSession(): void
+    {
+        $this->app['router']->get('/requests/{slug}', function (\Illuminate\Http\Request $request) {
+            $requests = Runtime::requests();
+            $requests->remember('_target_path', '/back');
+            $requests->flash('success', 'Bienvenue.');
+
+            return response()->json([
+                'has' => $requests->has(),
+                'ip' => $requests->ip(),
+                'referer' => $requests->header('Referer'),
+                'uri' => $requests->uri(),
+                'host' => $requests->host(),
+                'route' => $requests->route(),
+                'slug' => $requests->attribute('slug'),
+                'kept' => $requests->session('_target_path'),
+                'flashes' => $requests->flashes(),
+                'same' => $requests->request() === $request,
+            ]);
+        })->name('requests_page')->middleware('web');
+
+        $this->get('http://site.example/requests/un-billet?x=1', ['Referer' => 'http://site.example/'])
+            ->assertOk()
+            ->assertJson([
+                'has' => true,
+                'ip' => '127.0.0.1',
+                'referer' => 'http://site.example/',
+                'uri' => 'http://site.example/requests/un-billet?x=1',
+                'host' => 'http://site.example',
+                'route' => 'requests_page',
+                'slug' => 'un-billet',
+                'kept' => '/back',
+                'flashes' => ['success' => ['Bienvenue.']],
+                'same' => true,
+            ]);
+    }
+
     public function testTheEnvironmentIsLaravels(): void
     {
         $this->assertSame('testing', Runtime::environment()->name());
