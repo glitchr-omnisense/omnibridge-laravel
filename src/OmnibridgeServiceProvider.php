@@ -3,7 +3,7 @@
 namespace Omnibridge\Laravel;
 
 use Base\Contract;
-use Base\Bridge\Doctrine\Mapping;
+use Omnibridge\Doctrine\Omnibase\Mapping;
 use Base\Contract\Runtime;
 use Base\Screen\ContextProvider;
 use Base\Screen\Negotiation;
@@ -232,7 +232,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
      * configured, they say so.
      *
      * With omnibridge.doctrine.omnibase on, the entity manager is omnibase's,
-     * as under Symfony: built with Base\Bridge\Doctrine\Mapping::configure()
+     * as under Symfony: built with Omnibridge\Doctrine\Omnibase\Mapping::configure()
      * (omnibridge/doctrine's configure:, the repositories from omnibase's
      * registry), over the core's entities beside the application's, then
      * Mapping::register() - the class convention (App\Entity\X is
@@ -294,13 +294,16 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
             return $this->mapping ?? throw new \LogicException('omnibase\'s Doctrine mapping is off: omnibridge.doctrine.omnibase.');
         });
+        // Its former name (Base\Bridge\Doctrine\Mapping, before omnisense/omnibase's step F3 moved it to
+        // omnibridge/doctrine), which the core aliases: the same binding.
+        $this->app->alias(Mapping::class, 'Base\Bridge\Doctrine\Mapping');
     }
 
     /** Laravel's environments by omnibase's names (the vault filter's, the rows Symfony wrote). */
     private const ENVIRONMENTS = ['production' => 'prod', 'local' => 'dev', 'development' => 'dev', 'testing' => 'test'];
 
     /**
-     * Base\Bridge\Doctrine\Mapping::register()'s options when
+     * Omnibridge\Doctrine\Omnibase\Mapping::register()'s options when
      * omnibridge.doctrine.omnibase is on (true, or the options themselves),
      * null when off: the project's folder (its src/Enum, src/Attribute),
      * the environment by omnibase's name, a cache folder under storage/, and

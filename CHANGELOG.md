@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- omnibase's Doctrine mapping is `Omnibridge\Doctrine\Omnibase\Mapping`, where omnisense/omnibase's
+  plan "omnibase agnostic" (step F3) moved `Base\Bridge\Doctrine\Mapping` with the core's other
+  Doctrine classes (omnibridge/doctrine). The provider imports the new name and binds the former one
+  as an alias of the same singleton; the core aliases the former class name, so an application's
+  code naming it is unchanged.
+
 ### Fixed
 
 - omnimap: `MapServiceProvider` makes omnimap/maplibre's factory when it is installed, beside

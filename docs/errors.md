@@ -12,7 +12,7 @@ the configuration key to set.
 |---|---|---|
 | `LogicException` | `Doctrine\DBAL\Connection` (resolved) | `No Doctrine connection: omnibridge.doctrine.connection names none of config/database.php.` |
 | `InvalidArgumentException` | the same | `No database connection "<name>" (omnibridge.doctrine.connection).`; `Doctrine\Connections`: `No Doctrine driver for Laravel's "<driver>" connections.` |
-| `LogicException` | `Base\Bridge\Doctrine\Mapping` (resolved) | `omnibase's Doctrine mapping is off: omnibridge.doctrine.omnibase.` |
+| `LogicException` | `Omnibridge\Doctrine\Omnibase\Mapping` (resolved) | `omnibase's Doctrine mapping is off: omnibridge.doctrine.omnibase.` |
 | `LogicException` | a repository class resolved | `No mapped entity names <class> as its repository (repositoryClass).` |
 | `LogicException` | the media's parameters | `omnibase's media are off: omnibridge.media.` |
 | `InvalidArgumentException` (a PSR-11 `NotFoundExceptionInterface`) | `Media\DiskStorages::get()` | `No storage "<id>": omnibridge.storages names no disk for it, and config/filesystems.php has no disk of that name.` |

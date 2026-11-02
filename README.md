@@ -280,7 +280,7 @@ $this->app->extend(RouterUrls::class, fn (RouterUrls $urls) => $urls->elsewhere(
 ```
 
 With `omnibridge.doctrine.omnibase` on, the bound entity manager is omnibase's, as
-under Symfony: built by omnibridge/doctrine with `Base\Bridge\Doctrine\Mapping::configure()`
+under Symfony: built by omnibridge/doctrine with `Omnibridge\Doctrine\Omnibase\Mapping::configure()` (formerly `Base\Bridge\Doctrine\Mapping`)
 (the repositories from omnibase's registry), over the core's entities beside the
 application's, then `Mapping::register()` - the class convention (`App\Entity\X` is
 `Base\Entity\X` where the application has none, an alias and not a subclass; an
