@@ -4,6 +4,8 @@
 
 ### Added
 
+- **`Auth\Roles`** implements omnisense/omnibridge's `Contract\Roles` (bound to the contract); omnibase's `SecurityPolicy` is given
+  it for its `$roleHierarchy` (step F5c, item 3).
 - **`Omnibase\OmnibaseServices`** (omnisense/omnibase's plan "omnibase agnostic", step F5c), with omnibase's mapping on: Symfony's
   `Translator` in the page's language, `Localizer`, `SettingBag`, the entity hydrator, `SpamChecker`, the mentions' enhancer;
   omnibase's entity dispatchers and `ThreadSubscriber`/`UserSubscriber`'s Doctrine hooks (`LazyListener`), their events heard by

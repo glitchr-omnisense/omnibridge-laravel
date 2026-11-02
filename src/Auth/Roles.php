@@ -4,6 +4,7 @@ namespace Omnibridge\Laravel\Auth;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Omnibridge\Contract\Roles as RolesContract;
 
 /**
  * Security's attributes as abilities of Laravel's gate (Gate::before): a
@@ -15,9 +16,11 @@ use Illuminate\Contracts\Auth\Factory as Auth;
  * (scheb/2fa's name), PUBLIC_ACCESS and IS_AUTHENTICATED_ANONYMOUSLY to
  * everybody. Any other ability is left to the gate's own definitions.
  * So is_granted('ROLE_ADMIN') in a template, and omnibase's Access contract,
- * answer as under Symfony.
+ * answer as under Symfony. It is omnisense/omnibridge's Contract\Roles too: the
+ * roles some roles reach (omnibase's SecurityPolicy asks it for the roles a
+ * second factor is required of).
  */
-final class Roles
+final class Roles implements RolesContract
 {
     /** @param array<string, list<string>> $hierarchy a role and the roles it includes */
     public function __construct(private readonly Auth $auth, private readonly array $hierarchy = [])
