@@ -49,6 +49,8 @@ use Omnibridge\Laravel\Contract\GateAccess;
 use Omnibridge\Laravel\Contract\GuardSessions;
 use Omnibridge\Laravel\Contract\RouterRoutes;
 use Omnibridge\Laravel\Contract\LaravelValidation;
+use Illuminate\View\Compilers\BladeCompiler;
+use Omnibridge\Laravel\Form\FormRenderer;
 use Omnibridge\Laravel\Contract\SessionTokens;
 use Omnibridge\Laravel\Contract\TransportMailer;
 use Omnibridge\Laravel\Doctrine\Connections;
@@ -100,6 +102,18 @@ use Omnibridge\Twig\TwigViews;
 final class OmnibridgeServiceProvider extends ServiceProvider
 {
     private ?Mapping $mapping = null;
+
+    /**
+     * The Blade side of the generic form theme: @form, @formStart, @formRow, @formWidget, @formLabel,
+     * @formErrors, @formRest and @formEnd print a form view (omnibase's Base\Form\Definition\FormView or
+     * Form\FormView) through FormRenderer, the markup Twig's form_*() functions print under Laravel.
+     */
+    private static function formDirectives(BladeCompiler $blade): void
+    {
+        foreach (['form' => 'form', 'formStart' => 'start', 'formRow' => 'row', 'formWidget' => 'widget', 'formLabel' => 'fieldLabel', 'formErrors' => 'errors', 'formRest' => 'rest', 'formEnd' => 'end'] as $directive => $method) {
+            $blade->directive($directive, static fn (string $expression): string => '<?php echo app('.FormRenderer::class.'::class)->'.$method.'('.$expression.'); ?>');
+        }
+    }
 
     /**
      * The catalogues' folders, Symfony's validator's first where it is installed: its messages in each
@@ -206,6 +220,8 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->callAfterResolving('blade.compiler', self::formDirectives(...));
+
         Runtime::setContainer($this->app);
 
         if (self::media($this->app)) {

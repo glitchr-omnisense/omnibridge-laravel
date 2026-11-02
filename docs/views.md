@@ -134,3 +134,20 @@ A few simple forms in the markup of omnibase's form theme, for the forms every p
 $this->app->extend(Base\Contract\Pictures::class, fn ($pictures) => $pictures->stored(fn (string $image) => /* its address, or null */));
 $this->app->extend(Base\Contract\Texts::class, fn ($texts) => $texts->images(fn (string $source) => /* its address, or null */));
 ```
+
+## The generic form theme
+
+`Form\FormRenderer` prints a form view - omnibase's neutral `Base\Form\Definition\FormView` (see omnibase's
+`docs/20-architecture/forms.md`) or this package's `Form\FormView`, the same vars - in the markup of omnibase's form theme:
+inputs, textarea, select, buttons, switches, expanded choices, the errors' list. In a Twig page through `form_row()` and
+its siblings (`Form\FormExtension`), in Blade through its directives:
+
+```blade
+@form($form)
+
+@formStart($form)
+    @formRow($form['email'])
+@formEnd($form)
+```
+
+`@formWidget`, `@formLabel`, `@formErrors` and `@formRest` print one piece.

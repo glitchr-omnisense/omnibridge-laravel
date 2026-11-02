@@ -4,6 +4,9 @@
 
 ### Added
 
+- **The generic form theme under Laravel** (omnibase's step F5b): `Form\FormRenderer` reads omnibase's neutral `Base\Form\Definition\FormView`
+  as well as this package's (any object with the same vars) and prints textareas, selects, buttons and errors, in the markup of omnibase's
+  theme; `form()`; Blade directives `@form`, `@formStart`, `@formRow`, `@formWidget`, `@formLabel`, `@formErrors`, `@formRest`, `@formEnd`.
 - **`Contract\LaravelValidation`** (omnibase's plan "omnibase agnostic", step F5b): omnibridge's `Validation` under Laravel - the kept
   constraints by omnibridge's `Validator`, so that their verdict and message are every host's, Laravel's own rules (a string, a Rule)
   by its validator; Symfony's messages from the `validators` catalogue, read from symfony/validator where it is installed.
