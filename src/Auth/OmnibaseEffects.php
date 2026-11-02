@@ -112,7 +112,8 @@ final class OmnibaseEffects
             $class = self::COMPOSER;
 
             return new $class(
-                $app->make(Environment::class),
+                // omnibridge's Views over the container's Twig (omnisense/omnibase's step F5a: EmailComposer renders through Views).
+                $app->make(\Omnibridge\Contract\Views::class),
                 static fn (): string => self::technicalAddress($app),
                 static fn (string $to): bool => self::isTest($app, $to),
                 static fn (string $id): string => $app->make(Translations::class)->trans($id),

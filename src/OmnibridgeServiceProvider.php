@@ -61,6 +61,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Twig\Environment;
+use Omnibridge\Twig\TwigViews;
 
 /**
  * omnisense/omnibase hosted by Laravel: each contract of its Foundation bound
@@ -162,6 +163,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->registerParameters();
         $this->registerDoctrine();
         $this->registerTwig();
+        // omnibridge's Views over the container's Twig (omnisense/omnibase's step F5a): what omnibase's
+        // services render through - the media tags, the mails, the sitemap, the sharing buttons.
+        $this->app->singleton(TwigViews::class, fn (Application $app) => new TwigViews(static fn (): Environment => $app->make(Environment::class)));
+        $this->app->alias(TwigViews::class, Host\Views::class);
         // Signing in through omniauth (plan "omniauth", step AU8), where omnisense/omniauth is
         // installed: Auth\AuthServiceProvider, which wires nothing unless omnibridge.auth is on
         // (the configuration may be set after the providers register: Testbench's defineEnvironment).
@@ -186,6 +191,12 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
         if (self::media($this->app)) {
             $this->registerMedia();
+        }
+        // omnibase's list of services (Base\Services::definitions(), its step F5a), as Symfony's container and
+        // the plain-PHP Omnibridge\Container read it: what is not bound above (or by the application) is bound
+        // from it - the paginator, the translator, the screens' builders... - its parameters omnibase's.
+        if (class_exists(\Base\Services::class)) {
+            Container\Definitions::bind($this->app, \Base\Services::definitions(), fn (string $name): mixed => self::listParameter($this->app, $name));
         }
         if (self::media($this->app) && false !== ($this->app['config']->get('omnibridge.media.routes') ?? true)) {
             // omnibase's image routes under their Symfony names, in Symfony's order (ImageRoute::ROUTES).
@@ -299,6 +310,19 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->alias(Mapping::class, 'Base\Bridge\Doctrine\Mapping');
     }
 
+    /**
+     * A parameter of omnibase's list of services: the kernel's secret is the media's (omnibridge.media.secret)
+     * or the application's key, as the Obfuscator's Hashids takes it; any other is omnibase's parameters'.
+     */
+    private static function listParameter(Application $app, string $name): mixed
+    {
+        if ('kernel.secret' === $name) {
+            return $app['config']->get('omnibridge.media.secret') ?? $app['config']->get('app.key');
+        }
+
+        return $app->make(ParameterBagInterface::class)->get($name);
+    }
+
     /** Laravel's environments by omnibase's names (the vault filter's, the rows Symfony wrote). */
     private const ENVIRONMENTS = ['production' => 'prod', 'local' => 'dev', 'development' => 'dev', 'testing' => 'test'];
 
@@ -399,7 +423,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
                 : self::diskStorages($app),
         ));
         $this->app->singleton(MediaService::class, fn (Application $app) => new MediaService(
-            $app->make(Environment::class),
+            $app->make(Host\Views::class),
             $app->make(LaravelMediaRouter::class),
             $app->make(Obfuscator::class),
             $app->make(Flysystem::class),
