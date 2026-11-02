@@ -181,6 +181,10 @@ final class AuthServiceProvider extends ServiceProvider
             return new RememberMe($app->make(Accounts::class), $app->bound(Passwords::class) ? $app->make(Passwords::class) : null, $settings->secret, Settings::string($remember['cookie'] ?? null) ?: 'REMEMBERME', Settings::int($remember['lifetime'] ?? null, 604800));
         });
         $this->app->singleton(Roles::class, fn (Application $app) => new Roles($app->make(AuthFactory::class), $app->make(Settings::class)->roleHierarchy));
+        $this->app->alias(Roles::class, \Omnibridge\Contract\Roles::class);
+        // omnisense/omnibase's SecurityPolicy reads the hierarchy through that contract; its argument is a union
+        // (Roles or Security's deprecated RoleHierarchyInterface), which Laravel gives by its name only.
+        $this->app->when('Base\Service\SecurityPolicy')->needs('$roleHierarchy')->give(static fn (Application $app) => $app->make(Roles::class));
         $this->app->singleton(Pages::class, fn (Application $app) => new Pages($app));
         $this->app->singleton(OmniauthUserProvider::class, fn (Application $app) => new OmniauthUserProvider($app->make(Accounts::class), $app->make(Passwords::class), $app->make(PasswordHasherInterface::class)));
         if (interface_exists('Omniauth\OAuth\Provider\Provider')) {
