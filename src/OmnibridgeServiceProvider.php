@@ -154,7 +154,12 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Host\Access::class, fn (Application $app) => new GateAccess($app->make(\Illuminate\Contracts\Auth\Access\Gate::class), $app->make('auth')));
         $this->app->singleton(Host\Sessions::class, fn (Application $app) => new GuardSessions($app->make('auth')));
         $this->app->singleton(Host\Tokens::class, fn (Application $app) => new SessionTokens($app));
-        $this->app->singleton(Host\Validation::class, fn (Application $app) => new LaravelValidation($app->make('validator'), $app->make(Host\Translations::class)));
+        $this->app->singleton(Host\Validation::class, fn (Application $app) => new LaravelValidation(
+            $app->make('validator'),
+            $app->make(Host\Translations::class),
+            // Unique's lookup: omnibase's over its repositories, when it is here.
+            class_exists(\Base\Form\Definition\UniqueLookup::class) ? static fn (string $class, array $criteria, ?object $record): bool => (new \Base\Form\Definition\UniqueLookup($app->make(\Base\Database\Repository\Repositories::class)))($class, $criteria, $record) : null,
+        ));
         $this->app->singleton(Host\Environment::class, fn (Application $app) => new AppEnvironment(
             (string) $app->environment(),
             (bool) $app['config']->get('app.debug'),

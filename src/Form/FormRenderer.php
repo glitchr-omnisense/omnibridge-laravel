@@ -54,7 +54,8 @@ final class FormRenderer
             'checkbox' => $this->checkbox($vars),
             'choice' => $this->isExpanded($vars) ? $this->choices($field, $vars) : $this->select($field, $vars),
             'textarea' => $this->textarea($vars),
-            'submit', 'button' => $this->button($vars),
+            'submit', 'button' => ($vars['button'] ?? false) ? $this->action($field, $vars) : $this->button($vars),
+            'repeated' => $this->repeated($field),
             default => $this->input($vars),
         };
     }
@@ -67,19 +68,74 @@ final class FormRenderer
             $field->rendered = true;
 
             return '<div  class="form-switch form-switch-lg form-group form-check"><span>'
-                .$this->label($vars['id'], $this->translate($vars['label'] ?? $vars['name']))
-                .'</span>'.$this->checkbox($vars + ['attr' => []]).'</div>';
+                .$this->label($vars['id'], $this->labelled($vars))
+                .'</span>'.$this->checkbox($vars + ['attr' => []]).$this->errors($field).'</div>';
+        }
+        if ('repeated' === $vars['type']) {
+            return $this->repeated($field);
         }
 
         if (\in_array($vars['type'], ['hidden', 'submit', 'button', 'html'], true)) {
             return $this->widget($field, $options);
         }
-        $label = false === ($vars['label'] ?? null) ? '' : $this->label($vars['id'], $this->translate($vars['label'] ?? $vars['name']));
+        $label = false === ($vars['label'] ?? null) ? '' : $this->label($vars['id'], $this->labelled($vars));
         if ([] !== (array) ($vars['errors'] ?? [])) {
             $options['attr'] = ['class' => trim('is-invalid '.($options['attr']['class'] ?? ''))] + ($options['attr'] ?? []);
         }
+        $rowAttr = (array) ($vars['row_attr'] ?? []);
+        $class = trim(($rowAttr['class'] ?? '').' form-group');
+        unset($rowAttr['class']);
 
-        return '<div class="form-group">'.$label.$this->widget($field, $options).$this->errors($field).'</div>';
+        return '<div '.$this->attributes(['class' => $class] + $rowAttr).'>'.$label.$this->widget($field, $options).$this->errors($field).'</div>';
+    }
+
+    /** A field's label when a template gives none: its own, else its name as Symfony humanizes it (Agree terms). @param array<string, mixed> $vars */
+    private function labelled(array $vars): string
+    {
+        $label = $vars['label'] ?? null;
+        if (null !== $label && false !== $label) {
+            return $this->translate($label);
+        }
+
+        return ucfirst(strtolower(trim((string) preg_replace(['/([A-Z])/', '/[_\s]+/'], ['_$1', ' '], (string) $vars['name']))));
+    }
+
+    /** A value typed twice: a row per input, its errors on the first. */
+    private function repeated(object $field): string
+    {
+        $field->rendered = true;
+        $html = '';
+        foreach ($field->children as $child) {
+            $html .= $this->row($child);
+        }
+
+        return $html;
+    }
+
+    /**
+     * A button of omnibase's ButtonType (the theme's button2): the real one kept hidden, the one
+     * shown asking first, in a modal when it asks for a confirmation.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function action(object $field, array $vars): string
+    {
+        $id = (string) $vars['id'];
+        $confirmation = (bool) ($vars['confirmation'] ?? false);
+        $classes = (string) ($vars['attr']['class'] ?? '');
+        $label = (string) ($vars['label'] ?? $this->labelled($vars));
+        $label = false === ($vars['label_html'] ?? null) ? htmlspecialchars($this->translate($label)) : $this->translate($label);
+        $hidden = ['type' => $vars['type'], 'id' => $id, 'name' => $vars['full_name'], 'data-button-field' => $id, 'data-button-confirmation' => $confirmation ? '1' : '', 'data-button-confirmation-bubbleup' => '1', 'class' => trim($classes.' hidden btn-action').' hidden btn-action'];
+        $html = '<button '.$this->attributes($hidden).'>'.$label.'</button>';
+        $html .= '<button '.$this->attributes(['type' => 'button', 'class' => $classes, 'id' => $id.'-request']).'>'.$label.'</button>';
+        if ($confirmation) {
+            $html .= '<div class="modal fade" id="'.htmlspecialchars($id).'-modal" tabindex="-1" role="dialog" aria-labelledby="'.htmlspecialchars($id).'-modal"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-body">'
+                .htmlspecialchars($this->translate('@fields.boolean.text')).'</div><div class="modal-footer"><button type="button" class="btn btn-default" id="'.htmlspecialchars($id).'-cancel" data-dismiss="modal">'
+                .htmlspecialchars($this->translate('@fields.boolean.button.cancel')).'</button><button type="button" class="btn btn-primary" id="'.htmlspecialchars($id).'-confirm">'
+                .htmlspecialchars($this->translate('@fields.boolean.button.confirm')).'</button></div></div></div></div>';
+        }
+
+        return $html;
     }
 
     /** form_errors(): the field's errors in the markup of omnibase's form theme; nothing without any. */
@@ -236,7 +292,7 @@ final class FormRenderer
         foreach ($this->flat($vars['choices'] ?? []) as $value => $label) {
             $id = $vars['id'].'_'.$value;
             $attributes = ['type' => 'checkbox', 'id' => $id, 'name' => $vars['full_name'].'[]', 'class' => 'form-switch form-switch-lg form-check-input', 'value' => (string) $value];
-            if (\in_array($value, (array) ($vars['data'] ?? $vars['value'] ?? []), false)) {
+            if (\in_array((string) $value, array_map(strval(...), (array) ($vars['data'] ?? $vars['value'] ?? [])), true)) {
                 $attributes['checked'] = 'checked';
             }
             $html .= '<input '.$this->attributes($attributes).' />'.$this->label($id, (string) $label);
