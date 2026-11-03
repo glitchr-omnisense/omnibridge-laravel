@@ -76,6 +76,7 @@ final class FormRenderer
             'textarea' => $this->textarea($vars),
             'submit', 'button' => ($vars['button'] ?? false) ? $this->action($field, $vars) : $this->button($vars),
             'repeated' => $this->repeated($field),
+            'translation' => $this->translation($field, $vars),
             default => $this->input($vars),
         };
     }
@@ -105,6 +106,9 @@ final class FormRenderer
         if ('repeated' === $vars['type']) {
             return $this->repeated($field);
         }
+        if ('translation' === $vars['type']) {
+            return $this->widget($field, $options); // translatable_row: the widget alone
+        }
 
         if (\in_array($vars['type'], ['hidden', 'submit', 'button', 'html'], true)) {
             return $this->widget($field, $options);
@@ -130,6 +134,65 @@ final class FormRenderer
         }
 
         return ucfirst(strtolower(trim((string) preg_replace(['/([A-Z])/', '/[_\s]+/'], ['_$1', ' '], (string) $vars['name']))));
+    }
+
+    /**
+     * A translations field (translatable_widget): one tab per language - its flag, the default and the
+     * required ones marked -, each the rows of its language's fields; a field of one language alone, its
+     * rows without tabs. A field of a kind this package does not draw refuses the whole field aloud.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function translation(object $field, array $vars): string
+    {
+        $rowAttr = (array) ($vars['row_attr'] ?? []);
+        $class = trim('form-translatable '.($rowAttr['class'] ?? ''));
+        unset($rowAttr['class']);
+        $id = (string) $vars['id'];
+        $rows = function (object $part) use ($field): string {
+            $part->rendered = true;
+            $html = '';
+            foreach ($part->children as $child) {
+                try {
+                    $html .= $this->row($child);
+                } catch (UnsupportedKind $refusal) {
+                    throw UnsupportedKind::of('translation', 'omnibridge/laravel', sprintf('its field "%s" is not drawn (%s)', $child->vars['name'], $refusal->getMessage()));
+                }
+            }
+
+            return $html;
+        };
+
+        $html = '<div '.$this->attributes(['id' => $id, 'class' => $class] + $rowAttr).'>';
+        if (1 === \count($field->children) && ($vars['single_locale'] ?? false)) {
+            foreach ($field->children as $part) {
+                $html .= '<div id="'.htmlspecialchars($part->vars['id']).'">'.$rows($part).'</div>';
+            }
+
+            return $html.'</div>';
+        }
+        if ($vars['translations_empty'] ?? true) {
+            return $html.'</div>';
+        }
+        $available = (array) ($vars['available_locales'] ?? []);
+        $shown = $vars['compatible_locale'] ?? null;
+        $nav = '<ul class="nav nav-tabs" role="tablist" id="'.htmlspecialchars($id).'_nav">';
+        $panes = '<div class="tab-content" id="'.htmlspecialchars($id).'_tab">';
+        foreach ($field->children as $locale => $part) {
+            if (!\in_array($locale, $available, true)) {
+                continue;
+            }
+            $tab = $id.'_'.$locale;
+            $required = $locale === ($vars['default_locale'] ?? null) || \in_array($locale, (array) ($vars['required_locales'] ?? []), true);
+            $country = strtolower(\Locale::getRegion(str_replace('-', '_', (string) $locale)) ?: (string) $locale);
+            $nav .= '<li class="nav-item" role="presentation"><button '.$this->attributes([
+                'class' => trim('nav-link '.($shown === $locale ? 'active ' : '').(\in_array($locale, (array) ($vars['nonempty_locales'] ?? []), true) ? '' : 'muted')),
+                'id' => $tab.'-tab', 'data-bs-toggle' => 'tab', 'data-bs-target' => '#'.$tab, 'type' => 'button', 'role' => 'tab', 'aria-controls' => $locale, 'aria-selected' => 'true',
+            ]).'><label'.($required ? ' class="required"' : '').'><img '.$this->attributes(['class' => trim('country-flag '.($locale === ($vars['default_locale'] ?? null) ? 'default' : '')), 'data-src' => '/bundles/base/images/flags/'.$country.'.svg', 'alt' => $locale]).'></label></button></li>';
+            $panes .= '<div '.$this->attributes(['class' => 'tab-pane fade'.($shown === $locale ? ' show active' : ''), 'id' => $tab, 'role' => 'tabpanel', 'aria-labelledby' => $tab.'-tab']).'>'.$rows($part).'</div>';
+        }
+
+        return $html.$nav.'</ul>'.$panes.'</div></div>';
     }
 
     /** A value typed twice: a row per input, its errors on the first. */

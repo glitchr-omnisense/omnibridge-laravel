@@ -168,6 +168,7 @@ Symfony type reads, so the same data attributes reach the same scripts:
 | `choice`, `role`, `state`, `gender`, `currency`, `country`, `icon` | `select2`: the `choice` part (`name[choice]`), its options printed, the chosen ones selected (a remote search's by the words select2 shows) |
 | `password` | `password2`: `plain` and `plain_repeater`, the strength meter |
 | `locale` | a plain select of Intl's locales |
+| `translation` | `translatable`: a tab per language (its flag, the default and the required ones marked), each the rows of its translation entity's fields (`name[fr-FR][title]`); one language alone, its rows without tabs. A field of a kind not drawn here refuses the whole field, naming it |
 
 `Form\LaravelKinds::COVERAGE` declares every kind of `Base\Field\Kind`: implemented, or unsupported with the reason.
 A field that names its host type and keeps a kind (`setFormType()`: the newsletter's destinations, records drawn

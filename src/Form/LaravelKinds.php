@@ -25,7 +25,7 @@ final class LaravelKinds
         'icon' => 'select2',
         'color' => 'jscolor', 'color_picker' => 'colorpickr',
         'date' => 'input', 'datetime' => 'input', 'datetime_picker' => 'datetimepicker', 'time' => 'input',
-        'repeated' => 'repeated', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
+        'repeated' => 'repeated', 'translation' => 'translatable', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
     ];
 
     private const NOT_YET = 'not drawn by omnibridge/laravel yet (plan "omnibase agnostic", step F5d, a later slice): ';
@@ -66,7 +66,9 @@ final class LaravelKinds
         'array' => 'unsupported: '.self::NOT_YET.'a list of entries with its prototype (ArrayType)',
         'collection' => 'unsupported: '.self::NOT_YET.'a collection of sub-forms with its prototype (CollectionType)',
         'repeated' => 'implemented',
-        'translation' => 'unsupported: '.self::NOT_YET.'one tab per language with the translation entity\'s fields (TranslationType)',
+        // One tab per language, the translation entity's fields (omnibase's Translation, RecordFields); a field of a kind
+        // not drawn here refuses the whole field.
+        'translation' => 'implemented',
         'discriminator' => 'unsupported: '.self::NOT_YET.'the inheritance\'s choice (DiscriminatorType)',
         'submit' => 'implemented', 'button' => 'implemented', 'html' => 'implemented',
         'custom' => 'unsupported: a Symfony form type named directly (FieldDescriptor::setFormType()) has no Laravel widget; name a kind',
