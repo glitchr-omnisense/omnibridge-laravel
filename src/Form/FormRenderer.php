@@ -73,6 +73,13 @@ final class FormRenderer
             // A text written in Editor.js or in Quill (omnibase's editor and wysiwyg blocks: Base\Field\Behaviour\{Editor, Wysiwyg}).
             case 'editor': return $this->editor($vars);
             case 'wysiwyg': return $this->wysiwyg($vars);
+            // A related record's form embedded, a list of entries, a record's attributes (omnibase's association,
+            // collection2, array and attribute blocks: Base\Field\Behaviour\{Association, Collection, Attribute}).
+            case 'association': return $this->association($field, $vars);
+            case 'association_entry': return $this->entity($field, $vars);
+            case 'collection2': return $this->collection($field, $vars);
+            case 'array': return $this->arrayList($field, $vars);
+            case 'attribute': return $this->attribute($field, $vars);
             // Pickr (colorpickr_widget): the input, told where its field is.
             case 'color': return $this->input(['attr' => $vars['attr'] + ['data-color-field' => $vars['id']]] + $vars);
         }
@@ -121,6 +128,23 @@ final class FormRenderer
             $label = false === ($vars['label'] ?? null) ? '' : $this->label($vars['id'], $this->labelled($vars), (bool) $vars['required']);
 
             return '<div '.$this->attributes(['class' => 'form-'.$vars['widget'].' '.$class] + $rowAttr).'><span>'.$label.'</span>'.$this->errors($field).$this->widget($field, $options).'</div>';
+        }
+        if ('association' === ($vars['widget'] ?? null)) {
+            return $this->associationRow($field, $vars);
+        }
+        if ('collection2' === ($vars['widget'] ?? null)) {
+            return $this->collectionRow($field, $vars);
+        }
+        if ('array' === ($vars['widget'] ?? null)) {
+            return $this->arrayRow($field, $vars);
+        }
+        if ('attribute' === ($vars['widget'] ?? null)) {
+            $rowAttr = (array) ($vars['row_attr'] ?? []);
+            $class = trim(($rowAttr['class'] ?? '').' form-group');
+            unset($rowAttr['class']);
+            $label = false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars), (bool) $vars['required']);
+
+            return '<div '.$this->attributes(['class' => $class] + $rowAttr).'>'.$label.$this->widget($field, $options).$this->errors($field).'</div>';
         }
         if ('boolean' === ($vars['widget'] ?? null)) {
             $rowAttr = (array) ($vars['row_attr'] ?? []);
@@ -667,6 +691,292 @@ final class FormRenderer
         }
 
         return $html;
+    }
+
+    /**
+     * omnibase's association_row: several records (a to-many association drawn at the form's root), the
+     * collection of their forms under the field's label; one record, its form (association_widget) - in a
+     * group, or labelled in a plain one.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function associationRow(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        $rowAttr = (array) ($vars['row_attr'] ?? []);
+        if (($vars['multiple'] ?? false) && isset($field->children['_collection'])) {
+            $class = trim('field-association '.($rowAttr['class'] ?? ''));
+            unset($rowAttr['class']);
+            $label = false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars));
+
+            return '<div '.$this->attributes(['class' => $class] + $rowAttr).'>'.$label.'<div '.$this->attributes(['id' => $vars['id'], 'class' => 'form-control']).'>'
+                .$this->collectionRow($field->children['_collection'], $field->children['_collection']->vars).'</div>'.$this->errors($field).'</div>';
+        }
+        if ($vars['group'] ?? true) {
+            return $this->association($field, $vars);
+        }
+        $label = false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars), (bool) $vars['required']);
+
+        return '<div class="form-association form-group">'.$label.'<div '.$this->attributes(['id' => $vars['id']]).'>'.$this->association($field, $vars).'</div></div>';
+    }
+
+    /**
+     * omnibase's association_widget: one record's form, its fields' rows; a translated attribute's value (its
+     * TranslationType) is not drawn here, refused aloud.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function association(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        if ($vars['translated'] ?? false) {
+            throw UnsupportedKind::of('attribute', 'omnibridge/laravel', 'a translated attribute\'s value (its adapter\'s TranslationType, an `intl` part) is not drawn here');
+        }
+        if (isset($field->children['_collection'])) {
+            return $this->collectionRow($field->children['_collection'], $field->children['_collection']->vars);
+        }
+
+        return $this->entity($field, $vars);
+    }
+
+    /** One record's form: a group of its fields' rows. @param array<string, mixed> $vars */
+    private function entity(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        $hidden = [] !== $field->children && [] === array_filter($field->children, static fn (object $child): bool => 'hidden' !== ($child->vars['type'] ?? null));
+        $attr = (array) ($vars['attr'] ?? []);
+        $class = trim(($hidden ? 'hidden ' : '').'form-group form-entity');
+        unset($attr['class']);
+        $html = '<div '.$this->attributes(['id' => $vars['id']] + $attr + ['class' => $class]).'>';
+        foreach ($field->children as $child) {
+            $html .= $this->row($child);
+        }
+
+        return $html.'</div>';
+    }
+
+    /**
+     * omnibase's collection2_row: the list under its label, the data attributes form-type-collection.js reads -
+     * the prototype of a new entry drawn whole, the number of entries, the prototype's name, what an empty
+     * list shows.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function collectionRow(object $field, array $vars): string
+    {
+        $prototype = $vars['prototype'] ?? null;
+        $attr = (array) ($vars['attr'] ?? []);
+        unset($attr['class']);
+        $attributes = ['id' => $vars['id'], 'name' => $vars['full_name']] + $attr;
+        if (\is_object($prototype)) {
+            $attributes['data-prototype'] = $this->row($prototype, ['attr' => ['class' => 'form-control']]);
+        }
+        $attributes += [
+            'data-collection-field' => 'true',
+            'data-num-items' => (string) \count($field->children),
+            'data-form-type-name-placeholder' => \is_object($prototype) ? (string) $prototype->vars['name'] : '',
+            'data-empty-collection' => (string) ($vars['empty'] ?? ''),
+            'class' => 'form-collection',
+        ];
+        $rowAttr = (array) ($vars['row_attr'] ?? []);
+        $label = false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars));
+        $inner = '<div '.$this->attributes($attributes).'>'.$this->collection($field, $vars).'</div>';
+        if (!($vars['group'] ?? true)) {
+            return $inner;
+        }
+
+        return '<div '.$this->attributes($rowAttr + ['class' => 'form-group']).'>'.$label.$inner.'</div>';
+    }
+
+    /**
+     * omnibase's collection2_widget: what an empty list shows, or its entries (each in its accordion, its
+     * delete button where entries are deleted), the add button; a capped list's window, the indexes it drew
+     * (`_rendered`) and the button that fetches the others.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function collection(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        $html = '';
+        if ([] === $field->children) {
+            $html .= (string) ($vars['empty'] ?? '');
+        } else {
+            $html .= '<div class="'.(($vars['allow_add'] ?? false) ? '' : 'form-collection-no-add-button ').'form-collection-items">';
+            foreach ($field->children as $entry) {
+                $html .= $this->collectionEntry($field, $entry, $vars);
+            }
+            $html .= '</div>';
+        }
+        if (($vars['group'] ?? true) && ($vars['allow_add'] ?? false)) {
+            $html .= '<button type="button" class="btn btn-link form-collection-add-button"><i class="fa-solid fa-plus pr-1"></i>'.htmlspecialchars($this->translate('@fields.collection.add_item')).'</button>';
+        }
+        $max = $vars['max_entries'] ?? null;
+        $total = $vars['entry_total'] ?? null;
+        $shown = (int) ($vars['entry_offset'] ?? 0) + (int) $max;
+        if ($max && null !== $total && $total > \count($field->children)) {
+            $html .= '<input '.$this->attributes(['type' => 'hidden', 'name' => $vars['full_name'].'[_rendered]', 'value' => implode(',', array_keys($field->children)), 'data-collection-rendered' => true]).'>';
+        }
+        if ($max && null !== $total && $total > $shown) {
+            $html .= '<button '.$this->attributes(['type' => 'button', 'class' => 'btn form-collection-more', 'data-collection-more' => true, 'data-loaded' => (string) $shown, 'data-total' => (string) $total, 'data-limit' => (string) $max]).'><i class="fa-solid fa-chevron-down"></i><span data-collection-more-label>'.($total - $shown).'</span></button>';
+        }
+
+        return $html;
+    }
+
+    /** omnibase's collection2_entry_widget: an entry in its accordion (a group), labelled, or as it is. @param array<string, mixed> $list */
+    private function collectionEntry(object $collection, object $entry, array $list): string
+    {
+        $entry->rendered = true;
+        $id = (string) $entry->vars['id'];
+        $record = $entry->vars['value'] ?? null;
+        $label = $this->entryLabel($entry);
+        $body = [] !== $entry->children ? $this->widget($entry) : $this->row($entry);
+        if (!($list['group'] ?? true)) {
+            return ($list['row_group'] ?? true) ? ('' !== $label ? '<label>'.htmlspecialchars($label).'</label>' : '').'<div class="form-collection-group">'.$body.'</div>' : $body;
+        }
+        $empty = [] === array_filter(array_keys($entry->children), static fn (string|int $name): bool => !str_starts_with((string) $name, '_'));
+        $collapsed = (bool) ($list['entry_collapsed'] ?? true);
+        $delete = ($list['allow_delete'] ?? false) ? '<button type="button" class="btn btn-link btn-link-danger form-collection-delete-button" title="'.htmlspecialchars($this->translate('@fields.collection.remove_item')).'"><i class="fa-regular fa-fw fa-trash-alt"></i></button>' : '';
+
+        return '<div class="accordion form-collection-item"><div class="accordion-item"><div class="accordion-header" id="'.htmlspecialchars($id).'-heading">'
+            .'<button class="accordion-button'.($collapsed ? ' collapsed' : '').'"'.($empty ? ' style="cursor:default;"' : '').' type="button" data-bs-toggle="collapse" data-bs-target="#'.htmlspecialchars($id).'-collapse" aria-expanded="'.($collapsed ? '' : '1').'" aria-controls="'.htmlspecialchars($id).'-collapse">'.htmlspecialchars($label).'</button>'
+            .'<div class="form-collection-buttons">'.$delete.'</div></div>'
+            .'<div id="'.htmlspecialchars($id).'-collapse" class="accordion-collapse collapse '.($collapsed || $empty ? '' : 'show').'"><div class="accordion-body">'.$body.'</div></div></div></div>';
+    }
+
+    /** An entry's label, as CollectionType's entry_label gives it: none for the prototype, the record's name and number. */
+    private function entryLabel(object $entry): string
+    {
+        $name = (string) $entry->vars['name'];
+        if (!ctype_digit($name)) {
+            return '';
+        }
+        $record = $entry->vars['value'] ?? null;
+        if (!\is_object($record)) {
+            return $this->translate('@fields.collection.entry').' #'.(((int) $name) + 1);
+        }
+
+        return $this->translate('@fields.collection.entry').' #'.(((int) $name) + 1).($record instanceof \Stringable ? ' : '.$record : '');
+    }
+
+    /**
+     * omnibase's array_row: the list under its label, the data attributes form-type-array.js reads; a list of
+     * a fixed pattern (a hyperlink's https://{0}), its inputs between the pattern's parts.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function arrayRow(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        $prototype = $vars['prototype'] ?? null;
+        $pattern = $vars['pattern'] ?? null;
+        if ([] === $field->children && !($vars['allow_add'] ?? false) && (null === $pattern || '' === $pattern)) {
+            return '';
+        }
+        $label = false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars));
+        $html = '<div class="form-group"><span>'.$label.'</span>';
+        if (\is_string($pattern) && '' !== $pattern && !\is_object($prototype)) {
+            $parts = preg_split('/{[0-9]*}/', $pattern) ?: [];
+            $html .= '<div class="input-group mb-3">';
+            $i = 0;
+            foreach ($field->children as $child) {
+                $before = $parts[$i++] ?? '';
+                $html .= ('' !== $before ? '<div class="input-group-text">'.htmlspecialchars($before).'</div>' : '').$this->widget($child);
+            }
+            $last = end($parts);
+
+            return $html.(\is_string($last) && '' !== $last ? '<div class="input-group-text">'.htmlspecialchars($last).'</div>' : '').'</div></div>'.$this->errors($field);
+        }
+        $attr = (array) ($vars['attr'] ?? []);
+        unset($attr['class']);
+        $attributes = ['id' => $vars['id'], 'name' => $vars['full_name']] + $attr;
+        if (\is_object($prototype)) {
+            $attributes['data-prototype'] = $this->arrayEntry($field, $prototype, $vars, ['class' => 'form-inline']);
+        }
+        $attributes += [
+            'data-array-field' => 'true', 'data-allow-add' => ($vars['allow_add'] ?? false) ? 'true' : 'false',
+            'data-allow-delete' => ($vars['allow_delete'] ?? false) ? 'true' : 'false', 'data-num-items' => (string) \count($field->children),
+            'data-form-type-name-placeholder' => \is_object($prototype) ? (string) $prototype->vars['name'] : '',
+            'data-empty-array' => $this->arrayEmpty($vars), 'class' => 'form-array',
+        ];
+
+        return $html.'<div '.$this->attributes($attributes).'>'.$this->arrayList($field, $vars).'</div></div>'.$this->errors($field);
+    }
+
+    /** omnibase's array_widget: what an empty list shows, or its entries; the add button. @param array<string, mixed> $vars */
+    private function arrayList(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        if ([] === $field->children) {
+            $html = $this->arrayEmpty($vars);
+        } else {
+            $html = '<div class="form-array-items">';
+            foreach ($field->children as $entry) {
+                $html .= $this->arrayEntry($field, $entry, $vars);
+            }
+            $html .= '</div>';
+        }
+        if ($vars['allow_add'] ?? false) {
+            $html .= '<button type="button" class="btn btn-link form-array-add-button"><i class="fa-solid fa-plus pr-1"></i>'.htmlspecialchars($this->translate('@fields.collection.add_item')).'</button>';
+        }
+
+        return $html;
+    }
+
+    /**
+     * omnibase's array_entry_widget: an entry in its accordion's header (an associative one's key and value
+     * inline), its delete button where entries are deleted.
+     *
+     * @param array<string, mixed> $vars
+     * @param array<string, mixed> $attr
+     */
+    private function arrayEntry(object $list, object $entry, array $vars, array $attr = []): string
+    {
+        $entry->rendered = true;
+        $id = (string) $entry->vars['id'];
+        $index = (int) $entry->vars['name'];
+        $placeholder = (array) ($vars['placeholder'] ?? []);
+        $given = [];
+        if (isset($placeholder[$index]) && '' !== $placeholder[$index]) {
+            $given['placeholder'] = $placeholder[$index];
+        }
+        if ($vars['associative'] ?? false) {
+            $widget = '<div '.$this->attributes(['id' => $id, 'class' => 'form-inline']).'>'.$this->widget($entry->children['key']).$this->widget($entry->children['value']).'</div>';
+        } else {
+            $widget = $this->widget($entry, ['attr' => ('' !== trim($attr['class'] ?? '') ? ['class' => trim($attr['class'])] : []) + $given]);
+        }
+        $delete = ($vars['allow_delete'] ?? false) ? '<button type="button" tabindex="-1" class="btn btn-link btn-link-danger form-array-delete-button" title="'.htmlspecialchars($this->translate('@fields.collection.remove_item')).'"><i class="fa-regular fa-fw fa-trash-alt"></i></button>' : '';
+
+        return '<div class="accordion form-array-item"><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" tabindex="-1" type="button" data-bs-toggle="collapse" data-bs-target="#'.htmlspecialchars($id).'-collapse"><i class="fa-solid fa-fw fa-chevron-right form-array-item-collapse-marker"></i>'
+            .$widget.'</button>'.$delete.'</h2></div></div>';
+    }
+
+    /** omnibase's array_empty. @param array<string, mixed> $vars */
+    private function arrayEmpty(array $vars): string
+    {
+        $button = ($vars['allow_add'] ?? false) ? '' : '<button tabindex="-1" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#'.htmlspecialchars((string) $vars['id']).'-collapse"><i class="fa-solid fw fa-chevron-right form-array-item-collapse-marker"></i>'.htmlspecialchars($this->translate('@fields.array.empty')).'</button>';
+
+        return '<div class="empty array-empty">'.$button.'</div>';
+    }
+
+    /**
+     * omnibase's attribute_widget: the select of adapters, then each attribute's part (its value's field),
+     * what shows for none.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function attribute(object $field, array $vars): string
+    {
+        $field->rendered = true;
+        $html = '<div class="form-control form-attribute">'.(isset($field->children['choice']) ? $this->widget($field->children['choice']) : '').'<div class="form-attribute-items">';
+        foreach ($field->children as $name => $part) {
+            if ('choice' !== $name) {
+                $html .= $this->widget($part);
+            }
+        }
+
+        return $html.'<div class="form-text text-muted">'.htmlspecialchars($this->translate('@fields.attribute.empty')).'</span></div></div></div>';
     }
 
     /** A var printed in an attribute as Twig prints it: true "1", false and null "", a list or a map its JSON. */

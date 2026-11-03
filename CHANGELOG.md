@@ -4,6 +4,14 @@
 
 ### Added
 
+- **omnibase's embedded forms, lists and attributes** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 7):
+  `FormRenderer` draws `association` (an embedded record's form, or several records' forms in the collection `_collection`
+  with its prototype, as omnibase's `association_row`, `collection2_row` and `collection2_entry_widget` blocks do), `collection`,
+  `array` (`array_row`, a fixed pattern's inputs between its parts) and `attribute` (the select of adapters, each attribute's
+  part); `LaravelKinds` declares the four implemented. A translated attribute's value (its adapter's `TranslationType`, the
+  `intl` part of every attribute of the core) is refused aloud, naming the reason. Binding is omnibase's (`FormBinder`:
+  `Base\Field\Behaviour\{Association, Collection, Attribute}`). Docs: docs/views.md.
+
 - **omnibase's editors** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 6): `FormRenderer` draws `editor`
   (Editor.js) and `wysiwyg` (Quill) as omnibase's `editor` and `wysiwyg` blocks do - the text in a hidden input, the script's
   element with what it reads (omnibase's `Editor` and `Wysiwyg` behaviours), Quill's holding the text as `|wysiwyg` prints it,
