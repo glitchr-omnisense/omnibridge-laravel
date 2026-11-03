@@ -4,6 +4,19 @@
 
 ### Added
 
+- **omnibase's records made from uploads** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 5): `FormRenderer`
+  draws `association_file` (a gallery's photos, a photo's picture) as omnibase's `associationfile` block does - its upload field
+  (a file, an image, an avatar) drawn as above, each stored file's name by its record's id in `data-entry-id` -, from omnibase's
+  `AssociationFile` behaviour; omnibase's binder makes what is sent into the related records. `LaravelKinds` declares it
+  implemented.
+- A file sent that its field refuses (a type its `mime_types` do not match, a size over its ceiling) is refused when the form is
+  validated, with omnibase's message (omnibase's `Upload::refusal()`, which its neutral binder applies), no longer at the flush.
+
+### Fixed
+
+- The upload's download icon (`data-file-download`) printed with one space between its style and its class, as omnibase's Twig
+  macro prints it.
+
 - **omnibase's uploads** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 4): `FormRenderer` draws `file`,
   `image`, `avatar`, `audio` and `video` as omnibase's `fileupload`, `imageupload` and `avatar` blocks do, from omnibase's
   `Upload` behaviour - the stored file's name in its hidden input (`[file]`), the file to send (`[raw]`), or a dropzone that
