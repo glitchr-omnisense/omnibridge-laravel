@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Accepts omnisense/omnibase 5.0 (`^4.0 || ^5.0`, plan "omnibase agnostic", step F6), and requires
+  symfony/validator, whose `validators` catalogue LaravelValidation reads and which omnibase 5.0 no longer
+  requires.
+
+
 ### Added
 
 - **omnibase's embedded forms, lists and attributes** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 7):
