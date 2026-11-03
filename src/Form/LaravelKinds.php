@@ -26,6 +26,7 @@ final class LaravelKinds
         'color' => 'jscolor', 'color_picker' => 'colorpickr',
         'date' => 'input', 'datetime' => 'input', 'datetime_picker' => 'datetimepicker', 'time' => 'input',
         'file' => 'fileupload', 'image' => 'imageupload', 'avatar' => 'avatar', 'audio' => 'fileupload', 'video' => 'fileupload',
+        'association_file' => 'associationfile',
         'repeated' => 'repeated', 'translation' => 'translatable', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
     ];
 
@@ -61,7 +62,8 @@ final class LaravelKinds
         'cropper' => 'unsupported: '.self::NOT_YET.'the cropper (CropperType): an image\'s crops as records of their own',
         'avatar' => 'implemented', 'audio' => 'implemented', 'video' => 'implemented',
         'association' => 'unsupported: '.self::NOT_YET.'a related record\'s form embedded (AssociationType)',
-        'association_file' => 'unsupported: '.self::NOT_YET.'records made from uploads (AssociationFileType)',
+        // Records made from uploads (omnibase's AssociationFile): its upload field drawn as above, the files sent made into records.
+        'association_file' => 'implemented',
         'attribute' => 'unsupported: '.self::NOT_YET.'the attributes\' adapters (AttributeType)',
         'array' => 'unsupported: '.self::NOT_YET.'a list of entries with its prototype (ArrayType)',
         'collection' => 'unsupported: '.self::NOT_YET.'a collection of sub-forms with its prototype (CollectionType)',

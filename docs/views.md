@@ -170,6 +170,7 @@ Symfony type reads, so the same data attributes reach the same scripts:
 | `locale` | a plain select of Intl's locales |
 | `file`, `audio`, `video` | `fileupload`: the stored file's name (`name[file]`), the file to send (`name[raw]`), or for several files a dropzone (each file sent to `ux_dropzone` as it is dropped, their uuids in `name[file]`); `data-file-*`, the size and types accepted |
 | `image`, `avatar` | `imageupload` (and `avatar`'s frame): the stored picture's thumbnail and lightbox, the cropper's modal, then `fileupload`; `data-image-*`, `data-avatar-*` |
+| `association_file` | `associationfile`: its upload field (a file, an image, an avatar: omnibase's `AssociationFile`), named by the first part of `entity_file`, with each stored file's name by its record's id in `data-entry-id`; what is sent made into the related records by omnibase's binder |
 | `translation` | `translatable`: a tab per language (its flag, the default and the required ones marked), each the rows of its translation entity's fields (`name[fr-FR][title]`); one language alone, its rows without tabs. A field of a kind not drawn here refuses the whole field, naming it |
 
 `Form\LaravelKinds::COVERAGE` declares every kind of `Base\Field\Kind`: implemented, or unsupported with the reason.

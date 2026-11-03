@@ -68,6 +68,8 @@ final class FormRenderer
             case 'file': return $this->fileUpload($vars);
             case 'image': return $this->imageUpload($vars);
             case 'avatar': return $this->avatarUpload($vars);
+            // Records made from uploads (omnibase's associationfile block: Base\Field\Behaviour\AssociationFile).
+            case 'associationfile': return $this->associationFile($field, $vars);
             // Pickr (colorpickr_widget): the input, told where its field is.
             case 'color': return $this->input(['attr' => $vars['attr'] + ['data-color-field' => $vars['id']]] + $vars);
         }
@@ -98,6 +100,15 @@ final class FormRenderer
             $label = ($vars['inline'] ?? false) || false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars), (bool) $vars['required']);
 
             return '<div '.$this->attributes((array) ($vars['row_attr'] ?? [])).'>'.$label.$this->errors($field).$this->widget($field, $options).'</div>';
+        }
+        if ('associationfile' === ($vars['widget'] ?? null)) {
+            // associationfile_label (the field's label, its required word), its errors, the widget.
+            $label = false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars), (bool) $vars['required']);
+            $rowAttr = (array) ($vars['row_attr'] ?? []);
+            $class = trim(($rowAttr['class'] ?? '').' form-group');
+            unset($rowAttr['class']);
+
+            return '<div '.$this->attributes(['class' => $class] + $rowAttr).'>'.$label.$this->widget($field, $options).$this->errors($field).'</div>';
         }
         if ('boolean' === ($vars['widget'] ?? null)) {
             $rowAttr = (array) ($vars['row_attr'] ?? []);
@@ -472,7 +483,8 @@ final class FormRenderer
         $full = (string) $vars['full_name'];
         $files = (array) ($vars['files'] ?? []);
         $mimeTypes = \is_array($vars['mime_types'] ?? null) ? $vars['mime_types'] : array_filter([(string) ($vars['mime_types'] ?? '')]);
-        $icon = static fn (string $classes, string $style = ''): string => '<i '.('' !== $style ? 'style="'.$style.'" ' : '')." class='".$classes."'></i>";
+        // As Twig's macro prints it: "<i  class" (two spaces) without a style, "<i style=\"...\" class" with one.
+        $icon = static fn (string $classes, string $style = ''): string => '<i '.('' !== $style ? 'style="'.$style.'"' : '')." class='".$classes."'></i>";
         $paths = json_decode(\is_string($vars['path'] ?? null) ? $vars['path'] : '[]', true);
         $data = [
             'data-file-sortable' => self::scalar($vars['sortable'] ?? null), 'data-file-lightbox-options' => $vars['lightbox'] ?? null,
@@ -627,6 +639,22 @@ final class FormRenderer
         }
 
         return $html.'</div>';
+    }
+
+    /**
+     * omnibase's associationfile_widget: its upload field (a file, an image, an avatar), drawn with each
+     * stored file's name by its record's id in data-entry-id.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function associationFile(object $field, array $vars): string
+    {
+        $html = '';
+        foreach ($field->children as $child) {
+            $html .= $this->widget($child, ['attr' => array_replace((array) $child->vars['attr'], ['data-entry-id' => (string) ($vars['entityId'] ?? '[]')])]);
+        }
+
+        return $html;
     }
 
     /** A var printed in an attribute as Twig prints it: true "1", false and null "", a list or a map its JSON. */
