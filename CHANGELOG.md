@@ -4,6 +4,13 @@
 
 ### Added
 
+- **omnibase's translations field** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 3): `FormRenderer` draws a
+  `translation` field as omnibase's `translatable_widget` does - a tab per language, each the rows of the translation entity's
+  fields omnibase's `FormView` gives (`Base\Field\Behaviour\Translation`, `RecordFields`), its values the record's; one language
+  alone, its rows without tabs. `LaravelKinds` declares `translation` implemented; a translations field holding a field of a kind
+  not drawn here (an editor, a wysiwyg) is refused aloud, naming that field. What is sent is written into the record's
+  translations by omnibase's `FormBinder`. tests/FieldConformanceTest maps omnibase's entities (the sample's thread) and draws
+  and binds a thread's translations. Docs: docs/views.md.
 - **omnibase's remote search** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 2): with `omnibridge.media` on and
   `omnibridge.forms.search` (true by default), the routes `ux_autocomplete` and `ux_autocomplete_icons` at the Symfony site's
   addresses, answered by `Form\SearchController` through omnibase's `Base\Field\Search\RemoteSearch` (in the web group for the
