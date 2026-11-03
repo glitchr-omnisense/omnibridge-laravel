@@ -102,7 +102,9 @@ final class OmnibaseServices
             $app->make(Environment::class)->name(),
         ));
         self::alias($app, SettingBag::class, SettingBagInterface::class);
-        if (class_exists(Mapping::class)) {
+        // The entity hydrator: omnibase's list binds it on the unit of work where the core lists it (its step F5c,
+        // item 3: Base\Services); over the mapping's entity manager and manipulator for a core that does not.
+        if (class_exists(Mapping::class) && !self::listed(EntityHydrator::class)) {
             self::singleton($app, EntityHydratorInterface::class, static function (Application $app): EntityHydrator {
                 $mapping = $app->make(Mapping::class);
 
@@ -137,6 +139,12 @@ final class OmnibaseServices
         if (null !== self::policy($app)) {
             self::registerNotifier($app);
         }
+    }
+
+    /** Whether omnibase's list of services (Base\Services::definitions()) defines that class. */
+    private static function listed(string $class): bool
+    {
+        return class_exists(\Base\Services::class) && \in_array($class, array_column(\Base\Services::definitions(), 'class'), true);
     }
 
     public static function boot(Application $app): void

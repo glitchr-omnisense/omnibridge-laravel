@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **The entity hydrator from omnibase's list** (omnisense/omnibase's plan "omnibase agnostic", step F5c, item 3): where
+  `Base\Services` lists `EntityHydrator` (on the unit of work and its shapes), the list binds it and `EntityHydratorInterface`;
+  `OmnibaseServices` builds it over the mapping's entity manager and manipulator only for a core that does not.
+
 ### Added
 
 - **`Auth\Roles`** implements omnisense/omnibridge's `Contract\Roles` (bound to the contract); omnibase's `SecurityPolicy` is given
