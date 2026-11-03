@@ -252,7 +252,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         if (class_exists(\Base\Services::class)) {
             // Media off, nothing of it is bound (registerMedia()): the list's would only fail when built.
             $media = self::media($this->app);
-            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class], true));
+            // The remote search hands its payload through the obfuscator: not bound without it either.
+            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch'], true));
+            if (class_exists(\Base\Service\Icons::class)) {
+                View\OmnibaseExtensions::bindIcons($this->app, $this->app['config']->get('omnibridge.icons.metadata'));
+            }
             Container\Definitions::bind($this->app, $definitions, fn (string $name): mixed => self::listParameter($this->app, $name));
         }
         if (self::media($this->app) && false !== ($this->app['config']->get('omnibridge.media.routes') ?? true)) {
@@ -261,6 +265,20 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             foreach (ImageRoute::ROUTES as $name => [$path]) {
                 $router->get($path, ImageController::class)->name($name)->where('data', '.+');
             }
+        }
+
+        if (self::media($this->app) && class_exists(\Base\Field\Search\RemoteSearch::class) && false !== $this->app['config']->get('omnibridge.forms.search', true)) {
+            // omnibase's remote search under its Symfony names (RemoteSearch::ROUTES): a select's records, an icon
+            // picker's icons. In the web group for the session's token, which the search checks itself. Its pages
+            // are the Paginator's, on omnibase's defaults where the config says nothing (base.paginator).
+            $config = $this->app['config'];
+            $config->set('base.paginator', array_replace(['page_range' => 1, 'page_size' => 10, 'page_parameter' => 'page', 'default_template' => '@Base/paginator/sliding.html.twig'], (array) $config->get('base.paginator', [])));
+            $router = $this->app->make('router');
+            $router->middleware('web')->withoutMiddleware(Auth\Routes::CSRF_MIDDLEWARE)->group(static function (\Illuminate\Routing\Router $router): void {
+                foreach (\Base\Field\Search\RemoteSearch::ROUTES as $name => [$path]) {
+                    $router->match(['GET', 'POST'], $path, Form\SearchController::class)->name($name);
+                }
+            });
         }
 
         $this->publishes([__DIR__.'/../config/omnibridge.php' => config_path('omnibridge.php')], 'omnibridge-config');

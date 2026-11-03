@@ -86,6 +86,14 @@ return [
     // hashids compression's, the Symfony site's kernel.secret; app.key when null).
     'media' => false,
 
+    // omnibase's forms (plan "omnibase agnostic", step F5d). With media on (the
+    // remote search hands its payload through the obfuscator), search: the
+    // routes ux_autocomplete and ux_autocomplete_icons, at the Symfony site's
+    // addresses, answered by Base\Field\Search\RemoteSearch - a select's records
+    // and an icon picker's icons are searched as under Symfony; false declares
+    // none (such a select is then refused aloud when drawn).
+    'forms' => ['search' => true],
+
     // The entity namespaces of the bundles the site uses, and their prefix in
     // the "entities" catalogues (Base\Marketplace\Entity\ => marketplace\).
     'entity_namespaces' => [],

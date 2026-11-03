@@ -22,6 +22,7 @@ final class LaravelKinds
         'integer' => 'input', 'number' => 'number2', 'year' => 'input',
         'boolean' => 'boolean', 'checkbox' => 'checkbox', 'choice' => 'select2', 'country' => 'select2',
         'currency' => 'select2', 'locale' => 'select', 'gender' => 'select2', 'role' => 'select2', 'state' => 'select2',
+        'icon' => 'select2',
         'color' => 'jscolor', 'color_picker' => 'colorpickr',
         'date' => 'input', 'datetime' => 'input', 'datetime_picker' => 'datetimepicker', 'time' => 'input',
         'repeated' => 'repeated', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
@@ -43,10 +44,12 @@ final class LaravelKinds
         'year' => 'implemented',
         'boolean' => 'implemented', 'checkbox' => 'implemented', 'choice' => 'implemented', 'country' => 'implemented',
         'currency' => 'implemented', 'locale' => 'implemented', 'gender' => 'implemented', 'role' => 'implemented',
-        // A choice of records searched remotely (an entity's picker) is refused when drawn, the search route being omnibase's ux_autocomplete.
+        // A choice of records searched remotely (an entity's picker) asks omnibase's ux_autocomplete, which this package declares
+        // with media on (SearchController); refused when drawn where the application has no such route.
         'state' => 'implemented',
         'route' => 'unsupported: '.self::NOT_YET.'RouteType lists the Symfony router\'s routes',
-        'icon' => 'unsupported: '.self::NOT_YET.'its icons are searched remotely (omnibase\'s ux_autocomplete_icons, a Symfony controller)',
+        // Searched remotely: omnibase's ux_autocomplete_icons, which this package declares with media on (SearchController).
+        'icon' => 'implemented',
         'emoji' => 'unsupported: '.self::NOT_YET.'the emoji picker (EmojiPickerType)',
         'color' => 'implemented', 'color_picker' => 'implemented',
         'quadrant' => 'unsupported: '.self::NOT_YET.'QuadrantType\'s nine positions',
@@ -57,7 +60,7 @@ final class LaravelKinds
         'avatar' => 'unsupported: '.self::NOT_YET.'the upload pipeline (AvatarType)',
         'audio' => 'unsupported: '.self::NOT_YET.'the upload pipeline (AudioType)',
         'video' => 'unsupported: '.self::NOT_YET.'the upload pipeline (VideoType)',
-        'association' => 'unsupported: '.self::NOT_YET.'a related record\'s form embedded (AssociationType), or picked through the remote search',
+        'association' => 'unsupported: '.self::NOT_YET.'a related record\'s form embedded (AssociationType)',
         'association_file' => 'unsupported: '.self::NOT_YET.'records made from uploads (AssociationFileType)',
         'attribute' => 'unsupported: '.self::NOT_YET.'the attributes\' adapters (AttributeType)',
         'array' => 'unsupported: '.self::NOT_YET.'a list of entries with its prototype (ArrayType)',
