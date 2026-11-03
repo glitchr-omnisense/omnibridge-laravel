@@ -3,6 +3,8 @@
 namespace Omnibridge\Laravel\Form;
 
 use Omnibridge\Contract\Translations;
+use Omnibridge\Form\Coverage;
+use Omnibridge\Form\UnsupportedKind;
 
 /**
  * form_start(), form_widget(), form_row(), form_label(), form_errors(),
@@ -10,6 +12,12 @@ use Omnibridge\Contract\Translations;
  * Base\Form\Definition\FormView, the same vars - with the markup omnibase's form theme gives
  * them: inputs, a textarea, a select, buttons, a switch, a list of switches, the errors. Placeholders
  * and labels are translated as Symfony's form theme translates them.
+ *
+ * A rich kind of omnibase (plan "omnibase agnostic", step F5d) is drawn as the block of omnibase's
+ * Symfony theme its neutral behaviour names (the view's `widget`): datetimepicker, slug, boolean,
+ * number2, select2, password2; its settings are the behaviour's, the same the Symfony type reads.
+ * A kind this package declares unsupported, or does not declare (LaravelKinds::COVERAGE), is
+ * refused aloud (UnsupportedKind), never drawn as a plain input.
  */
 final class FormRenderer
 {
@@ -47,6 +55,18 @@ final class FormRenderer
         $field->rendered = true;
         $vars = array_replace($field->vars, $options);
         $vars['attr'] = array_replace($field->vars['attr'], $options['attr'] ?? []);
+        self::refuse($vars);
+
+        switch ($vars['widget'] ?? null) {
+            case 'datetimepicker': return $this->dateTimePicker($vars);
+            case 'slug': return $this->slug($vars);
+            case 'boolean': return $this->toggle($vars);
+            case 'number': return $this->number($vars);
+            case 'select2': return $this->select2($vars);
+            case 'password2': return $this->password($vars);
+            // Pickr (colorpickr_widget): the input, told where its field is.
+            case 'color': return $this->input(['attr' => $vars['attr'] + ['data-color-field' => $vars['id']]] + $vars);
+        }
 
         return match ($vars['type']) {
             // Markup given whole (a captcha's widget: Auth\Controllers\SignIn's FORM_EXTRA), printed as it is.
@@ -64,6 +84,17 @@ final class FormRenderer
     public function row(object $field, array $options = []): string
     {
         $vars = array_replace($field->vars, $options);
+        self::refuse($vars);
+        if ('password2' === ($vars['widget'] ?? null)) {
+            return $this->widget($field, $options).$this->errors($field);
+        }
+        if ('boolean' === ($vars['widget'] ?? null)) {
+            $rowAttr = (array) ($vars['row_attr'] ?? []);
+            $class = trim(($vars['switch'] ?? true ? 'form-check form-switch ' : '').(($vars['inline'] ?? false) ? 'inline ' : '').($rowAttr['class'] ?? '').' form-group');
+            unset($rowAttr['class']);
+
+            return '<div '.$this->attributes(['class' => $class] + $rowAttr).'><span>'.$this->label($vars['id'], $this->labelled($vars), (bool) $vars['required']).'</span>'.$this->widget($field, $options).$this->errors($field).'</div>';
+        }
         if ('checkbox' === $vars['type']) {
             $field->rendered = true;
 
@@ -78,7 +109,8 @@ final class FormRenderer
         if (\in_array($vars['type'], ['hidden', 'submit', 'button', 'html'], true)) {
             return $this->widget($field, $options);
         }
-        $label = false === ($vars['label'] ?? null) ? '' : $this->label($vars['id'], $this->labelled($vars));
+        // A select2 is its form's `choice` part: its label is for no input, as Symfony's compound row prints it.
+        $label = false === ($vars['label'] ?? null) ? '' : $this->label('select2' === ($vars['widget'] ?? null) ? '' : $vars['id'], $this->labelled($vars), 'select2' === ($vars['widget'] ?? null) && (bool) $vars['required']);
         if ([] !== (array) ($vars['errors'] ?? [])) {
             $options['attr'] = ['class' => trim('is-invalid '.($options['attr']['class'] ?? ''))] + ($options['attr'] ?? []);
         }
@@ -276,7 +308,9 @@ final class FormRenderer
     {
         $multiple = (bool) ($vars['multiple'] ?? false);
         $attr = $vars['attr'];
-        $attributes = ['id' => $vars['id'], 'name' => $vars['full_name'].($multiple ? '[]' : ''), 'multiple' => $multiple, 'required' => (bool) $vars['required'], 'class' => trim('form-control '.($attr['class'] ?? ''))];
+        // Symfony's choice_widget_collapsed: a single select with no placeholder is not required (its first option is a value).
+        $required = (bool) $vars['required'] && ($multiple || null !== ($vars['placeholder'] ?? null));
+        $attributes = ['id' => $vars['id'], 'name' => $vars['full_name'].($multiple ? '[]' : ''), 'multiple' => $multiple, 'required' => $required, 'class' => trim('form-control '.($attr['class'] ?? ''))];
         unset($attr['class'], $attr['placeholder']);
         $html = '<select '.$this->attributes($attributes + $attr).'>';
         if (!$multiple && null !== ($vars['placeholder'] ?? null)) {
@@ -294,6 +328,9 @@ final class FormRenderer
     private function checkbox(array $vars): string
     {
         $attributes = ['type' => 'checkbox', 'id' => $vars['id'], 'name' => $vars['full_name'], 'class' => 'form-switch form-switch-lg form-check-input', 'value' => (string) ($vars['value'] ?? '1')];
+        if ($vars['required'] ?? false) {
+            $attributes['required'] = 'required'; // as Symfony's CheckboxType: required unless it says otherwise
+        }
         if ($vars['checked'] ?? false) {
             $attributes['checked'] = 'checked';
         }
@@ -317,9 +354,214 @@ final class FormRenderer
         return $html.'</div>';
     }
 
-    private function label(string $for, string $text): string
+    private function label(string $for, string $text, bool $required = false): string
     {
-        return '<div class="label-wrapper"><label class="form-check-label" for="'.htmlspecialchars($for).'">'.htmlspecialchars($text).'</label><span class="badge badge-secondary label"></span></div>';
+        $class = 'form-check-label'.($required ? ' required' : '');
+
+        return '<div class="label-wrapper"><label class="'.$class.'"'.('' !== $for ? ' for="'.htmlspecialchars($for).'"' : '').'>'.htmlspecialchars($text).'</label><span class="badge badge-secondary label"></span></div>';
+    }
+
+    /**
+     * A kind of omnibase this package does not draw, or does not declare: refused aloud. A view
+     * without a kind (this package's own FormView) or the form itself is drawn as it was.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private static function refuse(array $vars): void
+    {
+        $kind = $vars['kind'] ?? null;
+        if (!\is_string($kind) || 'form' === $kind || !class_exists(\Base\Field\Kinds::class)) {
+            return;
+        }
+        // A field that names its host type but keeps a kind (the newsletter's records as an association, Symfony's
+        // EntityType) is drawn from its generic view - input, textarea, choice - as the definition gives it; one with
+        // no kind at all (custom) has nothing to draw here.
+        if (($vars['explicit'] ?? false) && 'custom' !== $kind) {
+            return;
+        }
+        $declaration = \Base\Field\Kinds::declaration($kind, 'laravel');
+        if (!Coverage::isImplemented($declaration)) {
+            throw UnsupportedKind::of($kind, 'omnibridge/laravel', Coverage::reason($declaration));
+        }
+    }
+
+    /** A date (and time) in flatpickr (datetimepicker_widget). @param array<string, mixed> $vars */
+    private function dateTimePicker(array $vars): string
+    {
+        $vars['type'] = 'text';
+        $vars['attr'] = array_replace($vars['attr'], ['data-datetimepicker-field' => $vars['id'], 'data-datetimepicker-options' => $vars['datetimepicker'] ?? '{}']);
+        $id = htmlspecialchars((string) $vars['id']);
+
+        return '<div class="input-group form-stock"><div class="input-group-text"><button class="btn btn-outline-secondary" type="button" id="'.$id.'-btn"><i class="fa-solid fa-calendar-day"></i></button></div>'
+            .$this->input($vars).'</div>';
+    }
+
+    /** A slug made from another field, locked once written (slug_widget). @param array<string, mixed> $vars */
+    private function slug(array $vars): string
+    {
+        $vars['type'] = 'text';
+        $vars['attr'] = array_replace($vars['attr'], [
+            'data-slug-field' => $vars['id'], 'data-slug-keep' => (string) ($vars['keep'] ?? ''), 'data-slug-strict' => $vars['strict'] ?? 'true',
+            'data-slug-upper' => $vars['upper'] ?? 'false', 'data-slug-separator' => (string) ($vars['separator'] ?? ''), 'data-slug-lock' => $vars['lock'] ?? 'null',
+            'data-slug-target' => $vars['target_id'] ?? (string) preg_replace('/_[^_]+$/', '', (string) $vars['id']),
+        ]);
+
+        return '<div class="input-group">'.$this->input($vars).'<div class="input-group-append"><button class="input-group-text" type="button"><i class="fa-solid '.(empty($vars['target']) ? 'fa-unlock' : 'fa-lock').' fa-fw"></i></button></div></div>';
+    }
+
+    /** A switch asking for a confirmation (boolean_widget). @param array<string, mixed> $vars */
+    private function toggle(array $vars): string
+    {
+        $id = (string) $vars['id'];
+        $attributes = ['type' => 'checkbox', 'id' => $id, 'name' => $vars['full_name'], 'class' => trim((($vars['switch'] ?? true) ? 'form-check-input ' : '').($vars['attr']['class'] ?? '').' form-control')];
+        $attr = $vars['attr'];
+        unset($attr['class']);
+        $attributes += $attr + [
+            'data-boolean-field' => $id,
+            'data-boolean-confirmation-check' => (bool) ($vars['confirmation_check'] ?? false),
+            'data-boolean-confirmation-uncheck' => (bool) ($vars['confirmation_uncheck'] ?? false),
+            'data-toggle-url' => (string) ($vars['toogle_url'] ?? ''),
+            'value' => (string) ($vars['value'] ?? '1'),
+            'checked' => (bool) ($vars['checked'] ?? false),
+            'disabled' => (bool) ($vars['disabled'] ?? false),
+        ];
+        $html = '<div class="form-checkbox"><input '.$this->attributes($attributes).' /></div>';
+        if (($vars['confirmation_check'] ?? false) || ($vars['confirmation_uncheck'] ?? false)) {
+            $e = htmlspecialchars($id);
+            $html .= '<div class="modal fade" id="'.$e.'-modal" tabindex="-1" role="dialog" aria-labelledby="'.$e.'-modal"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header">'
+                .'<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" id="'.$e.'-close"><span aria-hidden="true">&times;</span></button>'
+                .'<h4 class="modal-title" id="'.$e.'-modal-label">'.htmlspecialchars($this->translations->trans('@fields.boolean.title', [false === ($vars['label'] ?? null) ? '' : (string) ($vars['label'] ?? '')])).'</h4></div>'
+                .'<div class="modal-body">'.htmlspecialchars($this->translate('@fields.boolean.text')).'</div><div class="modal-footer">'
+                .'<button type="button" class="btn btn-default" id="'.$e.'-cancel" data-dismiss="modal">'.htmlspecialchars($this->translate('@fields.boolean.button.cancel')).'</button>'
+                .'<button type="button" class="btn btn-primary" id="'.$e.'-confirm">'.htmlspecialchars($this->translate('@fields.boolean.button.confirm')).'</button></div></div></div></div>';
+        }
+
+        return $html;
+    }
+
+    /** A number with its steppers (number2_widget). @param array<string, mixed> $vars */
+    private function number(array $vars): string
+    {
+        $vars['type'] = 'text';
+        $vars['attr'] = array_replace(['inputmode' => 'decimal'], $vars['attr'], [
+            'data-number-field' => $vars['id'], 'data-number-keyup' => (bool) ($vars['keyUp'] ?? true), 'data-number-keydown' => (bool) ($vars['keyDown'] ?? true),
+            'data-number-up' => (string) ($vars['stepUp'] ?? 1), 'data-number-divisor' => (string) ($vars['divisor'] ?? 1), 'data-number-down' => (string) ($vars['stepDown'] ?? 1),
+            'data-number-up-throttle' => (string) ($vars['throttleUp'] ?? 0), 'data-number-down-throttle' => (string) ($vars['throttleDown'] ?? 0),
+            'autocomplete' => ($vars['autocomplete'] ?? false) ? 'on' : 'off',
+            'data-number-min' => (string) ($vars['min'] ?? ''), 'data-number-max' => (string) ($vars['max'] ?? ''),
+            'data-number-suffix' => (string) ($vars['suffix'] ?? ''), 'data-number-prefix' => (string) ($vars['prefix'] ?? ''),
+        ]);
+        if ($vars['disabled'] ?? false) {
+            $vars['attr']['disabled'] = 'disabled';
+        }
+        $id = htmlspecialchars((string) $vars['id']);
+        $disabled = ($vars['disabled'] ?? false) ? ' disabled="disabled"' : '';
+
+        return '<div class="input-group form-number">'.$this->input($vars)
+            .'<div class="input-group-text"><button class="btn btn-outline-secondary"'.$disabled.' id="'.$id.'-down" type="button"><i class="fa-solid fa-minus"></i></button></div>'
+            .'<div class="input-group-text"><button class="btn btn-outline-secondary"'.$disabled.' id="'.$id.'-up" type="button"><i class="fa-solid fa-plus"></i></button></div></div>';
+    }
+
+    /**
+     * A select2 (select2_widget): the field's `choice` part, as omnibase's SelectType names it,
+     * its options printed, the chosen ones selected, the placeholder first for a single value.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function select2(array $vars): string
+    {
+        if (\array_key_exists('search', (array) ($vars['endpoints'] ?? [])) && null === $vars['endpoints']['search']) {
+            // Its choices are searched on the host (omnibase's ux_autocomplete): without that route, a select of
+            // the chosen records alone, which a visitor could not change. Refused aloud.
+            throw UnsupportedKind::of((string) $vars['kind'], 'omnibridge/laravel', 'its choices are searched remotely, and this application has no such route (omnibase\'s ux_autocomplete)');
+        }
+        $multiple = (bool) ($vars['multiple'] ?? false);
+        $id = $vars['id'].'_choice';
+        $attr = $vars['attr'];
+        $class = trim('form-select2 form-select2 '.($attr['class'] ?? '').' form-control');
+        unset($attr['class'], $attr['placeholder']);
+        $attributes = ['id' => $id, 'name' => $vars['full_name'].'[choice]'.($multiple ? '[]' : ''), 'class' => $class] + $attr + [
+            'data-select2-field' => $id, 'data-select2-options' => (string) ($vars['select2'] ?? '{}'),
+            'data-select2-href' => urldecode((string) ($vars['select2-href'] ?? '')),
+            'data-select2-sortable' => (bool) ($vars['select2-sortable'] ?? false),
+            'data-select2-tabulation' => (string) ($vars['tabulation'] ?? ''), 'data-select2-highlight' => (bool) ($vars['highlight'] ?? false),
+            'multiple' => $multiple, 'disabled' => (bool) ($vars['disabled'] ?? false), 'required' => (bool) $vars['required'],
+        ];
+        $html = '<select '.$this->attributes($attributes).'>';
+        $placeholder = json_decode((string) ($vars['select2'] ?? ''), true)['placeholder'] ?? null;
+        if (!$multiple && \is_string($placeholder)) {
+            $html .= '<option value="">'.htmlspecialchars($placeholder).'</option>';
+        }
+        $chosen = array_map('strval', array_filter((array) ($vars['value'] ?? []), 'is_scalar'));
+        foreach ($this->flat($vars['choices'] ?? []) as $value => $label) {
+            $html .= '<option '.$this->attributes(['value' => (string) $value, 'selected' => \in_array((string) $value, $chosen, true)]).'>'.htmlspecialchars($this->translate($label)).'</option>';
+        }
+        // A remote search's records already chosen: printed, select2 asks the rest.
+        foreach (array_diff($chosen, array_map('strval', array_keys($this->flat($vars['choices'] ?? [])))) as $value) {
+            $html .= '<option value="'.htmlspecialchars($value).'" selected="selected">'.htmlspecialchars($value).'</option>';
+        }
+        $html .= '</select>';
+        if (isset($vars['tokenSeparators'])) {
+            $html .= '<div class="form-filesize form-text text-muted">'.htmlspecialchars($this->translations->trans('@fields.select.token_separator', ["'".implode("' '", (array) $vars['tokenSeparators'])."'"])).'</div>';
+        }
+
+        return $html.'<div class="form-choice-thumbnail" id="'.htmlspecialchars($vars['id'].'_label').'"></div>';
+    }
+
+    /**
+     * omnibase's password (password2_row, inline): typed in `plain`, again in `plain_repeater`, its
+     * strength meter; nothing is shown of a password.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function password(array $vars): string
+    {
+        $id = (string) $vars['id'];
+        $t = fn (string $key, array $parameters = []): string => $this->translations->trans($key, $parameters);
+        $attributes = [
+            'data-password-field' => $id,
+            'data-password-strength' => $t('@fields.password.strength.label'),
+        ];
+        foreach (['bad', 'poor', 'weak', 'good', 'strong'] as $i => $level) {
+            $attributes['data-password-strength-name['.$i.']'] = $t('@fields.password.strength.'.$level.'.label');
+        }
+        foreach (['bad', 'poor', 'weak', 'good', 'strong'] as $i => $level) {
+            $attributes['data-password-strength-message['.$i.']'] = $t('@fields.password.strength.'.$level.'.message');
+        }
+        $attributes += [
+            'data-password-autocomplete' => ($vars['autocomplete'] ?? false) ? 'on' : 'new-password',
+            'data-password-match' => $t('@validators.password.not_matching'),
+            'data-password-allow-empty' => !$vars['required'] ? 'true' : '',
+            'data-password-minstrength' => (string) ($vars['min_strength'] ?? 0),
+            'data-password-minstrength[feedback]' => $t('@validators.password.min_strength', [$vars['min_strength'] ?? 0]),
+            'data-password-minlength' => (string) ($vars['min_length'] ?? 8),
+            'data-password-minlength[feedback]' => $t('@validators.password.min_length', [$vars['min_length'] ?? 8]),
+            'class' => trim((($vars['repeater'] ?? true) ? 'form-repeater ' : '').'form-password'),
+        ];
+        $input = fn (string $part): string => '<input '.$this->attributes(['type' => 'password', 'id' => $id.'_'.$part, 'name' => $vars['full_name'].'['.$part.']', 'required' => (bool) $vars['required'], 'class' => 'form-control', 'autocomplete' => ($vars['autocomplete'] ?? false) ? 'autocomplete' : 'new-password']).' />';
+        $html = '<div '.$this->attributes($attributes).'><div class="form-group">'.$this->label($id.'_plain', $t('@fields.password.first'))
+            .'<div class="input-group"><span class="input-group-text"><i class="fa-fw fa-solid '.(($vars['repeater'] ?? true) ? 'fa-unlock' : 'fa-lock').'"></i></span>'.$input('plain').'</div>'
+            .'<div class="form-password-strength" id="'.htmlspecialchars($id).'_strength">';
+        for ($i = 1; $i <= (int) ($vars['max_strength'] ?? 5); ++$i) {
+            $html .= '<span class="strength" id="'.htmlspecialchars($id).'_strength_'.$i.'"></span>';
+        }
+        $html .= '</div>';
+        if (!$vars['required'] && ($vars['hint'] ?? true)) {
+            $html .= '<div class="form-text text-muted">'.htmlspecialchars($t('@fields.password.unchanged')).'</div>';
+        }
+        if ($vars['min_length'] ?? null) {
+            $html .= '<div class="form-text text-muted">'.htmlspecialchars($t('@fields.password.requirements.min_length', [$vars['min_length']])).'</div>';
+        }
+        if (($vars['min_strength'] ?? 0) > 0) {
+            $html .= '<div class="form-text text-muted">'.htmlspecialchars($t('@fields.password.requirements.min_strength', [$vars['min_strength']])).'</div>';
+        }
+        $html .= '</div>';
+        if ($vars['repeater'] ?? true) {
+            $html .= '<div class="form-group">'.$this->label($id.'_plain_repeater', $t('@fields.password.second'))
+                .'<div class="input-group"><span class="input-group-text"><i class="fa-fw fa-solid fa-lock"></i></span>'.$input('plain_repeater').'</div></div>';
+        }
+
+        return $html.'</div>';
     }
 
     private function translate(mixed $text): string
