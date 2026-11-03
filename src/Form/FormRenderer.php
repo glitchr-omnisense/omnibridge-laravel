@@ -70,6 +70,9 @@ final class FormRenderer
             case 'avatar': return $this->avatarUpload($vars);
             // Records made from uploads (omnibase's associationfile block: Base\Field\Behaviour\AssociationFile).
             case 'associationfile': return $this->associationFile($field, $vars);
+            // A text written in Editor.js or in Quill (omnibase's editor and wysiwyg blocks: Base\Field\Behaviour\{Editor, Wysiwyg}).
+            case 'editor': return $this->editor($vars);
+            case 'wysiwyg': return $this->wysiwyg($vars);
             // Pickr (colorpickr_widget): the input, told where its field is.
             case 'color': return $this->input(['attr' => $vars['attr'] + ['data-color-field' => $vars['id']]] + $vars);
         }
@@ -109,6 +112,15 @@ final class FormRenderer
             unset($rowAttr['class']);
 
             return '<div '.$this->attributes(['class' => $class] + $rowAttr).'>'.$label.$this->widget($field, $options).$this->errors($field).'</div>';
+        }
+        if (\in_array($vars['widget'] ?? null, ['editor', 'wysiwyg'], true)) {
+            // editor_row, wysiwyg_row: the row's class, its label in a span, its errors, the widget.
+            $rowAttr = (array) ($vars['row_attr'] ?? []);
+            $class = trim(($rowAttr['class'] ?? '').' form-group');
+            unset($rowAttr['class']);
+            $label = false === ($vars['label'] ?? null) ? '' : $this->label($vars['id'], $this->labelled($vars), (bool) $vars['required']);
+
+            return '<div '.$this->attributes(['class' => 'form-'.$vars['widget'].' '.$class] + $rowAttr).'><span>'.$label.'</span>'.$this->errors($field).$this->widget($field, $options).'</div>';
         }
         if ('boolean' === ($vars['widget'] ?? null)) {
             $rowAttr = (array) ($vars['row_attr'] ?? []);
@@ -677,6 +689,75 @@ final class FormRenderer
 
         return '<div class="input-group form-stock"><div class="input-group-text"><button class="btn btn-outline-secondary" type="button" id="'.$id.'-btn"><i class="fa-solid fa-calendar-day"></i></button></div>'
             .$this->input($vars).'</div>';
+    }
+
+    /**
+     * omnibase's editor_widget: the document in a hidden input, Editor.js's element beside it with what
+     * form-type-editor.js reads - the field, its settings (`editor`), the five addresses of the editor's
+     * routes (Base\Field\Editor\EditorJs) -, the soft line break's hint.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function editor(array $vars): string
+    {
+        $class = trim('form-editor-codex '.trim(((array) ($vars['row_attr'] ?? []))['class'] ?? '').' form-group');
+        $attr = $vars['attr'];
+        unset($attr['placeholder']);
+
+        return $this->hidden($vars).'<div '.$this->attributes(['id' => $vars['id'].'_editor'] + array_replace($attr, [
+            'data-editor-field' => $vars['id'],
+            'data-editor-options' => $vars['editor'] ?? '{}',
+            'data-editor-upload-file' => $vars['uploadByFile'] ?? null,
+            'data-editor-upload-url' => $vars['uploadByUrl'] ?? null,
+            'data-editor-endpoint-user' => $vars['endpointByUser'] ?? null,
+            'data-editor-endpoint-thread' => $vars['endpointByThread'] ?? null,
+            'data-editor-endpoint-keyword' => $vars['endpointByKeyword'] ?? null,
+            'class' => $class,
+        ])).'></div>'.$this->softBreak();
+    }
+
+    /**
+     * omnibase's wysiwyg_widget: the HTML in a hidden input, Quill's element beside it holding the text as
+     * |wysiwyg prints it (omnibase's Texts contract), with what form-type-wysiwyg.js reads - the field, its
+     * settings (`wysiwyg`) -, the soft line break's hint.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function wysiwyg(array $vars): string
+    {
+        $attr = $vars['attr'];
+        unset($attr['placeholder']);
+        $attr['class'] = trim('form-control '.($attr['class'] ?? ''));
+        $texts = \Omnibridge\Runtime::find(\Base\Contract\Texts::class);
+        $value = \is_string($vars['value'] ?? null) ? $vars['value'] : null;
+        $html = $texts instanceof \Base\Contract\Texts ? $texts->render($value) : htmlspecialchars((string) $value);
+
+        return $this->hidden($vars).'<div '.$this->attributes(['id' => $vars['id'].'_editor'] + array_replace($attr, [
+            'data-wysiwyg-field' => $vars['id'],
+            'data-wysiwyg-options' => $vars['wysiwyg'] ?? '{}',
+        ])).'>'.$html.'</div>'.$this->softBreak();
+    }
+
+    /** The text's hidden input, as the hidden_widget an editor's block prints first (the field's class, never required). @param array<string, mixed> $vars */
+    private function hidden(array $vars): string
+    {
+        $attr = $vars['attr'];
+        unset($attr['placeholder']);
+        $attributes = ['type' => 'hidden', 'id' => $vars['id'], 'name' => $vars['full_name'], 'class' => trim('form-control '.($attr['class'] ?? ''))];
+        unset($attr['class']);
+        $attributes += $attr;
+        $value = $vars['value'] ?? null;
+        if (null !== $value && '' !== $value && !\is_array($value)) {
+            $attributes['value'] = (string) $value;
+        }
+
+        return '<input '.$this->attributes($attributes).' />';
+    }
+
+    /** The hint under an editor, as omnibase's blocks print it (their closing span kept). */
+    private function softBreak(): string
+    {
+        return '<div class="form-text text-muted clear-both">'.htmlspecialchars($this->translations->trans('@fields.wysiwyg.soft_linebreak')).'</span></div>';
     }
 
     /** A slug made from another field, locked once written (slug_widget). @param array<string, mixed> $vars */

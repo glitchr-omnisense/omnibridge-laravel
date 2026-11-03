@@ -26,7 +26,7 @@ final class LaravelKinds
         'color' => 'jscolor', 'color_picker' => 'colorpickr',
         'date' => 'input', 'datetime' => 'input', 'datetime_picker' => 'datetimepicker', 'time' => 'input',
         'file' => 'fileupload', 'image' => 'imageupload', 'avatar' => 'avatar', 'audio' => 'fileupload', 'video' => 'fileupload',
-        'association_file' => 'associationfile',
+        'association_file' => 'associationfile', 'editor' => 'editor', 'wysiwyg' => 'wysiwyg',
         'repeated' => 'repeated', 'translation' => 'translatable', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
     ];
 
@@ -36,8 +36,10 @@ final class LaravelKinds
         'text' => 'implemented', 'textarea' => 'implemented', 'email' => 'implemented', 'password' => 'implemented',
         'url' => 'implemented', 'tel' => 'implemented', 'search' => 'implemented', 'slug' => 'implemented',
         'code' => 'unsupported: '.self::NOT_YET.'the one-box-per-character code (CodeType, forms/form-type-code.js)',
-        'editor' => 'unsupported: '.self::NOT_YET.'Editor.js and its collaboration relay (EditorType)',
-        'wysiwyg' => 'unsupported: '.self::NOT_YET.'Quill (WysiwygType) and its uploads',
+        // Editor.js (omnibase's Editor behaviour), its routes omnibase's ux_editorjs_*, which this package declares with
+        // media on (EditorController); Quill (Wysiwyg), no route.
+        'editor' => 'implemented',
+        'wysiwyg' => 'implemented',
         'hidden' => 'implemented',
         'integer' => 'implemented', 'number' => 'implemented',
         'money' => 'unsupported: '.self::NOT_YET.'MoneyType\'s currency and its divisor',

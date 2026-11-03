@@ -253,7 +253,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             // Media off, nothing of it is bound (registerMedia()): the list's would only fail when built.
             $media = self::media($this->app);
             // The remote search hands its payload through the obfuscator: not bound without it either.
-            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch', 'Base\Field\Upload\Dropzone'], true));
+            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch', 'Base\Field\Upload\Dropzone', 'Base\Field\Editor\EditorJs'], true));
             if (class_exists(\Base\Service\Icons::class)) {
                 View\OmnibaseExtensions::bindIcons($this->app, $this->app['config']->get('omnibridge.icons.metadata'));
             }
@@ -288,6 +288,18 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             $router->middleware('web')->withoutMiddleware(Auth\Routes::CSRF_MIDDLEWARE)->group(static function (\Illuminate\Routing\Router $router): void {
                 foreach (\Base\Field\Upload\Dropzone::ROUTES as $name => [$path]) {
                     $router->match(['GET', 'POST'], $path, Form\UploadController::class)->name($name);
+                }
+            });
+        }
+
+        if (self::media($this->app) && class_exists(\Base\Field\Editor\EditorJs::class) && false !== $this->app['config']->get('omnibridge.forms.editor', true)) {
+            // omnibase's Editor.js routes under their Symfony names (EditorJs::ROUTES, the collaboration's first): the
+            // mentions, a text's pictures, the relay's ticket, a field's autosave; a mention's page optional, as Symfony's
+            // controller defaults it. In the web group for the session's tokens, which EditorJs checks itself.
+            $router = $this->app->make('router');
+            $router->middleware('web')->withoutMiddleware(Auth\Routes::CSRF_MIDDLEWARE)->group(static function (\Illuminate\Routing\Router $router): void {
+                foreach (\Base\Field\Editor\EditorJs::ROUTES as $name => [$path, , $methods]) {
+                    $router->match($methods, str_replace('{page}', '{page?}', $path), Form\EditorController::class)->name($name);
                 }
             });
         }
@@ -540,6 +552,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         // (Symfony's editor_enhancer's media pass), each picture of a text by the image
         // route's address made from its stored origin, in the editor's storage
         // (base.twig.editor.storage), as HtmlTwigExtension asks it.
+        // omnibase's stored files by storage name (Base\Service\Storages: an editor's pictures, EditorJs), its Flysystem.
+        if (interface_exists(\Base\Service\Storages::class) && !$this->app->bound(\Base\Service\Storages::class)) {
+            $this->app->alias(Flysystem::class, \Base\Service\Storages::class);
+        }
         $this->app->singleton(MediaEnhancerInterface::class, fn (Application $app) => new MediaEnhancer($app->make(MediaService::class), $app->make(Flysystem::class), $app->make('log')));
         $this->app->extend(Contract\Texts::class, function (Contract\Texts $texts, Application $app) {
             if (!$texts instanceof Screen\WysiwygTexts) {
