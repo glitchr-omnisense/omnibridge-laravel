@@ -2,6 +2,7 @@
 
 namespace Omnibridge\Laravel\Container;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 
 /**
@@ -71,9 +72,21 @@ final class Definitions
                     $names[] = $named->getName();
                 }
             }
+            $optional = $argument->isDefaultValueAvailable() || $argument->allowsNull();
             foreach ($names as $typeName) {
                 if ($container->bound($typeName)) {
-                    $values[$name] = $container->make($typeName);
+                    try {
+                        $values[$name] = $container->make($typeName);
+                    } catch (BindingResolutionException $unbuilt) {
+                        // An optional service this application binds but cannot build (omnibase's translator without
+                        // its catalogues' translator): left out, as an unbound one; a required one says why.
+                        if (!$optional) {
+                            throw $unbuilt;
+                        }
+                        if (!$argument->isDefaultValueAvailable()) {
+                            $values[$name] = null;
+                        }
+                    }
                     continue 2;
                 }
             }

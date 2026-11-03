@@ -473,7 +473,7 @@ final class FormRenderer
         if (\array_key_exists('search', (array) ($vars['endpoints'] ?? [])) && null === $vars['endpoints']['search']) {
             // Its choices are searched on the host (omnibase's ux_autocomplete): without that route, a select of
             // the chosen records alone, which a visitor could not change. Refused aloud.
-            throw UnsupportedKind::of((string) $vars['kind'], 'omnibridge/laravel', 'its choices are searched remotely, and this application has no such route (omnibase\'s ux_autocomplete)');
+            throw UnsupportedKind::of((string) $vars['kind'], 'omnibridge/laravel', 'its choices are searched remotely, and this application has no such route (omnibase\'s ux_autocomplete, ux_autocomplete_icons: omnibridge.media and omnibridge.forms.search on)');
         }
         $multiple = (bool) ($vars['multiple'] ?? false);
         $id = $vars['id'].'_choice';
@@ -496,9 +496,15 @@ final class FormRenderer
         foreach ($this->flat($vars['choices'] ?? []) as $value => $label) {
             $html .= '<option '.$this->attributes(['value' => (string) $value, 'selected' => \in_array((string) $value, $chosen, true)]).'>'.htmlspecialchars($this->translate($label)).'</option>';
         }
-        // A remote search's records already chosen: printed, select2 asks the rest.
+        // A remote search's records already chosen: printed with the words select2 shows them by, select2 asks the rest.
+        $texts = [];
+        foreach ((array) (json_decode((string) ($vars['select2'] ?? ''), true)['data'] ?? []) as $entry) {
+            if (\is_array($entry) && \is_scalar($entry['id'] ?? null) && \is_scalar($entry['text'] ?? null) && '' !== trim((string) $entry['text'])) {
+                $texts[(string) $entry['id']] = (string) $entry['text'];
+            }
+        }
         foreach (array_diff($chosen, array_map('strval', array_keys($this->flat($vars['choices'] ?? [])))) as $value) {
-            $html .= '<option value="'.htmlspecialchars($value).'" selected="selected">'.htmlspecialchars($value).'</option>';
+            $html .= '<option value="'.htmlspecialchars($value).'" selected="selected">'.htmlspecialchars($texts[$value] ?? $value).'</option>';
         }
         $html .= '</select>';
         if (isset($vars['tokenSeparators'])) {

@@ -4,6 +4,20 @@
 
 ### Added
 
+- **omnibase's remote search** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 2): with `omnibridge.media` on and
+  `omnibridge.forms.search` (true by default), the routes `ux_autocomplete` and `ux_autocomplete_icons` at the Symfony site's
+  addresses, answered by `Form\SearchController` through omnibase's `Base\Field\Search\RemoteSearch` (in the web group for the
+  session's token, which the search checks itself; `base.paginator` completed with omnibase's defaults). A record's picker and an
+  icon picker are drawn: `LaravelKinds` declares `icon` implemented (`select2`); a select searched remotely is still refused where
+  the application has no such route. A remote search's chosen records are printed by the words select2 shows them by.
+  `View\OmnibaseExtensions::bindIcons()`: omnibase's icons bound where nothing binds them (the search's adapters, the filters').
+  `tests/SearchTest`; `tests/FieldConformanceTest` with media on. Docs: docs/views.md.
+
+### Changed
+
+- `Container\Definitions`: an optional argument whose service is bound but cannot be built (omnibase's translator without its
+  catalogues' translator) is left to its default or null, as an unbound one; a required one still says why.
+
 - **omnibase's rich kinds drawn** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 1): `Form\FormRenderer` draws the
   widget a field's neutral behaviour names - `datetimepicker`, `slug`, `boolean` (with its confirmation modal), `number2`, `select2`
   (the `choice` part, its options and selection printed), `password2` (`plain`, `plain_repeater`, the strength meter) - with the

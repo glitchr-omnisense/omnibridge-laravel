@@ -165,7 +165,7 @@ Symfony type reads, so the same data attributes reach the same scripts:
 | `boolean` | `boolean`: the switch, `data-boolean-*`, the confirmation's modal |
 | `number` | `number2`: the steppers, `data-number-*`, the value in the page's language |
 | `color`, `color_picker` | text inputs with `data-jscolor` / `data-color-pickr` |
-| `choice`, `role`, `state`, `gender`, `currency`, `country` | `select2`: the `choice` part (`name[choice]`), its options printed, the chosen ones selected |
+| `choice`, `role`, `state`, `gender`, `currency`, `country`, `icon` | `select2`: the `choice` part (`name[choice]`), its options printed, the chosen ones selected (a remote search's by the words select2 shows) |
 | `password` | `password2`: `plain` and `plain_repeater`, the strength meter |
 | `locale` | a plain select of Intl's locales |
 
@@ -174,9 +174,22 @@ A field that names its host type and keeps a kind (`setFormType()`: the newslett
 as a list through Symfony's `EntityType`) is drawn from its generic view - input, textarea, choice - as before; one
 with no kind at all (`custom`) is refused.
 `FormRenderer` refuses an unsupported or undeclared kind (`Omnibridge\Form\UnsupportedKind`), and a select whose
-choices are searched remotely (a record's picker, the icons): this application has no `ux_autocomplete` route yet.
+choices are searched remotely where this application has no such route.
+
+**The remote search.** A record's picker and an icon picker search their entries on the host. With
+`omnibridge.media` on (the search's payload goes through omnibase's obfuscator) and `omnibridge.forms.search`
+(true by default), this package declares omnibase's routes under their Symfony names and paths
+(`Base\Field\Search\RemoteSearch::ROUTES`): `ux_autocomplete` (`/ux/autocomplete/{data}`) and
+`ux_autocomplete_icons` (`/ux/autocomplete/{provider}/{pageSize}/{data}`), GET and POST, in the web group (the
+session holds the token the payload carries) without Laravel's CSRF middleware - the search checks that token
+itself. `Form\SearchController` hands omnibase's `RemoteSearch` the request's method, query and body and sends its
+answer as JSON: the same entries, pages and refusals as Symfony's `AutocompleteController`. omnibase's `FormView`
+gives the field's search its address with its payload, and the entries chosen; the icons are omnibase's adapters
+over `omnibridge.icons.metadata` (`View\OmnibaseExtensions::bindIcons()`), the pages the Paginator's on
+`base.paginator` (omnibase's defaults where the config says nothing).
+
 Not drawn yet (a later slice of omnibase's step F5d): `code`, `editor`, `wysiwyg`, `money`, `forex`, `stock`,
-`route`, `icon`, `emoji`, `quadrant`, the uploads (`file`, `image`, `cropper`, `avatar`, `audio`, `video`),
+`route`, `emoji`, `quadrant`, the uploads (`file`, `image`, `cropper`, `avatar`, `audio`, `video`),
 `association`, `association_file`, `attribute`, `array`, `collection`, `translation`, `discriminator`, and
 `custom` (a Symfony type named directly).
 

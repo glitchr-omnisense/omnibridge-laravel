@@ -222,26 +222,35 @@ final class OmnibaseExtensions
     /** omnibase's icon adapters over its metadata, a route's icons by the Routes contract. */
     private function icons(): Icons
     {
-        $app = $this->app;
-        if (!$app->bound(Icons::class)) {
-            $metadata = $this->config('omnibridge.icons.metadata');
-            $metadata = \is_string($metadata) && '' !== $metadata ? $metadata : $app->publicPath('bundles/base/metadata');
-            $app->singleton(Icons::class, static function (Application $app) use ($metadata): Icons {
-                $cache = $app->storagePath('framework/cache/omnibase-icons');
-                $routes = $app->make(Routes::class);
+        self::bindIcons($this->app, $this->config('omnibridge.icons.metadata'));
 
-                return new Icons(
-                    // Made once in the process for a folder, when a first icon is asked (each reads its metadata through its cache).
-                    static fn (): array => self::$adapters[$metadata] ??= [
-                        new FontAwesomeAdapter($metadata.'/icons.yml', $cache),
-                        new BootstrapTwitterAdapter($metadata.'/bootstrap-icons.json', $cache),
-                    ],
-                    static fn (mixed $route): ?array => \is_string($route) && '' !== $route ? $routes->icons($route) : null,
-                );
-            });
+        return $this->app->make(Icons::class);
+    }
+
+    /**
+     * omnibase's Icons bound where nothing binds it yet: Font Awesome's and Bootstrap's adapters over
+     * their metadata (omnibridge.icons.metadata, public/bundles/base/metadata by default), a route's
+     * icons by the Routes contract - what the icon filters and an icon picker's search read.
+     */
+    public static function bindIcons(Application $app, mixed $metadata = null): void
+    {
+        if ($app->bound(Icons::class)) {
+            return;
         }
+        $metadata = \is_string($metadata) && '' !== $metadata ? $metadata : $app->publicPath('bundles/base/metadata');
+        $app->singleton(Icons::class, static function (Application $app) use ($metadata): Icons {
+            $cache = $app->storagePath('framework/cache/omnibase-icons');
+            $routes = $app->make(Routes::class);
 
-        return $app->make(Icons::class);
+            return new Icons(
+                // Made once in the process for a folder, when a first icon is asked (each reads its metadata through its cache).
+                static fn (): array => self::$adapters[$metadata] ??= [
+                    new FontAwesomeAdapter($metadata.'/icons.yml', $cache),
+                    new BootstrapTwitterAdapter($metadata.'/bootstrap-icons.json', $cache),
+                ],
+                static fn (mixed $route): ?array => \is_string($route) && '' !== $route ? $routes->icons($route) : null,
+            );
+        });
     }
 
     /** omnibase's WebPushService on omnibridge.push's keys; none without them. */
