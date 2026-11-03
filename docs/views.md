@@ -168,6 +168,8 @@ Symfony type reads, so the same data attributes reach the same scripts:
 | `choice`, `role`, `state`, `gender`, `currency`, `country`, `icon` | `select2`: the `choice` part (`name[choice]`), its options printed, the chosen ones selected (a remote search's by the words select2 shows) |
 | `password` | `password2`: `plain` and `plain_repeater`, the strength meter |
 | `locale` | a plain select of Intl's locales |
+| `file`, `audio`, `video` | `fileupload`: the stored file's name (`name[file]`), the file to send (`name[raw]`), or for several files a dropzone (each file sent to `ux_dropzone` as it is dropped, their uuids in `name[file]`); `data-file-*`, the size and types accepted |
+| `image`, `avatar` | `imageupload` (and `avatar`'s frame): the stored picture's thumbnail and lightbox, the cropper's modal, then `fileupload`; `data-image-*`, `data-avatar-*` |
 | `translation` | `translatable`: a tab per language (its flag, the default and the required ones marked), each the rows of its translation entity's fields (`name[fr-FR][title]`); one language alone, its rows without tabs. A field of a kind not drawn here refuses the whole field, naming it |
 
 `Form\LaravelKinds::COVERAGE` declares every kind of `Base\Field\Kind`: implemented, or unsupported with the reason.
@@ -189,10 +191,18 @@ gives the field's search its address with its payload, and the entries chosen; t
 over `omnibridge.icons.metadata` (`View\OmnibaseExtensions::bindIcons()`), the pages the Paginator's on
 `base.paginator` (omnibase's defaults where the config says nothing).
 
+**The uploads.** A file field is drawn from omnibase's `Upload` behaviour, the vars Symfony's `FileType` reads. With
+`omnibridge.media` on and `omnibridge.forms.uploads` (true by default), this package declares omnibase's dropzone routes
+under their Symfony names and paths (`Base\Field\Upload\Dropzone::ROUTES`): `ux_dropzone` (`/ux/dropzone/{data}`: a file
+kept under a uuid until its form is sent), `ux_dropzone_preview` and `ux_dropzone_delete`, in the web group without Laravel's
+CSRF middleware - the dropzone checks the session's token itself. `Form\UploadController` hands omnibase's `Dropzone` the
+file sent and sends its answer. An application hands its forms the files sent with the values
+(`array_replace_recursive($request->request->all($name), $request->files->all($name))`); omnibase's FormBinder reads them,
+the record's `#[Uploader]` stores them at the flush on its storage (`omnibridge.storages`).
+
 Not drawn yet (a later slice of omnibase's step F5d): `code`, `editor`, `wysiwyg`, `money`, `forex`, `stock`,
-`route`, `emoji`, `quadrant`, the uploads (`file`, `image`, `cropper`, `avatar`, `audio`, `video`),
-`association`, `association_file`, `attribute`, `array`, `collection`, `translation`, `discriminator`, and
-`custom` (a Symfony type named directly).
+`route`, `emoji`, `quadrant`, `cropper`, `association`, `association_file`, `attribute`, `array`, `collection`,
+`discriminator`, and `custom` (a Symfony type named directly).
 
 `tests/FieldConformanceTest` runs omnibase's conformance suite here (`Form\Conformance\LaravelHost`): every kind
 declared, each implemented one drawn, shown, bound and refused as Symfony does it.

@@ -14,8 +14,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
  * omnisense/omnibase's field conformance suite on Laravel (plan "omnibase agnostic", step F5d):
  * every kind declared (LaravelKinds::COVERAGE), each implemented one drawn, shown, bound and
  * refused as Symfony does it (the samples are Symfony's), each unsupported one refused aloud. With omnibase's
- * media on, as an application drawing an icon picker has it (its remote search's routes), and its entities
- * mapped (a translations field's parts are its translation entity's fields).
+ * media on, as an application drawing an icon picker has it (its remote search's routes), its uploads' storage
+ * (a file field shows the record's files), and its entities mapped (a translations field's parts are its
+ * translation entity's fields).
  */
 final class FieldConformanceTest extends TestCase
 {
@@ -44,7 +45,9 @@ final class FieldConformanceTest extends TestCase
         $root = sys_get_temp_dir().'/omnibridge-laravel-conformance-'.getmypid();
         $app['config']->set('omnibridge.media', true);
         $app['config']->set('filesystems.disks.omnibase-cache', ['driver' => 'local', 'root' => $root.'/cache']);
-        $app['config']->set('omnibridge.storages', ['local.cache' => 'omnibase-cache']);
+        // The uploads' storage, as an application whose records hold files has it: a file field shows the record's.
+        $app['config']->set('filesystems.disks.omnibase-uploads', ['driver' => 'local', 'root' => $root.'/uploads']);
+        $app['config']->set('omnibridge.storages', ['local.cache' => 'omnibase-cache', 'local.uploads' => 'omnibase-uploads']);
         $app['config']->set('base.obfuscator.cache_dir', $root.'/obfuscator');
         // omnibase's entities mapped, as an application has them: a translations field lists its translation
         // entity's fields from its shape (a thread's translations, the sample's record).

@@ -64,6 +64,10 @@ final class FormRenderer
             case 'number': return $this->number($vars);
             case 'select2': return $this->select2($vars);
             case 'password2': return $this->password($vars);
+            // A file sent with its form (omnibase's fileupload, imageupload and avatar blocks: Base\Field\Behaviour\Upload).
+            case 'file': return $this->fileUpload($vars);
+            case 'image': return $this->imageUpload($vars);
+            case 'avatar': return $this->avatarUpload($vars);
             // Pickr (colorpickr_widget): the input, told where its field is.
             case 'color': return $this->input(['attr' => $vars['attr'] + ['data-color-field' => $vars['id']]] + $vars);
         }
@@ -88,6 +92,12 @@ final class FormRenderer
         self::refuse($vars);
         if ('password2' === ($vars['widget'] ?? null)) {
             return $this->widget($field, $options).$this->errors($field);
+        }
+        if (\in_array($vars['widget'] ?? null, ['file', 'image', 'avatar'], true)) {
+            // fileupload_row: its label (none for an inline one, which the widget prints), its errors, the widget.
+            $label = ($vars['inline'] ?? false) || false === ($vars['label'] ?? null) ? '' : $this->label('', $this->labelled($vars), (bool) $vars['required']);
+
+            return '<div '.$this->attributes((array) ($vars['row_attr'] ?? [])).'>'.$label.$this->errors($field).$this->widget($field, $options).'</div>';
         }
         if ('boolean' === ($vars['widget'] ?? null)) {
             $rowAttr = (array) ($vars['row_attr'] ?? []);
@@ -446,6 +456,188 @@ final class FormRenderer
         if (!Coverage::isImplemented($declaration)) {
             throw UnsupportedKind::of($kind, 'omnibridge/laravel', Coverage::reason($declaration));
         }
+    }
+
+    /**
+     * omnibase's fileupload_widget: the stored file's name in a hidden input ([file]), the file to send
+     * ([raw]) - or a dropzone that sends each file as it is dropped, its uuids in the hidden input -,
+     * the data attributes form-type-file.js reads (Base\Field\Behaviour\Upload's vars), the size and
+     * the types accepted, the confirmation's modal.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function fileUpload(array $vars): string
+    {
+        $id = (string) $vars['id'];
+        $full = (string) $vars['full_name'];
+        $files = (array) ($vars['files'] ?? []);
+        $mimeTypes = \is_array($vars['mime_types'] ?? null) ? $vars['mime_types'] : array_filter([(string) ($vars['mime_types'] ?? '')]);
+        $icon = static fn (string $classes, string $style = ''): string => '<i '.('' !== $style ? 'style="'.$style.'" ' : '')." class='".$classes."'></i>";
+        $paths = json_decode(\is_string($vars['path'] ?? null) ? $vars['path'] : '[]', true);
+        $data = [
+            'data-file-sortable' => self::scalar($vars['sortable'] ?? null), 'data-file-lightbox-options' => $vars['lightbox'] ?? null,
+            'data-file-ajax' => $vars['ajax'] ?? null, 'data-file-href' => urldecode((string) ($vars['href'] ?? '')),
+            'data-file-max-files' => self::scalar($vars['max_files'] ?? null),
+            'data-file-path-links' => self::scalar($vars['path'] ?? null), 'data-file-preview-links' => self::scalar($vars['previews'] ?? null),
+            'data-file-download-links' => self::scalar($vars['download'] ?? null),
+            'data-file-clipboard' => "\n<a class=\"fa-2x fa-fw\" href=\"{0}\" data-clipboard-copy>\n    ".$icon('fa-fw fa-solid fa-clipboard-list')."\n</a>",
+            'data-file-download' => "<a href='{0}' >".$icon('fa-fw fa-solid fa-2x fa-download', 'font-size: 1.8em;').'</a>',
+            'data-file-lightbox' => ($vars['lightbox'] ?? null) ? "<a href='{0}' data-lightbox='lightbox-".$id."' loading='lazy'>".$icon(\is_array($paths) && \count($paths) > 1 ? 'fa-fw fa-solid fa-2x fa-search-plus' : 'fa-fw fa-solid fa-2x fa-image').'</a>' : '',
+            'data-file-goto' => "<a target='_blank' href='{0}'>".$icon('fa-fw fa-solid fa-2x fa-external-link-square-alt').'</a>',
+            'data-file-delete' => ($vars['allow_delete'] ?? false) ? "<a class='warning' data-dz-remove='true'>".$icon('fa-fw fa-regular fa-2x fa-trash-alt').'</a>' : null,
+            'data-file-clippable' => self::scalar($vars['clippable'] ?? null),
+            'data-file-loader' => "<div id='".$id."_loader' class='loader'><div class='loader-spinner'></div></div>",
+        ];
+        foreach (['counter' => 'file_counter', 'counter-max' => 'file_counter_max'] as $attribute => $key) {
+            foreach (['none' => 'none', 'singular' => '_singular', 'plural' => '_plural'] as $count => $word) {
+                $data['data-file-'.$attribute.'['.$count.']'] = $this->translations->trans('@fields.fileupload.'.$key.'.'.$word, ['{0}']);
+            }
+        }
+        $attr = array_replace((array) $vars['attr'], $data);
+
+        $html = '<div '.$this->attributes(['class' => 'fileupload', 'data-file-field' => $id, 'data-file-dropzone' => $vars['dropzone'] ?? '']).'><div class="field">';
+        $value = \is_string($vars['value'] ?? null) ? $vars['value'] : '';
+        if (($vars['multiple'] ?? false) && ($vars['dropzone'] ?? null)) {
+            $html .= '<div '.$this->attributes(['id' => $id.'_dropzone'] + $attr).'></div>';
+            $html .= '<input '.$this->attributes(['type' => 'hidden', 'id' => $id, 'name' => $full.'[file]', 'value' => '' !== $value ? $value : null]).' />';
+        } else {
+            $stored = (string) ($vars['file_value'] ?? '');
+            $html .= '<input '.$this->attributes(['type' => 'hidden', 'id' => $id.'_file', 'name' => $full.'[file]', 'value' => '' !== $stored ? $stored : null]).' />';
+            if (($vars['allow_reupload'] ?? true) || '' === $value) {
+                $html .= '<div class="input-group field-raw">';
+                if ($vars['inline'] ?? false) {
+                    $html .= '<div class="input-group-prepend"><span class="input-group-text">'.$this->label('', $this->labelled($vars), (bool) $vars['required']).'</span></div>';
+                }
+                if ($vars['allow_url'] ?? false) {
+                    $html .= '<div class="input-group-text">'.$icon('fa-solid fa-paperclip').'</div>';
+                }
+                $empty = [] === $files && '' === $value;
+                $html .= '<input '.$this->attributes([
+                    'type' => 'file', 'id' => $id.'_raw', 'name' => $full.'[raw]'.(($vars['multiple'] ?? false) ? '[]' : ''),
+                    'disabled' => (bool) ($vars['disabled'] ?? false) || (!($vars['allow_reupload'] ?? true) && !$empty),
+                    'required' => (bool) $vars['required'] && !($vars['allow_url'] ?? false) && $empty && null === ($vars['cropper'] ?? null),
+                    'multiple' => (bool) ($vars['multiple'] ?? false),
+                    'class' => [] === $files ? 'last' : null, 'accept' => implode(',', $mimeTypes),
+                ]).' />';
+                if (($vars['allow_delete'] ?? false) && !($vars['disabled'] ?? false)) {
+                    $html .= '<div id="'.htmlspecialchars($id).'_deleteBtn" class="input-group-text deleteBtn '.([] === $files ? 'hidden' : '').'"><span style="cursor:pointer;">&#x2715;</span></div>';
+                }
+                $html .= '</div>';
+            }
+            if ($vars['allow_url'] ?? false) {
+                $html .= '<div class="input-group field-url"><div class="input-group-text">'.$icon('fa-solid fa-link').'</div><input '.$this->attributes(['type' => 'url', 'id' => $id.'_url', 'name' => $full.'[url]', 'placeholder' => $this->translate('@fields.fileupload.download_placeholder')]).' /></div>';
+            }
+        }
+        $html .= '</div>';
+
+        $media = \Omnibridge\Runtime::find(\Base\Service\MediaServiceInterface::class);
+        if (($vars['max_size'] ?? null) && $media instanceof \Base\Service\FileService) {
+            $html .= '<div class="form-filesize form-text text-muted">'.htmlspecialchars($this->translations->trans('@fields.fileupload.max_size', [$media->filesize($vars['max_size'])])).'</div>';
+        }
+        $extensions = $media instanceof \Base\Service\FileService ? array_values(array_filter((array) $media->getExtensions($mimeTypes))) : [];
+        if ([] !== $extensions) {
+            $html .= '<div class="form-filesize form-text text-muted">'.htmlspecialchars($this->translations->trans('@fields.fileupload.mime_type', [\count($extensions), strtoupper(implode(', ', $extensions))])).'</div>';
+        }
+        if (($vars['multiple'] ?? false) && ($vars['dropzone'] ?? null)) {
+            $html .= '<div id="'.htmlspecialchars($id).'_metadata" class="form-text text-muted"><div id="'.htmlspecialchars($id).'_loader" class="loader"><div class="loader-spinner"></div> '.htmlspecialchars($this->translate('@fields.fileupload.dropzone.spinner')).'</div></div>';
+        }
+        $html .= '</div>';
+
+        if ($vars['confirm_action'] ?? false) {
+            $html .= '<div class="modal fade" id="'.htmlspecialchars($id).'-modal" tabindex="-1" role="dialog" aria-labelledby="'.htmlspecialchars($id).'-modal"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content">'
+                .'<div class="modal-header"><button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="'.htmlspecialchars($id).'-modal-label">'.htmlspecialchars($this->translate('@fields.fileupload.dropzone.title')).'</h4></div>'
+                .'<div class="modal-body" id="'.htmlspecialchars($id).'-text"></div>'
+                .'<div class="modal-footer"><button type="button" class="btn btn-default" id="'.htmlspecialchars($id).'-dismiss" data-dismiss="modal">'.htmlspecialchars($this->translate('@fields.fileupload.dropzone.button.cancel')).'</button>'
+                .'<button type="button" class="btn btn-primary" id="'.htmlspecialchars($id).'-confirm">'.htmlspecialchars($this->translate('@fields.fileupload.dropzone.button.confirm')).'</button></div>'
+                .'</div></div></div>';
+        }
+
+        return $html;
+    }
+
+    /**
+     * omnibase's imageupload_widget: the stored picture's thumbnail (the field's own when there is none), its
+     * lightbox, the cropper's modal, then the file's inputs (fileupload_widget).
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function imageUpload(array $vars): string
+    {
+        $id = (string) $vars['id'];
+        $value = \is_string($vars['value'] ?? null) ? $vars['value'] : '';
+        $media = \Omnibridge\Runtime::find(\Base\Service\MediaServiceInterface::class);
+        $media = $media instanceof \Base\Service\MediaService ? $media : null;
+        $mimeTypes = \is_array($vars['mime_types'] ?? null) ? implode(',', $vars['mime_types']) : (string) ($vars['mime_types'] ?? '');
+        $attr = array_replace((array) $vars['attr'], [
+            'data-image-field' => $id, 'data-image-modal' => $vars['modal'] ?? null, 'data-image-cropper' => $vars['cropper'] ?? '',
+            'data-image-lightbox' => $vars['lightbox'] ?? '', 'data-image-mimetypes' => $mimeTypes, 'data-image-thumbnail' => $vars['thumbnail'] ?? null,
+            'data-image-ajax' => $vars['ajax'] ?? '', 'data-image-maxsize' => self::scalar($vars['max_size'] ?? null),
+            'data-image-maxsize[feedback]' => $this->translations->trans('@fields.fileupload.max_size_feedback', ['{0}']),
+            'data-image-uploadFailed' => $this->translate('@fields.fileupload.error.cannot_upload'),
+        ]);
+        $thumbnail = ('' !== $value ? $media?->thumbnail($value, 500, 500) : null) ?: ($vars['thumbnail'] ?? '');
+        $lightbox = '' !== $value && !empty($vars['lightbox']);
+
+        $html = '<div class="imageupload" '.$this->attributes($attr).'>';
+        if (!($vars['multiple'] ?? false)) {
+            $html .= '<figure class="lazyload"><img '.$this->attributes(['id' => $id.'_thumbnail', 'style' => 'cursor: pointer;', 'data-src' => \is_string($thumbnail) ? $thumbnail : '']).' />';
+            $html .= '<figcaption id="'.htmlspecialchars($id).'_figcaption"><div class="figwrapper">';
+            if ($lightbox) {
+                $image = (string) $media?->image($value);
+                $html .= '<span><i class="fa-solid fa-search-plus" id="'.htmlspecialchars($id).'_preview"></i></span>'
+                    .'<span><a class="fa-2x fa-fw" href="'.htmlspecialchars($image).'" data-clipboard-copy><i class=\'fa-fw fa-solid fa-clipboard-list\'></i></a></span>'
+                    .'<span><a href=\''.htmlspecialchars((string) ($vars['download'] ?? '')).'\'><i style="font-size:0.95em;bottom:3px;position:relative" class=\'fa-solid fa-fw fa-download\'></i></a></span>'
+                    .'<span><a target=\'_blank\' href=\''.htmlspecialchars($image).'\'><i class=\'fa-solid fa-fw fa-image\'></i></a></span>';
+            } else {
+                $html .= '<span><i class="fa-solid fa-plus-circle"></i></span>';
+            }
+            $html .= '</div></figcaption>';
+            if ($lightbox) {
+                $html .= '<a '.$this->attributes(['href' => (string) $media?->thumbnail($value, 1000, 1000), 'data-lightbox' => $id.'_lightbox', 'id' => $id.'_lightbox', 'loading' => 'lazy']).'></a>';
+            }
+            $html .= '</figure>';
+            if ($vars['cropper'] ?? null) {
+                $html .= '<div class="modal fade" id="'.htmlspecialchars($id).'_modal"><div class="modal-dialog modal-dialog-centered modal-dialog modal-dialog-centered-centered"><div class="modal-content">'
+                    .'<div class="modal-header"><h5 class="modal-title">Image cropper</h5></div>'
+                    .'<div class="modal-body"><div class="imageupload-cropper"><img id="'.htmlspecialchars($id).'_cropper" src="" class="imageupload-cropper-image" style="visibility:hidden"></div></div>'
+                    .'<div class="modal-footer"><div class="form-text text-muted">'
+                    .(($vars['max_size'] ?? null) && $media ? htmlspecialchars($this->translations->trans('@fields.fileupload.max_size', [$media->filesize($vars['max_size'])])).'<div id="'.htmlspecialchars($id).'_modal_feedback" class="invalid-image"></div>' : '')
+                    .'</div><div><button type="button" class="btn btn-secondary" id="'.htmlspecialchars($id).'_modalClose">'.htmlspecialchars($this->translate('@fields.boolean.button.cancel')).'</button>'
+                    .'<button type="button" class="btn btn-primary" id="'.htmlspecialchars($id).'_modalSave">'.htmlspecialchars($this->translate('@fields.boolean.button.confirm')).'</button></div></div>'
+                    .'</div></div></div>';
+            }
+        }
+
+        return $html.'<div class="imageupload-field">'.$this->fileUpload($vars).'</div></div>';
+    }
+
+    /**
+     * omnibase's avatar_widget: the picture's block (imageupload_widget) in an avatarupload frame that
+     * form-type-avatar.js reads, its removal's button.
+     *
+     * @param array<string, mixed> $vars
+     */
+    private function avatarUpload(array $vars): string
+    {
+        $id = (string) $vars['id'];
+        $attr = array_replace((array) $vars['attr'], ['data-avatar-field' => $id, 'data-avatar-cropper' => $vars['cropper'] ?? '']);
+        $html = '<div class="avatarupload" '.$this->attributes($attr).'>'.$this->imageUpload($vars);
+        if ($vars['allow_delete'] ?? false) {
+            $html .= '<div id="'.htmlspecialchars($id).'_deleteBtn2" class="deleteBtn" style="'.(empty($vars['avatar']) ? 'display:none;' : '').'"><i class="fa-solid fa-plus-circle fa-2x"></i></div>';
+        }
+
+        return $html.'</div>';
+    }
+
+    /** A var printed in an attribute as Twig prints it: true "1", false and null "", a list or a map its JSON. */
+    private static function scalar(mixed $value): string
+    {
+        return match (true) {
+            null === $value => '',
+            \is_bool($value) => $value ? '1' : '',
+            \is_array($value) => (string) json_encode($value),
+            default => (string) $value,
+        };
     }
 
     /** A date (and time) in flatpickr (datetimepicker_widget). @param array<string, mixed> $vars */

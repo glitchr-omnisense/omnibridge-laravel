@@ -253,7 +253,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             // Media off, nothing of it is bound (registerMedia()): the list's would only fail when built.
             $media = self::media($this->app);
             // The remote search hands its payload through the obfuscator: not bound without it either.
-            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch'], true));
+            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch', 'Base\Field\Upload\Dropzone'], true));
             if (class_exists(\Base\Service\Icons::class)) {
                 View\OmnibaseExtensions::bindIcons($this->app, $this->app['config']->get('omnibridge.icons.metadata'));
             }
@@ -277,6 +277,17 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             $router->middleware('web')->withoutMiddleware(Auth\Routes::CSRF_MIDDLEWARE)->group(static function (\Illuminate\Routing\Router $router): void {
                 foreach (\Base\Field\Search\RemoteSearch::ROUTES as $name => [$path]) {
                     $router->match(['GET', 'POST'], $path, Form\SearchController::class)->name($name);
+                }
+            });
+        }
+
+        if (self::media($this->app) && class_exists(\Base\Field\Upload\Dropzone::class) && false !== $this->app['config']->get('omnibridge.forms.uploads', true)) {
+            // omnibase's dropzone under its Symfony names (Dropzone::ROUTES): a file field's files sent as they are dropped,
+            // kept until the form is sent. In the web group for the session's token, which the dropzone checks itself.
+            $router = $this->app->make('router');
+            $router->middleware('web')->withoutMiddleware(Auth\Routes::CSRF_MIDDLEWARE)->group(static function (\Illuminate\Routing\Router $router): void {
+                foreach (\Base\Field\Upload\Dropzone::ROUTES as $name => [$path]) {
+                    $router->match(['GET', 'POST'], $path, Form\UploadController::class)->name($name);
                 }
             });
         }
@@ -393,6 +404,10 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     {
         if ('kernel.secret' === $name) {
             return $app['config']->get('omnibridge.media.secret') ?? $app['config']->get('app.key');
+        }
+        if ('kernel.cache_dir' === $name) {
+            // omnibase's cache folder (a dropzone's uploads wait in its dropzone/): under this application's storage.
+            return $app['config']->get('omnibridge.cache_dir') ?? $app->storagePath('framework/cache/omnibase');
         }
 
         return $app->make(ParameterBagInterface::class)->get($name);
