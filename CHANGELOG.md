@@ -4,6 +4,18 @@
 
 ### Added
 
+- **omnibase's uploads** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 4): `FormRenderer` draws `file`,
+  `image`, `avatar`, `audio` and `video` as omnibase's `fileupload`, `imageupload` and `avatar` blocks do, from omnibase's
+  `Upload` behaviour - the stored file's name in its hidden input (`[file]`), the file to send (`[raw]`), or a dropzone that
+  sends each file as it is dropped; the stored picture's thumbnail, its lightbox, the cropper's modal; the data attributes
+  omnibase's scripts read, the size and types accepted, the confirmation's modal. `LaravelKinds` declares the five kinds
+  implemented (`cropper` stays unsupported). With `omnibridge.media` on and `omnibridge.forms.uploads` (true by default), this
+  package declares omnibase's dropzone routes under their Symfony names and paths (`Base\Field\Upload\Dropzone::ROUTES`:
+  `ux_dropzone`, `ux_dropzone_preview`, `ux_dropzone_delete`), in the web group without Laravel's CSRF middleware: the
+  dropzone checks the session's token itself. `Form\UploadController` hands omnibase's `Dropzone` the file sent and sends its
+  answer. omnibase's `kernel.cache_dir` is `omnibridge.cache_dir`, else `storage/framework/cache/omnibase` (a dropzone's files
+  wait in its `dropzone/`). What is sent is bound by omnibase's FormBinder and stored by the record's `#[Uploader]` at the flush.
+  tests/FieldConformanceTest gives the uploads a storage (`local.uploads`).
 - **omnibase's translations field** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 3): `FormRenderer` draws a
   `translation` field as omnibase's `translatable_widget` does - a tab per language, each the rows of the translation entity's
   fields omnibase's `FormView` gives (`Base\Field\Behaviour\Translation`, `RecordFields`), its values the record's; one language

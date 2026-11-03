@@ -25,6 +25,7 @@ final class LaravelKinds
         'icon' => 'select2',
         'color' => 'jscolor', 'color_picker' => 'colorpickr',
         'date' => 'input', 'datetime' => 'input', 'datetime_picker' => 'datetimepicker', 'time' => 'input',
+        'file' => 'fileupload', 'image' => 'imageupload', 'avatar' => 'avatar', 'audio' => 'fileupload', 'video' => 'fileupload',
         'repeated' => 'repeated', 'translation' => 'translatable', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
     ];
 
@@ -54,12 +55,11 @@ final class LaravelKinds
         'color' => 'implemented', 'color_picker' => 'implemented',
         'quadrant' => 'unsupported: '.self::NOT_YET.'QuadrantType\'s nine positions',
         'date' => 'implemented', 'datetime' => 'implemented', 'datetime_picker' => 'implemented', 'time' => 'implemented',
-        'file' => 'unsupported: '.self::NOT_YET.'the upload pipeline (FileType: dropzone, the stored file\'s preview, deletion)',
-        'image' => 'unsupported: '.self::NOT_YET.'the upload pipeline (ImageType)',
-        'cropper' => 'unsupported: '.self::NOT_YET.'the cropper (CropperType) on the upload pipeline',
-        'avatar' => 'unsupported: '.self::NOT_YET.'the upload pipeline (AvatarType)',
-        'audio' => 'unsupported: '.self::NOT_YET.'the upload pipeline (AudioType)',
-        'video' => 'unsupported: '.self::NOT_YET.'the upload pipeline (VideoType)',
+        // A file sent with its form, the stored one shown (omnibase's Upload behaviour); a dropzone's files sent as they are
+        // dropped to omnibase's ux_dropzone, which this package declares with media on (UploadController).
+        'file' => 'implemented', 'image' => 'implemented',
+        'cropper' => 'unsupported: '.self::NOT_YET.'the cropper (CropperType): an image\'s crops as records of their own',
+        'avatar' => 'implemented', 'audio' => 'implemented', 'video' => 'implemented',
         'association' => 'unsupported: '.self::NOT_YET.'a related record\'s form embedded (AssociationType)',
         'association_file' => 'unsupported: '.self::NOT_YET.'records made from uploads (AssociationFileType)',
         'attribute' => 'unsupported: '.self::NOT_YET.'the attributes\' adapters (AttributeType)',
