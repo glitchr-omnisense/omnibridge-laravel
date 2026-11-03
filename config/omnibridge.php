@@ -91,8 +91,11 @@ return [
     // routes ux_autocomplete and ux_autocomplete_icons, at the Symfony site's
     // addresses, answered by Base\Field\Search\RemoteSearch - a select's records
     // and an icon picker's icons are searched as under Symfony; false declares
-    // none (such a select is then refused aloud when drawn).
-    'forms' => ['search' => true],
+    // none (such a select is then refused aloud when drawn). uploads: the
+    // dropzone's routes (ux_dropzone...). editor: Editor.js's routes
+    // (ux_editorjs_...: the mentions, a text's pictures, the collaboration's
+    // ticket and autosave), answered by Base\Field\Editor\EditorJs.
+    'forms' => ['search' => true, 'uploads' => true, 'editor' => true],
 
     // The entity namespaces of the bundles the site uses, and their prefix in
     // the "entities" catalogues (Base\Marketplace\Entity\ => marketplace\).

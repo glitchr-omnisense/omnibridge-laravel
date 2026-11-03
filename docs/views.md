@@ -171,6 +171,8 @@ Symfony type reads, so the same data attributes reach the same scripts:
 | `file`, `audio`, `video` | `fileupload`: the stored file's name (`name[file]`), the file to send (`name[raw]`), or for several files a dropzone (each file sent to `ux_dropzone` as it is dropped, their uuids in `name[file]`); `data-file-*`, the size and types accepted |
 | `image`, `avatar` | `imageupload` (and `avatar`'s frame): the stored picture's thumbnail and lightbox, the cropper's modal, then `fileupload`; `data-image-*`, `data-avatar-*` |
 | `association_file` | `associationfile`: its upload field (a file, an image, an avatar: omnibase's `AssociationFile`), named by the first part of `entity_file`, with each stored file's name by its record's id in `data-entry-id`; what is sent made into the related records by omnibase's binder |
+| `editor` | `editor`: the document in a hidden input, Editor.js's element (`name_editor`) with `data-editor-field`, `data-editor-options` (its placeholder, the collaboration's room when one is asked) and the five addresses of omnibase's `ux_editorjs_*` routes; the soft line break's hint |
+| `wysiwyg` | `wysiwyg`: the HTML in a hidden input, Quill's element holding the text as `\|wysiwyg` prints it (omnibase's Texts), `data-wysiwyg-field`, `data-wysiwyg-options`; the hint |
 | `translation` | `translatable`: a tab per language (its flag, the default and the required ones marked), each the rows of its translation entity's fields (`name[fr-FR][title]`); one language alone, its rows without tabs. A field of a kind not drawn here refuses the whole field, naming it |
 
 `Form\LaravelKinds::COVERAGE` declares every kind of `Base\Field\Kind`: implemented, or unsupported with the reason.
@@ -201,9 +203,18 @@ file sent and sends its answer. An application hands its forms the files sent wi
 (`array_replace_recursive($request->request->all($name), $request->files->all($name))`); omnibase's FormBinder reads them,
 the record's `#[Uploader]` stores them at the flush on its storage (`omnibridge.storages`).
 
-Not drawn yet (a later slice of omnibase's step F5d): `code`, `editor`, `wysiwyg`, `money`, `forex`, `stock`,
-`route`, `emoji`, `quadrant`, `cropper`, `association`, `association_file`, `attribute`, `array`, `collection`,
-`discriminator`, and `custom` (a Symfony type named directly).
+**The editors.** With `omnibridge.media` on and `omnibridge.forms.editor` (true by default), this package declares
+omnibase's Editor.js routes under their Symfony names and paths (`Base\Field\Editor\EditorJs::ROUTES`, the collaboration's
+first): `ux_editorjs_collabTicket`, `ux_editorjs_autosave` (POST), the mentions `ux_editorjs_endpointByUser`,
+`...Keyword`, `...Thread` (`/ux/editorjs/user/{data}/{page?}`...) and a text's pictures `ux_editorjs_uploadByFile`
+(`/ux/editorjs/{data}`) and `ux_editorjs_uploadByUrl`, in the web group without Laravel's CSRF middleware - `EditorJs`
+checks the editor's token, or the room's, itself. `Form\EditorController` hands it the request's parts and sends its
+answer. A picture is stored in the editor's storage (`base.twig.editor.storage`, one of `omnibridge.storages`);
+`Base\Service\Storages` is omnibase's Flysystem here. A relay's live editing (`collab_live`) needs omnibase's
+`CollabTicketFactory` bound with its secret; without it the field is offered without it, as under Symfony.
+
+Not drawn yet (a later slice of omnibase's step F5d): `code`, `money`, `forex`, `stock`, `route`, `emoji`, `quadrant`,
+`cropper`, `association`, `attribute`, `array`, `collection`, `discriminator`, and `custom` (a Symfony type named directly).
 
 `tests/FieldConformanceTest` runs omnibase's conformance suite here (`Form\Conformance\LaravelHost`): every kind
 declared, each implemented one drawn, shown, bound and refused as Symfony does it.

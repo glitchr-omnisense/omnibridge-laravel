@@ -55,6 +55,9 @@ final class FieldConformanceTest extends TestCase
         $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         $app['config']->set('base.database.use_custom', true);
         $app['config']->set('base.attributes.use_custom', true);
+        // omnibase's templates, as a site under Twig has them: a wysiwyg's text is printed by its |wysiwyg (quill.html.twig).
+        $app['config']->set('omnibridge.twig.paths', [[\dirname((string) (new \ReflectionClass(\Base\Services::class))->getFileName(), 2).'/templates', 'Base']]);
+        $app['config']->set('omnibridge.twig.cache', $root.'/twig');
     }
 
     private function host(): LaravelHost

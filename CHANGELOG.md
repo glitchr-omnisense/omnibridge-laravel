@@ -4,6 +4,16 @@
 
 ### Added
 
+- **omnibase's editors** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 6): `FormRenderer` draws `editor`
+  (Editor.js) and `wysiwyg` (Quill) as omnibase's `editor` and `wysiwyg` blocks do - the text in a hidden input, the script's
+  element with what it reads (omnibase's `Editor` and `Wysiwyg` behaviours), Quill's holding the text as `|wysiwyg` prints it,
+  the soft line break's hint -; `LaravelKinds` declares both implemented, so the translations holding one (an article's,
+  a destination's, a gallery's, a page's) are drawn too. With media on and `omnibridge.forms.editor` (true by default), the
+  routes of omnibase's `EditorJs::ROUTES` (`ux_editorjs_*`: the mentions, a text's pictures, the relay's ticket, a field's
+  autosave) are declared under their Symfony names and paths and answered by `Form\EditorController`; `Base\Service\Storages`
+  is bound to omnibase's Flysystem (a picture's storage). `tests/EditorTest`; `FieldConformanceTest` gives omnibase's templates
+  to Twig (a wysiwyg's text printed by `|wysiwyg`).
+
 - **omnibase's records made from uploads** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 5): `FormRenderer`
   draws `association_file` (a gallery's photos, a photo's picture) as omnibase's `associationfile` block does - its upload field
   (a file, an image, an avatar) drawn as above, each stored file's name by its record's id in `data-entry-id` -, from omnibase's
