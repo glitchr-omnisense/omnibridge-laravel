@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Added
+
+- **omnibase's rich kinds drawn** (omnisense/omnibase's plan "omnibase agnostic", step F5d, slice 1): `Form\FormRenderer` draws the
+  widget a field's neutral behaviour names - `datetimepicker`, `slug`, `boolean` (with its confirmation modal), `number2`, `select2`
+  (the `choice` part, its options and selection printed), `password2` (`plain`, `plain_repeater`, the strength meter) - with the
+  behaviour's settings, the ones omnibase's Symfony types read. `Form\LaravelKinds`: `MAP` (kind => widget) and `COVERAGE`, every
+  kind implemented or unsupported with the reason; an unsupported or undeclared kind, or a select searched remotely without the
+  route, is refused aloud (`Omnibridge\Form\UnsupportedKind`), never a plain input. `Form\Conformance\LaravelHost`, for omnibase's
+  field conformance suite; `tests/FieldConformanceTest` (56 kinds). Docs: docs/views.md.
+
+### Changed
+
+- A checkbox is `required` when its view says so, and a single select without a placeholder is not, as Symfony's theme prints them.
+
 ### Changed
 
 - **The entity hydrator from omnibase's list** (omnisense/omnibase's plan "omnibase agnostic", step F5c, item 3): where

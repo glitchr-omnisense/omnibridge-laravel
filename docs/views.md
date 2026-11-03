@@ -151,3 +151,34 @@ its siblings (`Form\FormExtension`), in Blade through its directives:
 ```
 
 `@formWidget`, `@formLabel`, `@formErrors` and `@formRest` print one piece.
+
+### omnibase's rich kinds, and the kinds it does not draw
+
+A field of omnibase whose kind has a neutral behaviour (`Base\Field\Behaviour\*`) carries its `widget`, and
+`FormRenderer` draws that block of omnibase's Symfony theme with the behaviour's settings - the same object the
+Symfony type reads, so the same data attributes reach the same scripts:
+
+| Kind | Widget |
+|---|---|
+| `datetime_picker` | `datetimepicker`: the calendar's button, `data-datetimepicker-field`/`-options`, the value in the field's ICU format |
+| `slug` | `slug`: `data-slug-*`, its target's id (`target_id`), the lock |
+| `boolean` | `boolean`: the switch, `data-boolean-*`, the confirmation's modal |
+| `number` | `number2`: the steppers, `data-number-*`, the value in the page's language |
+| `color`, `color_picker` | text inputs with `data-jscolor` / `data-color-pickr` |
+| `choice`, `role`, `state`, `gender`, `currency`, `country` | `select2`: the `choice` part (`name[choice]`), its options printed, the chosen ones selected |
+| `password` | `password2`: `plain` and `plain_repeater`, the strength meter |
+| `locale` | a plain select of Intl's locales |
+
+`Form\LaravelKinds::COVERAGE` declares every kind of `Base\Field\Kind`: implemented, or unsupported with the reason.
+A field that names its host type and keeps a kind (`setFormType()`: the newsletter's destinations, records drawn
+as a list through Symfony's `EntityType`) is drawn from its generic view - input, textarea, choice - as before; one
+with no kind at all (`custom`) is refused.
+`FormRenderer` refuses an unsupported or undeclared kind (`Omnibridge\Form\UnsupportedKind`), and a select whose
+choices are searched remotely (a record's picker, the icons): this application has no `ux_autocomplete` route yet.
+Not drawn yet (a later slice of omnibase's step F5d): `code`, `editor`, `wysiwyg`, `money`, `forex`, `stock`,
+`route`, `icon`, `emoji`, `quadrant`, the uploads (`file`, `image`, `cropper`, `avatar`, `audio`, `video`),
+`association`, `association_file`, `attribute`, `array`, `collection`, `translation`, `discriminator`, and
+`custom` (a Symfony type named directly).
+
+`tests/FieldConformanceTest` runs omnibase's conformance suite here (`Form\Conformance\LaravelHost`): every kind
+declared, each implemented one drawn, shown, bound and refused as Symfony does it.
