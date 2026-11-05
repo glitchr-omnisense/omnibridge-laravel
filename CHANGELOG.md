@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Added: omnibase's access policies (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 1)
+
+- `Auth\Policies`, on Laravel's gate (Gate::before, with omnibase 5.0): BACKEND on the back office's and the
+  profiler's routes, the permission tags, COMPLAINT_READ / COMPLAINT_HANDLE (on `Auth\Roles`' hierarchy) and the access
+  restriction's attributes (where `base.access_restriction` is configured: one firewall, `main`) - the core's
+  `Base\Auth\Policy\*`, as its Symfony voters ask them.
+- `Auth\Middleware\AccessRestriction` (the web group, with omnibase's sign-in effects): the core's `Restriction`, as
+  its SecuritySubscriber applies it (404, the redirection, the notices flashed); nothing where no restriction is set.
+
+### Changed
+
+- `Auth\Listener\WelcomeFlash` asks the core's `Welcome` for its key (5.0); its copy of the rule is
+  `Legacy\WelcomeKey`, for omnibase 4.x, removed once 4.x is no longer served. Under 5.0 an account whose last
+  activity is unknown is welcomed "back", as the Symfony site welcomes it.
+
 ### Changed
 
 - Accepts omnisense/omnibase 5.0 (`^4.0 || ^5.0`, plan "omnibase agnostic", step F6), and requires
