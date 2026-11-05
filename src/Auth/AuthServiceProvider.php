@@ -242,6 +242,11 @@ final class AuthServiceProvider extends ServiceProvider
 
         // Security's attributes as the gate's abilities (is_granted('ROLE_ADMIN'), the Access contract).
         $this->app->make(Gate::class)->before(fn (?Authenticatable $user, string $ability) => $this->app->make(Roles::class)->decide($user, $ability));
+        // omnibase's access policies (5.0: BACKEND, the permission tags, the complaints, the restriction), as its voters decide them.
+        if (class_exists('Base\Auth\Policy\Access')) {
+            $this->app->singleton(Policies::class);
+            $this->app->make(Gate::class)->before(fn (?Authenticatable $user, string $ability, array $arguments = []) => $this->app->make(Policies::class)->decide($user, $ability, $arguments));
+        }
 
         // The cookies the Symfony site shares, as it writes them: plain.
         $plain = [];
@@ -281,6 +286,10 @@ final class AuthServiceProvider extends ServiceProvider
                 $kernel->appendMiddlewareToGroup('web', EnrolmentPrompt::class);
                 // The account's presence (its activeAt), as omnibase's SecuritySubscriber pokes it.
                 $kernel->appendMiddlewareToGroup('web', Middleware\Presence::class);
+                // The access restriction (omnibase 5.0's Restriction policy), as its SecuritySubscriber applies it.
+                if (class_exists('Base\Auth\Policy\Restriction')) {
+                    $kernel->appendMiddlewareToGroup('web', Middleware\AccessRestriction::class);
+                }
             }
         } elseif ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {
             $events = $this->app->make(Dispatcher::class);

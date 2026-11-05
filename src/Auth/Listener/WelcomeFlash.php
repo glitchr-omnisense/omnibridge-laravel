@@ -3,7 +3,9 @@
 namespace Omnibridge\Laravel\Auth\Listener;
 
 use Illuminate\Contracts\Session\Session;
+use Base\Auth\Policy\Welcome;
 use Omniauth\Event\SignedIn;
+use Omnibridge\Laravel\Legacy\WelcomeKey;
 use Omnibridge\Contract\Locales;
 use Omnibridge\Contract\Translations;
 use Omnibridge\Laravel\Page\SessionView;
@@ -11,7 +13,8 @@ use Psr\Log\LoggerInterface;
 
 /**
  * The word of welcome a sign-in leaves for the next page (omnibase's
- * SecuritySubscriber::onLoginSuccess() under Symfony, a "success" flash):
+ * SecuritySubscriber::onLoginSuccess() under Symfony, a "success" flash), its key
+ * omnibase 5.0's Welcome policy (step F5e of its plan; under 4.x Legacy\WelcomeKey):
  * for a verified account, "@notifications.login.success.<period>.<active>" -
  * the period of the account's last activity (morning 05-10 h, afternoon
  * 12-15 h, evening 19-05 h, day otherwise), "first" when that activity is
@@ -37,15 +40,11 @@ final class WelcomeFlash
     public function onSignedIn(SignedIn $event): void
     {
         $user = $event->account;
-        if (method_exists($user, 'isPersistent') && !$user->isPersistent()) {
-            $title = '@notifications.login.social';
-        } elseif (method_exists($user, 'isVerified') && $user->isVerified()) {
-            $activeAt = method_exists($user, 'getActiveAt') ? $user->getActiveAt() : null;
-            $activeAt = $activeAt instanceof \DateTimeInterface ? \DateTime::createFromInterface($activeAt) : null;
-            $title = '@notifications.login.success.'.self::period($activeAt).'.'.self::active($activeAt);
-        } else {
+        $key = class_exists(Welcome::class) ? Welcome::key($user) : WelcomeKey::key($user);
+        if (null === $key) {
             return;
         }
+        $title = '@notifications.'.$key;
         $name = $user instanceof \Stringable || method_exists($user, '__toString') ? (string) $user : '';
         $locale = $this->locales?->getLocale();
         $message = $this->translations->trans($title, [$name], null, $locale);
@@ -64,42 +63,5 @@ final class WelcomeFlash
     private static function isKey(string $message): bool
     {
         return str_starts_with($message, '@') && str_contains($message, '.') && !str_contains($message, ' ');
-    }
-
-    /** "first" when the last activity is not today's (omnibase's daydiff(): the day of the activity against today), "back" when it is. */
-    private static function active(?\DateTime $activeAt): string
-    {
-        if (null === $activeAt) {
-            return 'first';
-        }
-        if (\function_exists('daydiff')) {
-            return daydiff(clone $activeAt) < 0 ? 'first' : 'back';
-        }
-
-        return $activeAt->format('Y-m-d') < (new \DateTime('today'))->format('Y-m-d') ? 'first' : 'back';
-    }
-
-    /** omnibase's periods of the day: its time_is_between() on the account's last activity, where its helpers are loaded. */
-    private static function period(?\DateTime $activeAt): string
-    {
-        if (null === $activeAt) {
-            return 'day';
-        }
-        if (\function_exists('time_is_between')) {
-            return match (true) {
-                (bool) time_is_between(clone $activeAt, '05:00:00', '10:00:00') => 'morning',
-                (bool) time_is_between(clone $activeAt, '12:00:00', '15:00:00') => 'afternoon',
-                (bool) time_is_between(clone $activeAt, '19:00:00', '05:00:00') => 'evening',
-                default => 'day',
-            };
-        }
-        $time = $activeAt->format('H:i:s');
-
-        return match (true) {
-            $time >= '05:00:00' && $time < '10:00:00' => 'morning',
-            $time >= '12:00:00' && $time < '15:00:00' => 'afternoon',
-            $time >= '19:00:00' || $time < '05:00:00' => 'evening',
-            default => 'day',
-        };
     }
 }
