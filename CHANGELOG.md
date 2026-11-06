@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added: `omnibridge:schema:create` on artisan (omnisense/omnibase's plan "omnibase agnostic", step F7a)
+
+- `Console\SchemaCreateCommand`, registered with omnibase 5.0 and its mapping on: the installed entities' tables created
+  in the empty database of `omnibridge.doctrine.connection` from their description (omnibase's `EntitySchema`,
+  omnisense/omnibridge's `SchemaCreator`), no ORM, through Laravel's PDO; `--dump-sql`; a database holding a table of the
+  description refused. SchemaCreateTest: the statements printed are SchemaCreator's, the tables read back are the
+  description and the ones Doctrine's SchemaTool makes from the entity manager's mapping (SQLite), a second run refused.
+  On the twin (lesringostars' entities, MySQL): the same 132 tables as SchemaTool's, column for column.
+
 ### Fixed: symfony/http-client required (F6 slice 2's defect)
 
 - `Omnibase\OmnibaseServices` (the SpamChecker's client) and `Map\MapServiceProvider` (omnimap's client) build

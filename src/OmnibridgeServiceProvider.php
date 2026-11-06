@@ -337,6 +337,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
                 Console\TrashPurgeCommand::class, Console\UserCreateCommand::class,
             ]);
         }
+        // omnibridge:schema:create (step F7a): the installed entities' tables from their description, with omnibase's
+        // mapping on, where the core describes them with no persistence (5.x) and omnisense/omnibridge writes them.
+        if ($this->app->runningInConsole() && class_exists(\Base\Database\Schema\EntitySchema::class) && class_exists(\Omnibridge\Schema\Database\SchemaCreator::class) && null !== self::omnibase($this->app)) {
+            $this->commands([Console\SchemaCreateCommand::class]);
+        }
     }
 
     /**

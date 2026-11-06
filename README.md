@@ -390,6 +390,23 @@ only), `doctrine:*` (upgrades and imports of a database the Symfony site owns).
 php artisan translation:entities --locale=fr
 ```
 
+## The schema created from the description: `omnibridge:schema:create`
+
+With omnibase 5.0 and its mapping on (`omnibridge.doctrine.omnibase`), `OmnibridgeServiceProvider` registers
+`omnibridge:schema:create` (`Console\SchemaCreateCommand`; omnibase's plan "omnibase agnostic", step F7a): the tables of
+the installed entities - `omnibridge.doctrine.entities` beside the core's, with `omnibridge.doctrine.omnibase`'s options
+(the project's folder and its enumerations, the targets) - created from their description (omnibase's
+`Base\Database\Schema\EntitySchema`) by omnisense/omnibridge's `SchemaCreator`, no ORM, in the empty database of the
+connection `omnibridge.doctrine.connection` names (Laravel's default otherwise), through Laravel's own PDO and with the
+connection's charset and collation. The same statements as omnibridge/symfony's command and the plain-PHP
+`vendor/bin/omnibridge-schema-create`. A database that already holds a table of the description is refused (status 1),
+nothing run; migrations evolve an existing database.
+
+```sh
+php artisan omnibridge:schema:create --dump-sql   # the statements, nothing run
+php artisan omnibridge:schema:create              # "132 tables created (289 statements)." on lesringostars' entities
+```
+
 ## Static export (omnibridge/static)
 
 Where omnibridge/static is installed, `OmnibridgeServiceProvider` registers
