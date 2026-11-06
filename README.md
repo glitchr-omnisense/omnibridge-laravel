@@ -369,6 +369,20 @@ another host's cache read only), `Omnimap\MapPrinter` and omnibridge/twig's
 them). Capturing and deleting a picture is omnibridge/symfony's
 (`routes.export.name`, `routes.suppress.name` name them for the buttons).
 
+## omnibase's console commands
+
+With omnibase 5.0, `OmnibridgeServiceProvider` registers the core's console tasks (`Base\Console\Task\*`) as
+artisan commands of the same names as omnibridge/symfony's: `translation:crud`, `translation:entities`,
+`translation:enums`, `translation:controllers`, `translation:settings`, `cache:clear:sessions`, `demo:reset`,
+`uploader:entities`, `uploader:images`, `uploader:images:crop`, and `omnibase:cache:clear` (Laravel keeps its own
+`cache:clear`; omnibase's checks, lock and counter run around `optimize:clear`). Each prints the task's
+`Base\Console\Report` as Symfony's command prints it (`Console\Reports`). The application's `App\` folder is
+`omnibridge.console.source`, else Composer's `App\` folder that has entities, else `app/`.
+
+```sh
+php artisan translation:entities --locale=fr
+```
+
 ## Static export (omnibridge/static)
 
 Where omnibridge/static is installed, `OmnibridgeServiceProvider` registers

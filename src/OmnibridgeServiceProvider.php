@@ -312,6 +312,17 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole() && class_exists(\Omnibridge\Static\Console\Cli::class)) {
             $this->commands([Static\BuildCommand::class]);
         }
+
+        // omnibase's console tasks as artisan commands (its plan "omnibase agnostic", step F5e, slice 3), where the core
+        // has them (5.0): the same tasks and Reports as omnibridge/symfony's commands of the same names.
+        if ($this->app->runningInConsole() && class_exists(\Base\Console\Task\TranslationCrud::class)) {
+            $this->commands([
+                Console\TranslationCrudCommand::class, Console\TranslationEntitiesCommand::class, Console\TranslationEnumsCommand::class,
+                Console\TranslationControllersCommand::class, Console\TranslationSettingsCommand::class,
+                Console\CacheClearCommand::class, Console\CacheClearSessionsCommand::class, Console\DemoResetCommand::class,
+                Console\UploaderEntitiesCommand::class, Console\UploaderImagesCommand::class, Console\UploaderImagesCropCommand::class,
+            ]);
+        }
     }
 
     /**
