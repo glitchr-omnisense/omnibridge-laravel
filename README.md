@@ -379,6 +379,13 @@ artisan commands of the same names as omnibridge/symfony's: `translation:crud`, 
 `Base\Console\Report` as Symfony's command prints it (`Console\Reports`). The application's `App\` folder is
 `omnibridge.console.source`, else Composer's `App\` folder that has entities, else `app/`.
 
+And (slice 3b) `base:mapping`, `icon:enums`, `icon:entities`, `autocomplete:entities`, `entity:discriminator`,
+`app:notifier`, `notifier:mail:test` and `user:create` (omnibase's Notifier where `omnibridge.notifier` gives a
+channel policy; `user:create --no-email` without it), `user:notifications`, `thread:publishable`, `trash:purge`.
+Not here, on purpose: `base:mailer:trap` (the trap holds Symfony Mailer's messages; Laravel's mailer never consults
+it), `timemachine:*` (the TimeMachine is built on DoctrineBundle's registry, registered by Symfony's container
+only), `doctrine:*` (upgrades and imports of a database the Symfony site owns).
+
 ```sh
 php artisan translation:entities --locale=fr
 ```
