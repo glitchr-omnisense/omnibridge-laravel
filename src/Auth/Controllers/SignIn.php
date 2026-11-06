@@ -229,7 +229,7 @@ final class SignIn
     /**
      * The sign-out's page: with the session's token, straight to the
      * sign-out; without it, a page asking to confirm by a link that carries
-     * one (omnibase's SecurityController::Logout). Signed out already: back
+     * one (omnibase's SignOutPage, which SecurityController::Logout asks too). Signed out already: back
      * to the page the visitor came from.
      */
     public function logoutPage(Request $request): Response
@@ -242,7 +242,7 @@ final class SignIn
             return new RedirectResponse($returnUrl);
         }
         $token = $request->query->get($field);
-        if (null === $csrf || null === $this->tokens || $this->tokens->isValid($csrf['intent'], \is_string($token) ? $token : null)) {
+        if (!self::confirms($this->tokens, $csrf, $token)) {
             return $this->redirector->route(Settings::string($logout['route']), \is_string($token) ? [$field => $token] : []);
         }
 
@@ -250,6 +250,22 @@ final class SignIn
             'logoutPath' => $this->urls->route(Settings::string($logout['route']), [$field => $this->tokens->csrf($csrf['intent'])]),
             'returnUrl' => $returnUrl,
         ]);
+    }
+
+    /**
+     * Whether a signed-in visitor is asked to confirm the sign-out: omnibase's SignOutPage rule (step F5e slice 5 of
+     * its plan "omnibase agnostic"), the one its SecurityController::Logout() asks under Symfony; under omnibase 4.x,
+     * which has no such rule, the former test (Legacy\Auth\SignOutConfirmation).
+     *
+     * @param array{intent: string, field?: string}|null $csrf
+     */
+    private static function confirms(?Tokens $tokens, ?array $csrf, mixed $token): bool
+    {
+        if (class_exists(\Base\Auth\Account\SignOutPage::class)) {
+            return (new \Base\Auth\Account\SignOutPage($tokens))->confirms(null !== $csrf, (string) ($csrf['intent'] ?? ''), $token);
+        }
+
+        return \Omnibridge\Laravel\Legacy\Auth\SignOutConfirmation::confirms($tokens, $csrf, $token);
     }
 
     /** The sign-out itself: the session's token required (as Security's logout with enable_csrf: 403 without it). */

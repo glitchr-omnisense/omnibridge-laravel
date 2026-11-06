@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed: the sign-out page asks the core's rule (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 5a)
+
+- `Auth\Controllers\SignIn::logoutPage()`: whether a signed-in visitor is asked to confirm is omnibase's
+  `Base\Auth\Account\SignOutPage::confirms()`, the rule SecurityController::Logout() asks under Symfony, where it was
+  written again here; under omnibase 4.x, the former test (`Legacy\Auth\SignOutConfirmation`).
+
 ### Changed: what the core declares is discovered is applied (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 4c)
 
 - `Container\Definitions::discover()`, after `bind()`: the core's registries (`Base\Discovery`; omnisense/omnibridge's
