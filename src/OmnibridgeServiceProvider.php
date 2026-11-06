@@ -203,6 +203,9 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
         $this->registerParameters();
         $this->registerDoctrine();
+        // The persistence (omnisense/omnibase's plan "omnibase agnostic", step F7d): base.persistence, omnibridge/eloquent's
+        // services behind the same contracts when it is the one chosen.
+        Persistence::register($this->app, static fn (Application $app): ?array => self::omnibase($app), static fn (Application $app): array => class_exists(\Base\Services::class) ? Omnibase\OmnibaseServices::entityDispatchers($app) : []);
         $this->registerTwig();
         // omnibridge's Views over the container's Twig (omnisense/omnibase's step F5a): what omnibase's
         // services render through - the media tags, the mails, the sitemap, the sharing buttons.
@@ -232,6 +235,8 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         Routing\TrailingSlash::register();
 
         Runtime::setContainer($this->app);
+        // Refused aloud now rather than at the first query: two persistences installed and base.persistence naming none.
+        Persistence::name($this->app);
         // omnibase's options (config/base.php) checked against the core's schema and completed with its defaults (Base\Options,
         // its plan's step F5e slice 4b), before anything reads them.
         Parameters\BaseOptions::apply($this->app, fn (string $name): mixed => self::optionParameter($this->app, $name));

@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added: the persistence chosen, Eloquent's when it is the one (omnisense/omnibase's plan "omnibase agnostic", step F7d)
+
+- `Persistence`: omnibase's option `base.persistence` (config/base.php), chosen by omnisense/omnibridge's `Persistences`
+  - the only one installed, else the one named; both installed and none named refused when the application boots.
+  Where omnibridge/eloquent is installed, `UnitOfWork`, `Snapshots`, `Backend`, `Repositories` and the core's
+  repository interfaces answer from it when it is chosen (`EloquentPersistence::host()` on Laravel's connection,
+  `omnibridge.eloquent.connection`; the lifecycle from the container; the trash and vault scopes), from Doctrine as
+  before otherwise. `OmnibaseServices::entityDispatchers()`.
+- The account's effects on the unit of work chosen (`OmnibaseEffects::unitOfWork()`): the connections' tracker,
+  TrackConnections, UpdateAccount, WelcomeBack, omniauth's omnibase stores; the connections' repository by its
+  interface. On Doctrine, the same objects as before (the unit of work is the entity manager's).
+- PersistenceTest. Docs: docs/configuration.md.
+
 ### Added: `omnibridge:schema:create` on artisan (omnisense/omnibase's plan "omnibase agnostic", step F7a)
 
 - `Console\SchemaCreateCommand`, registered with omnibase 5.0 and its mapping on: the installed entities' tables created
