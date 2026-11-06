@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Fixed: symfony/http-client required (F6 slice 2's defect)
+
+- `Omnibase\OmnibaseServices` (the SpamChecker's client) and `Map\MapServiceProvider` (omnimap's client) build
+  symfony/http-client's `HttpClient`, which was only in require-dev: an application without it (the twin, until its own
+  root requirement) failed on 48 tests. It is required now - the bridge is where omnibase's HTTP contract
+  (http-client-contracts) gets its implementation.
+
 ### Changed: the language menu asks the core's rule (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 5b)
 
 - `Http\SwitchLocale` asks omnibase's `Base\Request\LocaleSwitch`, the rule LocalizerController asks under Symfony,
