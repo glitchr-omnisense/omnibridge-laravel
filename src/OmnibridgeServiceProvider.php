@@ -323,6 +323,16 @@ final class OmnibridgeServiceProvider extends ServiceProvider
                 Console\UploaderEntitiesCommand::class, Console\UploaderImagesCommand::class, Console\UploaderImagesCropCommand::class,
             ]);
         }
+        // Slice 3b's (core 5.x with BaseMapping): the listings, the notifications, the scheduled threads, the trash and the
+        // accounts; base:mailer:trap, timemachine:* and doctrine:* stay Symfony's (README: what has no sense here).
+        if ($this->app->runningInConsole() && class_exists(\Base\Console\Task\BaseMapping::class)) {
+            $this->commands([
+                Console\BaseMappingCommand::class, Console\IconEnumsCommand::class, Console\IconEntitiesCommand::class,
+                Console\AutocompleteEntitiesCommand::class, Console\EntityDiscriminatorCommand::class, Console\NotifierCommand::class,
+                Console\NotifierMailTestCommand::class, Console\UserNotificationCommand::class, Console\ThreadPublishableCommand::class,
+                Console\TrashPurgeCommand::class, Console\UserCreateCommand::class,
+            ]);
+        }
     }
 
     /**

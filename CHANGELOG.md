@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added: the console's other tasks as artisan commands (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 3b)
+
+- With omnibase 5.0 (its `Base\Console\Task\BaseMapping`): `base:mapping`, `icon:enums`, `icon:entities`,
+  `autocomplete:entities`, `entity:discriminator`, `app:notifier`, `notifier:mail:test`, `user:notifications`,
+  `thread:publishable`, `trash:purge` (omnibase's TrashManager on the unit of work and the trash's repository where
+  none is bound), `user:create` (the Notifier where bound; `--no-email` asked without it): the core's tasks, the same
+  Reports as omnibridge/symfony's commands. base:mailer:trap, timemachine:* and doctrine:* stay Symfony's (README).
+  No rule of the core is written here (rules written twice: 0 before, 0 after). tests/ConsoleTasksTest.
+
 ### Added: omnibase's console tasks as artisan commands (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 3a)
 
 - With omnibase 5.0, `Console\*`: `translation:crud`, `translation:entities`, `translation:enums`,

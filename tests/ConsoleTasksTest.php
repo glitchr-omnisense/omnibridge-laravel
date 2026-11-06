@@ -2,6 +2,8 @@
 
 namespace Omnibridge\Laravel\Tests;
 
+use Base\Console\Task\IconEnums;
+use Base\Console\Task\IconEnumsInput;
 use Base\Console\Task\TranslationEntities;
 use Base\Console\Task\TranslationEntitiesInput;
 use Base\Service\LocalizerInterface;
@@ -39,7 +41,7 @@ final class ConsoleTasksTest extends TestCase
 
     public function testTheTasksAreArtisanCommands(): void
     {
-        foreach (['translation:crud', 'translation:entities', 'translation:enums', 'translation:controllers', 'translation:settings', 'cache:clear:sessions', 'omnibase:cache:clear', 'demo:reset', 'uploader:entities', 'uploader:images', 'uploader:images:crop'] as $name) {
+        foreach (['translation:crud', 'translation:entities', 'translation:enums', 'translation:controllers', 'translation:settings', 'cache:clear:sessions', 'omnibase:cache:clear', 'demo:reset', 'uploader:entities', 'uploader:images', 'uploader:images:crop', 'base:mapping', 'icon:enums', 'icon:entities', 'autocomplete:entities', 'entity:discriminator', 'app:notifier', 'notifier:mail:test', 'user:notifications', 'thread:publishable', 'trash:purge', 'user:create'] as $name) {
             $this->assertArrayHasKey($name, Artisan::all(), $name);
         }
     }
@@ -53,6 +55,24 @@ final class ConsoleTasksTest extends TestCase
         $this->assertStringContainsString(' * App\Entity\User : ', $report->text());
         $this->assertStringContainsString('@entities[de-DE].user._singular', $report->text());
         $this->assertSame(self::lines($report->text()), self::lines(Artisan::output()));
+    }
+
+    /** Slice 3b: a listing printed as the task says it (Symfony's icon:enums prints the same Report). */
+    public function testIconEnumsPrintsItsTasksReport(): void
+    {
+        $this->assertSame(0, Artisan::call('icon:enums', ['--enum' => 'Base\\Enum\\UserRole', '--no-ansi' => true]));
+
+        $report = (new IconEnums())->run(new IconEnumsInput(self::FIXTURES.'/Omnibase', 'Base\\Enum\\UserRole'));
+        $this->assertStringContainsString("\tROLE_ADMIN ", $report->text());
+        $this->assertSame(self::lines($report->text()), self::lines(Artisan::output()));
+    }
+
+    /** user:create without omnibase's Notifier (no channel policy here) asks for --no-email before it reads or writes anything. */
+    public function testUserCreateAsksForNoEmailWithoutANotifier(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('pass --no-email');
+        Artisan::call('user:create', ['username' => 'someone', 'email' => 'someone@example.org', '--no-ansi' => true]);
     }
 
     public function testDemoResetRefusesOutsideTheDemonstration(): void
