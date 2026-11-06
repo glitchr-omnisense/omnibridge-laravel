@@ -234,6 +234,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->callAfterResolving('blade.compiler', self::formDirectives(...));
+        Routing\TrailingSlash::register();
 
         Runtime::setContainer($this->app);
         // omnibase's services an account's pages need (its Notifier, its entity events...), with its mapping on:
@@ -241,6 +242,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         if (self::omnibaseServices($this->app)) {
             Omnibase\OmnibaseServices::register($this->app);
             Omnibase\OmnibaseServices::boot($this->app);
+            Omnibase\Redirections::boot($this->app);
         }
 
         if (self::media($this->app)) {

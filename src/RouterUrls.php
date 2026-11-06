@@ -5,6 +5,7 @@ namespace Omnibridge\Laravel;
 use Illuminate\Support\Facades\Route;
 use Omnibridge\Contract\Urls;
 use Omnibridge\Laravel\Routing\LocalizedNames;
+use Omnibridge\Laravel\Routing\TrailingSlash;
 
 /**
  * Addresses answered by Laravel: a route by its name through Laravel's
@@ -65,7 +66,8 @@ final class RouterUrls implements Urls
         $parameters = array_filter($parameters, static fn ($value) => null !== $value);
         $resolved = $this->resolve($name);
         if (null !== $resolved || null === $this->elsewhere) {
-            return route($resolved ?? $name, $parameters, false);
+            // With its last slash where the route keeps one (Routing\TrailingSlash), as the Symfony site writes it.
+            return TrailingSlash::apply(route($resolved ?? $name, $parameters, false), Route::getRoutes()->getByName($resolved ?? $name));
         }
 
         return ($this->elsewhere)($name, $parameters, app()->getLocale());

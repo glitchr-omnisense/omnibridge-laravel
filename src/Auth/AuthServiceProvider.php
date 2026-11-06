@@ -284,11 +284,20 @@ final class AuthServiceProvider extends ServiceProvider
             // The second factor's enrolment a signed-in account is sent to (omnibase's EnrolmentPrompt, R29).
             if (method_exists($kernel, 'appendMiddlewareToGroup')) {
                 $kernel->appendMiddlewareToGroup('web', EnrolmentPrompt::class);
-                // The account's presence (its activeAt), as omnibase's SecuritySubscriber pokes it.
-                $kernel->appendMiddlewareToGroup('web', Middleware\Presence::class);
-                // The access restriction (omnibase 5.0's Restriction policy), as its SecuritySubscriber applies it.
-                if (class_exists('Base\Auth\Policy\Restriction')) {
+                if (class_exists('Base\Request\Rule\Accounts')) {
+                    // omnibase 5.0's request rules, in its Symfony subscribers' order: the pages kept for some accounts
+                    // (the firewall's access_control there), the access restriction, the maintenance and launch pages,
+                    // the account rules (the kick, the presence, the verification, the approval).
+                    $kernel->appendMiddlewareToGroup('web', \Omnibridge\Laravel\Http\AccessControl::class);
                     $kernel->appendMiddlewareToGroup('web', Middleware\AccessRestriction::class);
+                    $kernel->appendMiddlewareToGroup('web', Middleware\SitePages::class);
+                    $kernel->appendMiddlewareToGroup('web', Middleware\AccountRules::class);
+                } else {
+                    // omnibase 4.x: the account's presence (its activeAt), this bridge's former copy of the rule.
+                    $kernel->appendMiddlewareToGroup('web', \Omnibridge\Laravel\Legacy\Middleware\Presence::class);
+                    if (class_exists('Base\Auth\Policy\Restriction')) {
+                        $kernel->appendMiddlewareToGroup('web', Middleware\AccessRestriction::class);
+                    }
                 }
             }
         } elseif ('omnibase' === $settings->stores && class_exists('Base\Auth\Listener\UpdateAccount')) {

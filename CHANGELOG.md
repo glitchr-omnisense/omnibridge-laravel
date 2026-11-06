@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+### Added: omnibase's request rules (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 2)
+
+- With omnibase 5.0, in the web group with its sign-in effects, in its Symfony subscribers' order:
+  `Http\AccessControl` (the pages kept for some accounts, `omnibridge.access_control` - Symfony's `access_control` as
+  data -, a refused visitor sent to the sign-in: the core's `AccessControl` and `EntryPoint`), `AccessRestriction`,
+  `Auth\Middleware\SitePages` (the maintenance and launch pages), `Auth\Middleware\AccountRules` (the kick, the
+  presence, the verification's notice, the approval: the core's `Accounts`). `Http\Decisions` applies a decision
+  (notices flashed, url.intended, the sign-out, abort, the redirection and its cookies), `Http\RequestPage` answers
+  the rules' questions about the route.
+- `Omnibase\Redirections`: a 404 looked up in the site's redirections (the core's `Redirection`), where their
+  repository is bound.
+- `Routing\TrailingSlash`: `Route::...->trailingSlash()` keeps a route's last slash in RouterUrls' addresses, as the
+  Symfony site declares it (`/profile/{id}/edit/`).
+
+### Changed
+
+- `Http\Localize` asks the core's `Locale` (5.0): a signed-in member's own language now comes before LANG, as on the
+  Symfony site. Its former copy of the rule is `Legacy\Http\Localize`, for omnibase 4.x.
+- `Auth\Middleware\Presence` is gone: the twin's copy of the presence rule. Under 5.0 the core's `Presence` runs in
+  `AccountRules`; under 4.x the former copy, `Legacy\Middleware\Presence`. Both removed with 4.x.
+- `AccessRestriction` reads its page through `Http\RequestPage`.
+
 ### Added: omnibase's access policies (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 1)
 
 - `Auth\Policies`, on Laravel's gate (Gate::before, with omnibase 5.0): BACKEND on the back office's and the
