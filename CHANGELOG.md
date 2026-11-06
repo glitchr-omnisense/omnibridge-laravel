@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Added: omnibase's console tasks as artisan commands (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 3a)
+
+- With omnibase 5.0, `Console\*`: `translation:crud`, `translation:entities`, `translation:enums`,
+  `translation:controllers` (the named routes), `translation:settings`, `cache:clear:sessions` (config
+  `session.files`), `omnibase:cache:clear` (the core's checks, lock and counter around `optimize:clear`; Laravel's
+  cache:clear keeps its name), `demo:reset` (artisan's commands through `Console\ArtisanCommands`: the fixtures are
+  `db:seed`, the pools `cache:clear`; symfony/lock's FlockStore where installed), `uploader:entities`,
+  `uploader:images`, `uploader:images:crop`: the core's `Base\Console\Task\*`, the same Report printed as
+  omnibridge/symfony prints it (`Console\Reports`). The application's App\ folder is `omnibridge.console.source`,
+  else Composer's App\ folder that has entities, else app/.
+
 ### Added: omnibase's request rules (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 2)
 
 - With omnibase 5.0, in the web group with its sign-in effects, in its Symfony subscribers' order:
