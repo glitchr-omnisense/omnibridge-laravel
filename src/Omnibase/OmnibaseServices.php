@@ -180,6 +180,17 @@ final class OmnibaseServices
         return $listeners;
     }
 
+    /**
+     * The ids of omnibase's entity dispatchers among the entity listeners (the core's and omnibridge.omnibase.
+     * entity_dispatchers'): what omnibridge/eloquent's lifecycle calls when it is the persistence (Persistence).
+     *
+     * @return list<string>
+     */
+    public static function entityDispatchers(Application $app): array
+    {
+        return array_values(array_filter(array_keys(self::entityListeners($app)), static fn (string $id): bool => is_a($id, AbstractEventDispatcher::class, true)));
+    }
+
     /** Whether omnibase's list of services (Base\Services::definitions()) defines that class. */
     private static function listed(string $class): bool
     {

@@ -335,7 +335,7 @@ final class AuthServiceProvider extends ServiceProvider
                 if (!class_exists($class) || !interface_exists($contract) || $this->app->bound($contract)) {
                     continue;
                 }
-                $this->app->singleton($class, static fn (Application $app) => new $class($app->make(EntityManagerInterface::class)));
+                $this->app->singleton($class, static fn (Application $app) => new $class(OmnibaseEffects::unitOfWork($app)));
                 $this->app->alias($class, $contract);
             }
             if (class_exists('Base\Auth\NotifierSender') && !$this->app->bound(Sender::class)) {

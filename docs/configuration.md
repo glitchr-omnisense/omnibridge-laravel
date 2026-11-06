@@ -21,6 +21,7 @@ order: 40
 | `doctrine.connection` | `?string` | null | `Doctrine\DBAL\Connection`, the settings, the screens' site | a connection of `config/database.php`; none: Doctrine asked is a `LogicException`, no settings read |
 | `doctrine.entities` | `list<string>` | `[]` | the entity manager | the entities' folders |
 | `doctrine.omnibase` | `bool\|array` | false | the entity manager | omnibase's own mapping: true, or `Mapping::register()`'s options (`project_dir`, `environment`, `cache_dir`, `parameters`, `types`, `enumerations`, `attribute_paths`, `resolve_target_entities`, `entity_listeners`) ([Doctrine and images](doctrine-media.md)) |
+| `eloquent.connection` | `?string` | null: `doctrine.connection`, else the default | omnibridge/eloquent's persistence | the connection of `config/database.php` it reads, when `base.persistence` is `eloquent` ([The persistence](configuration.md#the-persistence-basepersistence)) |
 | `parameters.hot` | `?bool` | null: the config's `base.parameter_bag.use_hot_bag` | `HotParameters` | the database settings laid over the config ([Parameters](contracts.md#parameters)) |
 | `theme.modes` | `array` | `[]` | `Page\Theme`, `ScreenContext`, `MenuTwigExtension` | id => `{id, class, icon, prefers}`; no colour scheme without modes |
 | `theme.filters`, `theme.no_filter` | `array` | `[]` | `Page\Theme` | the filters, the one for no filter |
@@ -64,3 +65,21 @@ checked; the media's and the paginator's defaults are this bridge's, as before (
 
 The other files: `config/omniauth.php` ([Signing in](omniauth.md#configomniauthphp)),
 `config/omnimap.php` and `config/omnishield.php` ([Maps, shields, static export](families.md)).
+
+## The persistence: `base.persistence`
+
+omnibase's option `persistence` (config/base.php; omnisense/omnibase's plan "omnibase agnostic", step F7d) chooses the
+persistence as every host does (omnisense/omnibridge's `Persistences`): the only one installed when it names none;
+omnibridge/doctrine and omnibridge/eloquent both installed and it naming none (nor the environment variable
+`OMNIBRIDGE_PERSISTENCE`) stops the application when it boots
+(`PersistenceException`). `Persistence::name()` says the one chosen.
+
+- `doctrine`: as before - the entity manager of `doctrine.*`, omnibridge/doctrine's unit of work and repositories.
+- `eloquent` (omnibridge/eloquent installed): `Omnibridge\Persistence\UnitOfWork`, `Snapshots`, `Backend`,
+  `Base\Database\Repository\Repositories` and the core's repository interfaces answer from omnibridge/eloquent, on
+  Laravel's connection `eloquent.connection` (else `doctrine.connection`, else the default one), the entities of
+  `doctrine.omnibase.project_dir` and the core's, the trash and vault scopes on; omnibase's lifecycle from the
+  container (the AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list). The
+  account's effects (the connections' tracker, TrackConnections, UpdateAccount, WelcomeBack, omniauth's stores) write
+  through the unit of work chosen.
+

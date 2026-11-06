@@ -49,6 +49,13 @@ return [
         'omnibase' => false,
     ],
 
+    // omnibridge/eloquent, when omnibase's option base.persistence (config/base.php) is
+    // "eloquent": the connection of config/database.php it reads (null: doctrine.connection,
+    // else the default one).
+    'eloquent' => [
+        'connection' => null,
+    ],
+
     // The application's parameters (Runtime::parameters()) are Laravel's config,
     // with the database settings linked to a parameter laid over it (omnibase's
     // HotParameters) when on: true, false, or null for the config's own

@@ -78,10 +78,8 @@ final class OmnibaseEffects
     {
         $app->singleton(self::TRACKER, static function (Application $app) {
             $class = self::TRACKER;
-            $entities = $app->make(EntityManagerInterface::class);
-
             return new $class(
-                $entities,
+                self::unitOfWork($app),
                 self::connections($app),
                 static fn (): string => self::browser($app),
                 static fn (): ?string => self::request($app)?->getHost(),
@@ -182,8 +180,8 @@ final class OmnibaseEffects
 
         // The account brought up to date at its sign-in: its constructor takes the unit of work or the entity manager
         // (a union Laravel's container cannot choose for).
-        $app->singleton('Base\Auth\Listener\UpdateAccount', static fn (Application $app) => new \Base\Auth\Listener\UpdateAccount($app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $app->make(\Omnibridge\Persistence\UnitOfWork::class) : $app->make(EntityManagerInterface::class)));
-        $app->singleton('Base\Auth\Listener\TrackConnections', static fn (Application $app) => new \Base\Auth\Listener\TrackConnections($app->make(self::TRACKER), $app->make(EntityManagerInterface::class), $app->make(Accounts::class)));
+        $app->singleton('Base\Auth\Listener\UpdateAccount', static fn (Application $app) => new \Base\Auth\Listener\UpdateAccount(self::unitOfWork($app)));
+        $app->singleton('Base\Auth\Listener\TrackConnections', static fn (Application $app) => new \Base\Auth\Listener\TrackConnections($app->make(self::TRACKER), self::unitOfWork($app), $app->make(Accounts::class)));
         $app->singleton('Base\Auth\Listener\WarnNewDevice', static fn (Application $app) => new \Base\Auth\Listener\WarnNewDevice(
             $app->make(self::POLICY),
             $app->make(self::TRACKER),
@@ -216,7 +214,7 @@ final class OmnibaseEffects
                 $notice,
             ));
         }
-        $app->singleton('Base\Auth\Listener\WelcomeBack', static fn (Application $app) => new \Base\Auth\Listener\WelcomeBack($app->make(EntityManagerInterface::class), null, $app->make(self::MAILS)));
+        $app->singleton('Base\Auth\Listener\WelcomeBack', static fn (Application $app) => new \Base\Auth\Listener\WelcomeBack(self::unitOfWork($app), null, $app->make(self::MAILS)));
         if (class_exists(self::CAPTCHA) && class_exists('Omnishield\Registry')) {
             $app->singleton('Base\Auth\Listener\GuardSignIn', static fn (Application $app) => new \Base\Auth\Listener\GuardSignIn(
                 $app->make(self::CAPTCHA),
@@ -412,13 +410,25 @@ final class OmnibaseEffects
         return $request instanceof Request ? $request : null;
     }
 
-    /** omnibase's repository of the browsers' connections. */
-    private static function connections(Application $app): \Base\Repository\User\ConnectionRepository
+    /**
+     * omnibase's repository of the browsers' connections, on the persistence chosen (its interface, step F7d of
+     * omnibase's plan "omnibase agnostic"), else on the entity manager.
+     */
+    private static function connections(Application $app): \Base\Repository\User\Connections
     {
-        $repository = $app->make(EntityManagerInterface::class)->getRepository('Base\Entity\User\Connection');
-        \assert($repository instanceof \Base\Repository\User\ConnectionRepository);
+        $repository = $app->bound('Base\Repository\User\Connections') ? $app->make('Base\Repository\User\Connections') : $app->make(EntityManagerInterface::class)->getRepository('Base\Entity\User\Connection');
+        \assert($repository instanceof \Base\Repository\User\Connections);
 
         return $repository;
+    }
+
+    /**
+     * The unit of work the account's effects write through: the persistence chosen (omnisense/omnibridge's contract,
+     * Doctrine's or Eloquent's: step F7d), else the entity manager.
+     */
+    public static function unitOfWork(Application $app): object
+    {
+        return $app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $app->make(\Omnibridge\Persistence\UnitOfWork::class) : $app->make(EntityManagerInterface::class);
     }
 
     /** @return array<string, mixed> */
