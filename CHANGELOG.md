@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Changed: the language menu asks the core's rule (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 5b)
+
+- `Http\SwitchLocale` asks omnibase's `Base\Request\LocaleSwitch`, the rule LocalizerController asks under Symfony,
+  where it was written again here; its answers are Symfony's now: LANG written as omnibase's localizer writes it
+  (`en-GB`, it wrote `en_GB`); back to the referring page's route in the chosen language where it has one, else its
+  own, its name read as this host's links read it (RouterUrls: `/galleries` is `/albums` in French), the index for a
+  referring path no route matches and when no language is given (it went back to the path); a member's language kept
+  as their own (not while impersonating) and the visitor told so in a flash. Under omnibase 4.x, which has no such
+  rule, the former code (`Legacy\Http\SwitchLocale`).
+- `Omnibase\SiteLocalizer`: omnibase's localizer on the site's languages (`omnibridge.locales.default`, `available`),
+  as Symfony's is on kernel.default_locale and the translator's fallbacks; it knew the translations' fallback only
+  (the twin: fr-FR and fr-BE), so every rule asking it which languages the site speaks refused English and German.
+- tests/LocaleTest: the menu's answers under 5.x (and the former ones under 4.x).
+
 ### Changed: the sign-out page asks the core's rule (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 5a)
 
 - `Auth\Controllers\SignIn::logoutPage()`: whether a signed-in visitor is asked to confirm is omnibase's
