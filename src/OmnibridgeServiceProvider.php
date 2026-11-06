@@ -255,11 +255,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             // Media off, nothing of it is bound (registerMedia()): the list's would only fail when built.
             $media = self::media($this->app);
             // The remote search hands its payload through the obfuscator: not bound without it either.
-            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'], [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch', 'Base\Field\Upload\Dropzone', 'Base\Field\Editor\EditorJs'], true));
+            $definitions = array_filter(\Base\Services::definitions(), static fn (array $definition): bool => $media || !\in_array($definition['class'] ?? null, [MediaService::class, Obfuscator::class, 'Base\Field\Search\RemoteSearch', 'Base\Field\Upload\Dropzone', 'Base\Field\Editor\EditorJs'], true));
             if (class_exists(\Base\Service\Icons::class)) {
                 View\OmnibaseExtensions::bindIcons($this->app, $this->app['config']->get('omnibridge.icons.metadata'));
             }
-            Container\Definitions::bind($this->app, $definitions, fn (string $name): mixed => self::listParameter($this->app, $name));
+            Container\Definitions::bind($this->app, $definitions, fn (string $name): mixed => self::listParameter($this->app, $name), self::ENVIRONMENTS[$this->app->environment()] ?? $this->app->environment(), fn (string $name): bool => self::hasListParameter($this->app, $name));
         }
         if (self::media($this->app) && false !== ($this->app['config']->get('omnibridge.media.routes') ?? true)) {
             // omnibase's image routes under their Symfony names, in Symfony's order (ImageRoute::ROUTES).
@@ -446,6 +446,19 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         }
 
         return $app->make(ParameterBagInterface::class)->get($name);
+    }
+
+    /**
+     * Whether the application gives one of omnibase's parameters, asked while its list is bound: the config's (the bag
+     * itself is not built then - it reads the database's settings once, when first asked), kernel.* as listParameter().
+     */
+    private static function hasListParameter(Application $app, string $name): bool
+    {
+        if (str_starts_with($name, 'kernel.')) {
+            return true;
+        }
+
+        return null !== (new ConfigParameters($app['config']))->get($name);
     }
 
     /** Whether omnibase's services are given here: omnibase installed, its mapping on (omnibridge.doctrine.omnibase). */
