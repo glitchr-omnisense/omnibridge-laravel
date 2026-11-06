@@ -44,5 +44,23 @@ Read from Laravel's own configuration: `app.locale`, `app.fallback_locale`, `app
 `base.uploader.storage`, `base.twig.editor.storage`, `base.router.use_fallbacks`,
 `base.router.host_fallbacks` for the sign-in cookie's domain).
 
+## `config/base.php`: omnibase's options
+
+With omnisense/omnibase 5.0, the `base` array is checked when the provider boots against the core's schema
+(`Base\Options`, the one omnibridge/symfony compiles into a Symfony site's `base:` tree), then completed with the
+defaults it leaves out (`Parameters\BaseOptions`):
+
+- an option the schema does not know, or of the wrong type, stops the application with the message Symfony gives the
+  same option (`Unrecognized option "identifer" under "base.user". Did you mean "identifier"?`); a deprecated one is
+  said (`E_USER_DEPRECATED`);
+- every option has a value afterwards: `config('base.guard.min_delay')`, `Runtime::parameters()` and the declared
+  services' `%base.*%` arguments read the core's defaults, as a Symfony site's container has them all;
+- the defaults' placeholders are this application's: `%kernel.project_dir%` its base path, `%kernel.cache_dir%`
+  `omnibridge.cache_dir` (else `storage/framework/cache/omnibase`), `%env(NAME)%` the environment, with the core's
+  default where it has none (`BASE_TRADING_LIVE`: live).
+
+A value set later (`config()->set('base.x', ...)` in a test) is not checked again. With omnibase 4.x nothing is
+checked; the media's and the paginator's defaults are this bridge's, as before (`Legacy\Parameters\OptionDefaults`).
+
 The other files: `config/omniauth.php` ([Signing in](omniauth.md#configomniauthphp)),
 `config/omnimap.php` and `config/omnishield.php` ([Maps, shields, static export](families.md)).

@@ -301,7 +301,7 @@ final class OmnibaseEffects
     /**
      * The domain of omnibase's site-wide cookies for this request: Base\Routing\CookieDomain's rule (AdvancedRouter::getDomain()
      * under Symfony) on base.router.use_fallbacks and base.router.host_fallbacks, as the application's config gives them;
-     * the request's host alone (no Domain attribute) where the application configures no router (no base.router.use_fallbacks)
+     * the request's host alone (no Domain attribute) where the application configures no router (no base.router.host_fallbacks)
      * or with a core that has no such rule.
      */
     public static function cookieDomain(Application $app, ?Request $request): ?string
@@ -310,10 +310,11 @@ final class OmnibaseEffects
             return null;
         }
         $config = $app->make(Config::class);
-        if (!$config->has('base.router.use_fallbacks')) {
+        // Since omnibase's options give every default (Base\Options), a router configured is one with host fallbacks.
+        $fallbacks = $config->get('base.router.host_fallbacks', []);
+        if (!$config->has('base.router.use_fallbacks') || !\is_array($fallbacks) || [] === $fallbacks) {
             return null;
         }
-        $fallbacks = $config->get('base.router.host_fallbacks', []);
         $locale = $app->getLocale();
         $default = $config->get('app.locale');
         $locales = array_values(array_filter([$locale, explode('-', str_replace('_', '-', $locale))[0], $default, \is_string($default) ? explode('-', str_replace('_', '-', $default))[0] : null], 'is_string'));

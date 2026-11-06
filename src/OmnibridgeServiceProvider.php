@@ -15,11 +15,6 @@ use Base\Repository\Layout\ImageCropRepository;
 use Base\Service\Flysystem;
 use Base\Service\ImageRoute;
 use Base\Service\MediaService;
-use Base\Service\Model\Obfuscator\Compression\DeflateCompression;
-use Base\Service\Model\Obfuscator\Compression\GzipCompression;
-use Base\Service\Model\Obfuscator\Compression\HashidsCompression;
-use Base\Service\Model\Obfuscator\Compression\NullCompression;
-use Base\Service\Model\Obfuscator\Compression\ZlibCompression;
 use Base\Service\Obfuscator;
 use Base\Service\Model\Wysiwyg\MediaEnhancer;
 use Base\Service\Model\Wysiwyg\MediaEnhancerInterface;
@@ -237,6 +232,9 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         Routing\TrailingSlash::register();
 
         Runtime::setContainer($this->app);
+        // omnibase's options (config/base.php) checked against the core's schema and completed with its defaults (Base\Options,
+        // its plan's step F5e slice 4b), before anything reads them.
+        Parameters\BaseOptions::apply($this->app, fn (string $name): mixed => self::optionParameter($this->app, $name));
         // omnibase's services an account's pages need (its Notifier, its entity events...), with its mapping on:
         // bound once the configuration is final, what an application bound before kept.
         if (self::omnibaseServices($this->app)) {
@@ -273,8 +271,9 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             // omnibase's remote search under its Symfony names (RemoteSearch::ROUTES): a select's records, an icon
             // picker's icons. In the web group for the session's token, which the search checks itself. Its pages
             // are the Paginator's, on omnibase's defaults where the config says nothing (base.paginator).
-            $config = $this->app['config'];
-            $config->set('base.paginator', array_replace(['page_range' => 1, 'page_size' => 10, 'page_parameter' => 'page', 'default_template' => '@Base/paginator/sliding.html.twig'], (array) $config->get('base.paginator', [])));
+            if (!class_exists(\Base\Options::class)) {
+                Legacy\Parameters\OptionDefaults::paginator($this->app);
+            }
             $router = $this->app->make('router');
             $router->middleware('web')->withoutMiddleware(Auth\Routes::CSRF_MIDDLEWARE)->group(static function (\Illuminate\Routing\Router $router): void {
                 foreach (\Base\Field\Search\RemoteSearch::ROUTES as $name => [$path]) {
@@ -449,6 +448,22 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     }
 
     /**
+     * A placeholder of omnibase's options' defaults (Parameters\BaseOptions): the project's folder is this application's
+     * base path, the cache folder and the environment are listParameter()'s, %env()% the environment's (the core's
+     * defaults where it has none), any other parameter the config's.
+     */
+    private static function optionParameter(Application $app, string $name): mixed
+    {
+        return match (true) {
+            'kernel.project_dir' === $name => $app->basePath(),
+            'kernel.cache_dir' === $name, 'kernel.secret' === $name => self::listParameter($app, $name),
+            'kernel.environment' === $name => self::ENVIRONMENTS[$app->environment()] ?? $app->environment(),
+            str_starts_with($name, 'env(') && str_ends_with($name, ')') => Container\Definitions::env(substr($name, 4, -1)),
+            default => $app['config']->get($name),
+        };
+    }
+
+    /**
      * Whether the application gives one of omnibase's parameters, asked while its list is bound: the config's (the bag
      * itself is not built then - it reads the database's settings once, when first asked), kernel.* as listParameter().
      */
@@ -549,16 +564,12 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     private function registerMedia(): void
     {
         $this->app->singleton(LaravelMediaRouter::class, fn (Application $app) => new LaravelMediaRouter($app->make('router'), $app->make('url'), $app->make(Host\Urls::class)));
-        $this->app->singleton(Obfuscator::class, function (Application $app) {
-            $parameters = self::mediaParameters($app);
-            $obfuscator = new Obfuscator($parameters, (string) $parameters->get('base.obfuscator.cache_dir'));
-            foreach ([new NullCompression(), new ZlibCompression(), new GzipCompression(), new DeflateCompression(), new HashidsCompression((string) ($app['config']->get('omnibridge.media.secret') ?? $app['config']->get('app.key')))] as $compression) {
-                $obfuscator->addCompression($compression);
-            }
-
-            return $obfuscator;
-        });
-        $this->app->alias(Obfuscator::class, \Base\Service\ObfuscatorInterface::class);
+        // The Obfuscator is the core's declaration's (Base\Services: its compressions, %base.obfuscator.cache_dir%,
+        // %kernel.secret%), bound with the rest of its list now that the options give its parameters (step F5e slice 4b).
+        if (!class_exists(\Base\Options::class)) {
+            Legacy\Parameters\OptionDefaults::obfuscator($this->app, self::mediaParameters(...));
+            $this->app->alias(Obfuscator::class, \Base\Service\ObfuscatorInterface::class);
+        }
         // The same drives as Omnidrive\Drives where the core reads them (omnibase feb6fa08 on); an earlier
         // core, or no omnidrive installed yet, takes the disks' container as before.
         $this->app->singleton(Flysystem::class, fn (Application $app) => new Flysystem(
@@ -616,10 +627,8 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         if (!self::media($app)) {
             throw new \LogicException('omnibase\'s media are off: omnibridge.media.');
         }
-        $config = $app['config'];
-        if (!$app->bound('omnibridge.media.defaults')) {
-            $config->set('base', array_replace_recursive(self::mediaDefaults($app), (array) $config->get('base', [])));
-            $app->instance('omnibridge.media.defaults', true);
+        if (!class_exists(\Base\Options::class)) {
+            Legacy\Parameters\OptionDefaults::media($app);
         }
 
         return $app->make(ParameterBagInterface::class);
@@ -648,47 +657,6 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $repository = $app->make(EntityManagerInterface::class)->getRepository(\Base\Entity\Layout\ImageCrop::class);
 
         return $repository instanceof ImageCropRepository ? $repository : null;
-    }
-
-    /**
-     * omnibase's defaults for the media parameters (BaseBundle's
-     * configuration), under the config's "base": an application says what
-     * its Symfony site's base.yaml says over them.
-     *
-     * @return array<string, mixed>
-     */
-    private static function mediaDefaults(Application $app): array
-    {
-        $noImage = static fn (string $file) => $app->publicPath('bundles/base/images/'.$file);
-
-        return [
-            'images' => [
-                'max_resolution' => \Base\Imagine\Filter\Basic\Definition\UltraHighDefinitionFilter::class,
-                'debug' => false,
-                'max_quality' => 1,
-                'timeout' => 60,
-                'enable_webp' => true,
-                'fallback' => false,
-                'no_image' => [
-                    ['extension' => 'webp', 'path' => $noImage('image.webp')],
-                    ['extension' => 'jpg', 'path' => $noImage('image.jpg')],
-                    ['extension' => 'jpeg', 'path' => $noImage('image.jpg')],
-                    ['extension' => 'png', 'path' => $noImage('image.png')],
-                    ['extension' => 'svg', 'path' => $noImage('image.svg')],
-                    ['extension' => 'gif', 'path' => $noImage('image.gif')],
-                ],
-            ],
-            'obfuscator' => [
-                'level' => -1,
-                'uuid' => \Symfony\Component\Uid\Uuid::NAMESPACE_URL,
-                'encoding' => null,
-                'max_length' => 0,
-                'compression' => 'null',
-                'cache_dir' => $app->storagePath('framework/cache/omnibase-obfuscator'),
-            ],
-            'uploader' => ['storage' => null],
-            'twig' => ['editor' => ['storage' => null]],
-        ];
     }
 
     /**

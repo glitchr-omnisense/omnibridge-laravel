@@ -320,6 +320,32 @@ final class Definitions
     }
 
     /** @param \Closure(string $name): mixed $parameter */
+    /**
+     * An environment variable as Symfony's %env()% reads it ('bool:NAME', 'int:', 'string:', 'default::'), the default
+     * the core declares for it where the environment has none (Base\Options::environment(): BASE_TRADING_LIVE,
+     * COLLAB_*, as Symfony's env(NAME) parameters give them).
+     */
+    public static function env(string $expression): mixed
+    {
+        $processors = explode(':', $expression);
+        $variable = array_pop($processors);
+        $found = getenv($variable);
+        $found = false === $found ? ($_ENV[$variable] ?? $_SERVER[$variable] ?? null) : $found;
+        if (null === $found && class_exists(\Base\Options::class)) {
+            $found = \Base\Options::environment()[$variable] ?? null;
+        }
+        foreach (array_reverse($processors) as $processor) {
+            $found = match ($processor) {
+                'bool' => null === $found ? false : filter_var($found, \FILTER_VALIDATE_BOOL),
+                'int' => (int) $found,
+                'string' => (string) $found,
+                default => $found,
+            };
+        }
+
+        return $found;
+    }
+
     private static function resolve(Container $container, mixed $value, \Closure $parameter): mixed
     {
         if (\is_array($value)) {
@@ -354,20 +380,7 @@ final class Definitions
             return $container->make($id);
         }
         if (preg_match('/^%env\(([^%\s]+)\)%$/', $value, $match)) {
-            $processors = explode(':', $match[1]);
-            $variable = array_pop($processors);
-            $found = getenv($variable);
-            $found = false === $found ? ($_ENV[$variable] ?? $_SERVER[$variable] ?? null) : $found;
-            foreach (array_reverse($processors) as $processor) {
-                $found = match ($processor) {
-                    'bool' => null === $found ? false : filter_var($found, \FILTER_VALIDATE_BOOL),
-                    'int' => (int) $found,
-                    'string' => (string) $found,
-                    default => $found,
-                };
-            }
-
-            return $found;
+            return self::env($match[1]);
         }
         if (preg_match('/^%([^%\s]+)%$/', $value, $match)) {
             return $parameter($match[1]);

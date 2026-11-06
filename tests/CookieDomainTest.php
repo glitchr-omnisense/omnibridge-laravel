@@ -8,7 +8,7 @@ use Omnibridge\Laravel\Auth\OmnibaseEffects;
 /**
  * The domain omnibase's site-wide cookies (the browser's PHPUSERID) are written for under Laravel (R29):
  * omnibase's rule (Base\Routing\CookieDomain, AdvancedRouter::getDomain()'s under Symfony) on the
- * application's base.router configuration; the request's host alone (no Domain) where it configures none.
+ * application's base.router configuration; the request's host alone (no Domain) where it configures no host fallbacks.
  */
 final class CookieDomainTest extends TestCase
 {
