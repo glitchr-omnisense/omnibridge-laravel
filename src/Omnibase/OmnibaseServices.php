@@ -90,10 +90,13 @@ final class OmnibaseServices
 
             return $translator;
         });
-        self::singleton($app, Localizer::class, static fn (Application $app) => new Localizer(
+        // On the site's languages (omnibridge.locales), as Symfony's is on kernel.default_locale and the translator's fallbacks.
+        self::singleton($app, Localizer::class, static fn (Application $app) => new SiteLocalizer(
             $app->make(ParameterBagInterface::class),
             $app->make(TranslatorInterface::class),
             $app->storagePath('framework/cache/omnibase-localizer'),
+            \is_string($default = $app['config']->get('omnibridge.locales.default')) ? $default : null,
+            (array) $app['config']->get('omnibridge.locales.available', []),
         ));
         self::alias($app, Localizer::class, LocalizerInterface::class);
         self::singleton($app, SettingBag::class, static fn (Application $app) => new SettingBag(
