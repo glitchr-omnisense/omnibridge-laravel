@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### Changed: config/base.php is checked against omnibase's schema (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 4b)
+
+- `Parameters\BaseOptions::apply()`, first thing at boot: the config's `base` array processed by the core's `Base\Options`
+  (omnisense/omnibridge's `Options\Processor`) - refused with Symfony's message, deprecations said - and completed with
+  its defaults, their placeholders resolved by the application (`%kernel.project_dir%`, `%kernel.cache_dir%`,
+  `%kernel.environment%`, `%env()%`). The parameters' bag and `hasListParameter()` then see every option.
+- Gone from the provider, now the core's defaults: `mediaDefaults()` (the images', obfuscator's, uploader's and editor's
+  options) and the paginator's, kept for omnibase 4.x in `Legacy\Parameters\OptionDefaults` with the hand-written
+  Obfuscator binding: under 5.0 the Obfuscator is the declaration's (its compressions, `%base.obfuscator.cache_dir%`,
+  `%kernel.secret%`). Hand-written bindings of core services: 31 -> 30 (OmnibridgeServiceProvider 11 -> 10).
+- `Container\Definitions::env()`: `%env()%` as before, the core's default (`Options::environment()`) where the environment
+  has none - an unset `BASE_TRADING_LIVE` is live, as under Symfony.
+- `OmnibaseEffects::cookieDomain()`: no router configured is now no `base.router.host_fallbacks` (the option always has a
+  value); the request's host alone, as before.
+- tests/BaseOptionsTest: the defaults, the placeholders, six refusals worded as Symfony's tree words them, the
+  environment's defaults.
+
 ### Changed: omnibase's whole declaration of services is bound (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 4a)
 
 - `Container\Definitions::bind()` reads `Base\Services` through omnisense/omnibridge's `Omnibridge\Container\Declarations`
