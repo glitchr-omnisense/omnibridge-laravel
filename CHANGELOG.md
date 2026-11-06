@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Changed: omnibase's whole declaration of services is bound (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 4a)
+
+- `Container\Definitions::bind()` reads `Base\Services` through omnisense/omnibridge's `Omnibridge\Container\Declarations`
+  (requires, environment, parents, positions, bindings, calls, tags, `!tagged_iterator`, `!service_closure`, `%env()%`,
+  Symfony's `#[Autowire]` read by name) and binds each declared service that applies and can be built here - what its
+  constructor needs bound or declared, its options configured (the config's, checked without building the parameters'
+  bag) -, a service the application binds keeping its binding and getting its contracts; a decoration stays the host's
+  wiring. A declared service that cannot be built answers Laravel's BindingResolutionException, so an optional parameter
+  takes its default as Laravel's autowiring does. The twin binds 142 of the 192 (19 before). No rule of the core is
+  written here (rules written twice: 0 before, 0 after); the hand-written bindings of core services are unchanged (31).
+
 ### Added: the console's other tasks as artisan commands (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 3b)
 
 - With omnibase 5.0 (its `Base\Console\Task\BaseMapping`): `base:mapping`, `icon:enums`, `icon:entities`,
