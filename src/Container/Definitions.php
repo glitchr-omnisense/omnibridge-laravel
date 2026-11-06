@@ -5,6 +5,7 @@ namespace Omnibridge\Laravel\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Omnibridge\Container\Declarations;
+use Omnibridge\Container\Discovery;
 
 /**
  * omnisense/omnibase's declaration of its services (Base\Services::definitions(), plan "omnibase agnostic", steps
@@ -65,6 +66,70 @@ final class Definitions
         foreach ($tags as $tag => $ids) {
             $container->tag($ids, $tag);
         }
+    }
+
+    /**
+     * What is discovered among the declared services, as the core declares it (Base\Discovery's registries, plan
+     * "omnibase agnostic", step F5e slice 4c; omnisense/omnibridge's Container\Discovery format), applied to what this
+     * container binds - after bind(): the tags autoconfiguration gives an autoconfigured service that is bound, each
+     * collection handed to its collecting service when it is made (a tagged service that is not bound is left out), a
+     * service no one binds bound to the first candidate bound or its default class. What only Symfony's container
+     * compiles (`preferred`, its pools) is not read here.
+     *
+     * @param iterable<array<string, mixed>> $definitions
+     * @param array<string, mixed>           $discovery
+     */
+    public static function discover(Container $container, iterable $definitions, array $discovery, ?string $environment = null): void
+    {
+        $resolved = Discovery::autoconfigure(Declarations::resolve($definitions, $environment), $discovery['autoconfigure'] ?? []);
+        $tags = [];
+        foreach ($resolved as $id => $definition) {
+            foreach (Discovery::tags($definition['autoconfigure'] ? $discovery['autoconfigure'] ?? [] : [], $definition['class']) as $tag) {
+                if ($container->bound($id)) {
+                    $tags[\is_string($tag) ? $tag : $tag['name']][$id] = $id;
+                }
+            }
+        }
+        foreach ($tags as $tag => $ids) {
+            $container->tag(array_values($ids), $tag);
+        }
+        foreach (Discovery::collected($resolved, $discovery['collect'] ?? [], $container->bound(...)) as $service => $calls) {
+            $container->extend($service, static function (object $object, Container $container) use ($calls): object {
+                foreach ($calls as [$method, $id]) {
+                    if ($container->bound($id)) {
+                        $object->{$method}($container->make($id));
+                    }
+                }
+
+                return $object;
+            });
+        }
+        foreach ($discovery['fallbacks'] ?? [] as $id => $fallback) {
+            if (!$container->bound($id)) {
+                $bound = Discovery::fallback($fallback, $container->bound(...));
+                isset($bound['alias']) ? $container->alias($bound['alias'], $id) : $container->singleton($id, $bound['class']);
+            }
+        }
+    }
+
+    /**
+     * The events each entity listener the declaration tags (`doctrine.event_listener`, its own tags and those its
+     * autoconfiguration gives) listens to, by id in the declaration's order: what a host that registers the Doctrine
+     * listeners itself registers.
+     *
+     * @param iterable<array<string, mixed>> $definitions
+     * @param list<array<string, mixed>>     $autoconfigure
+     *
+     * @return array<string, list<string>>
+     */
+    public static function entityListeners(iterable $definitions, array $autoconfigure, ?string $environment = null): array
+    {
+        $listeners = [];
+        foreach (Discovery::attributes(Discovery::autoconfigure(Declarations::resolve($definitions, $environment), $autoconfigure), 'doctrine.event_listener') as $id => $tags) {
+            $listeners[$id] = array_values(array_unique(array_filter(array_column($tags, 'event'), \is_string(...))));
+        }
+
+        return $listeners;
     }
 
     /**
