@@ -3,6 +3,7 @@
 namespace Omnibridge\Laravel\Http;
 
 use Base\Request\Rule\Locale;
+use Base\Service\Model\LocaleNormalizer;
 use Closure;
 use Illuminate\Http\Request;
 use Omnibridge\Contract\Access;
@@ -69,15 +70,24 @@ if (!class_exists(Locale::class)) {
          *
          * @param list<string> $available
          */
+        /**
+         * The locale of a language as omnibase's Localizer writes it (Base\Service\Model\LocaleNormalizer, Symfony's
+         * LANG): the first available locale of that language, else the language with the default locale's country -
+         * ja-FR for a site in fr-FR (it gave "ja").
+         */
         private static function locale(string $language, array $available): string
         {
+            $default = self::fallback();
             foreach ($available as $locale) {
                 if (str_starts_with($locale, $language)) {
                     return $locale;
                 }
+                if (\strlen($default) < 5 && str_starts_with($locale, $default)) {
+                    $default = $locale;
+                }
             }
 
-            return $language;
+            return LocaleNormalizer::normalize($language, \strlen($default) >= 5 ? $default : null, $available);
         }
     }
 }
