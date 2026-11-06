@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnibridge\Laravel\Auth\Middleware;
+namespace Omnibridge\Laravel\Legacy\Middleware;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
@@ -9,6 +9,9 @@ use Omnibridge\Persistence\UnitOfWork;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * omnisense/omnibase 4.x only, which has no request rules: the rule under 5.0 is the core's (Base\Request\Rule\Presence, through Auth\Middleware\AccountRules).
+ * Removed once 4.x is no longer served.
+ *
  * The presence of the account signed in, as omnibase's SecuritySubscriber records it under Symfony:
  * an omnibase account not active lately (Base\Entity\User::isActive()) is poked - its activeAt now -
  * before the page is drawn, and once more on the answer for an account signed in during the request
