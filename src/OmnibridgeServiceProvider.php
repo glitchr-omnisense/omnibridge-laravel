@@ -258,6 +258,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
                 View\OmnibaseExtensions::bindIcons($this->app, $this->app['config']->get('omnibridge.icons.metadata'));
             }
             Container\Definitions::bind($this->app, $definitions, fn (string $name): mixed => self::listParameter($this->app, $name), self::ENVIRONMENTS[$this->app->environment()] ?? $this->app->environment(), fn (string $name): bool => self::hasListParameter($this->app, $name));
+            // What is discovered among them (Base\Discovery, step F5e slice 4c): the autoconfigured tags, each collection
+            // handed to its service (the obfuscator's compressions, the sharing adapters...), the admin's links.
+            if (class_exists(\Base\Discovery::class)) {
+                Container\Definitions::discover($this->app, $definitions, \Base\Discovery::registries(), self::ENVIRONMENTS[$this->app->environment()] ?? $this->app->environment());
+            }
         }
         if (self::media($this->app) && false !== ($this->app['config']->get('omnibridge.media.routes') ?? true)) {
             // omnibase's image routes under their Symfony names, in Symfony's order (ImageRoute::ROUTES).
@@ -417,7 +422,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         // (Base\Repository\Aliases, R27; an application's own are its #[AsAlias], Container\Aliases).
         // Only with omnibase's mapping (omnibridge.doctrine.omnibase): its entities name those repositories.
         if (class_exists(\Base\Repository\Aliases::class) && null !== self::omnibase($this->app)) {
-            Container\Aliases::bind($this->app, \Base\Repository\Aliases::INTERFACES);
+            Container\Aliases::bind($this->app, class_exists(\Base\Discovery::class) ? \Base\Discovery::registry('repositories') : \Base\Repository\Aliases::INTERFACES);
         }
         // What the mapping registered (its registry, reader, repositories), once the entity manager is built.
         $this->app->singleton(Mapping::class, function (Application $app) {
@@ -564,7 +569,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     private function registerMedia(): void
     {
         $this->app->singleton(LaravelMediaRouter::class, fn (Application $app) => new LaravelMediaRouter($app->make('router'), $app->make('url'), $app->make(Host\Urls::class)));
-        // The Obfuscator is the core's declaration's (Base\Services: its compressions, %base.obfuscator.cache_dir%,
+        // The Obfuscator is the core's declaration's (Base\Services; its compressions handed by Base\Discovery's collect, %base.obfuscator.cache_dir%,
         // %kernel.secret%), bound with the rest of its list now that the options give its parameters (step F5e slice 4b).
         if (!class_exists(\Base\Options::class)) {
             Legacy\Parameters\OptionDefaults::obfuscator($this->app, self::mediaParameters(...));

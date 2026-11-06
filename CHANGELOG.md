@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Changed: what the core declares is discovered is applied (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 4c)
+
+- `Container\Definitions::discover()`, after `bind()`: the core's registries (`Base\Discovery`; omnisense/omnibridge's
+  `Container\Discovery`) applied to what the container binds - the tags autoconfiguration gives, each collection handed
+  to its service when it is made (the obfuscator's compressions, the sharing adapters...), the fallbacks (the admin's
+  links on the null generator). `Definitions::entityListeners()`: the Doctrine listeners the declaration tags and their
+  events.
+- `Omnibase\OmnibaseServices`: the entity dispatchers and ThreadSubscriber are bound from the core's declaration, and
+  every Doctrine listener is registered on the events the registries give it (an application's
+  `omnibridge.omnibase.entity_dispatchers` on those of `Base\EntityDispatcher\EventDispatcherInterface`), where the
+  bridge wrote the list of dispatchers and the events of each by hand; that code is `Legacy\Omnibase\EntityListeners`,
+  for omnibase 4.x. `OmnibaseServices::DISPATCHERS` deprecated. The repository interfaces from the `repositories` registry.
+- Hand-written bindings of core services: 30 -> 27 (the two dispatchers, ThreadSubscriber). tests/DiscoveryTest.
+
 ### Changed: config/base.php is checked against omnibase's schema (omnisense/omnibase's plan "omnibase agnostic", step F5e, slice 4b)
 
 - `Parameters\BaseOptions::apply()`, first thing at boot: the config's `base` array processed by the core's `Base\Options`

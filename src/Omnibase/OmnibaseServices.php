@@ -2,6 +2,8 @@
 
 namespace Omnibridge\Laravel\Omnibase;
 
+use Omnibridge\Laravel\Container\Definitions;
+use Omnibridge\Laravel\Legacy\Omnibase\EntityListeners;
 use Base\Database\Entity\EntityHydrator;
 use Base\Database\Entity\EntityHydratorInterface;
 use Base\EntityDispatcher\AbstractEventDispatcher;
@@ -25,7 +27,6 @@ use Base\Service\SpamChecker;
 use Base\Service\SpamCheckerInterface;
 use Base\Service\TranslatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Events;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Events\LocaleUpdated;
@@ -68,18 +69,20 @@ final class OmnibaseServices
     /** omnibase's own subscribers of the entity events, by name (getSubscribedEvents()). */
     public const SUBSCRIBERS = ['Base\EntitySubscriber\UserSubscriber', 'Base\EntitySubscriber\ThreadSubscriber'];
 
-    /** omnibase's entity dispatchers (Doctrine listeners raising the user.* and thread.* events). */
-    public const DISPATCHERS = ['Base\EntityDispatcher\Event\UserEventDispatcher', 'Base\EntityDispatcher\Event\ThreadEventDispatcher'];
-
-    /** The Doctrine events an entity dispatcher listens to (omnibase's BaseExtension tags them so). */
-    private const DISPATCHER_EVENTS = [Events::prePersist, Events::preUpdate, Events::preRemove, Events::postPersist, Events::postUpdate, Events::postRemove, Events::postFlush];
+    /**
+     * omnibase's entity dispatchers (Doctrine listeners raising the user.* and thread.* events), for a core without
+     * Base\Discovery (4.x): the core's declaration lists them since step F5e slice 4c (Legacy\Omnibase\EntityListeners).
+     *
+     * @deprecated read Base\Discovery's `autoconfigure` and Base\Services; removed once omnibase 4.x is no longer served
+     */
+    public const DISPATCHERS = EntityListeners::DISPATCHERS;
 
     public static function register(Application $app): void
     {
         // The core's repositories by their interfaces, where the provider did not bind them yet (a configuration
         // given after its registration: a test's).
         if (class_exists(\Base\Repository\Aliases::class)) {
-            \Omnibridge\Laravel\Container\Aliases::bind($app, array_filter(\Base\Repository\Aliases::INTERFACES, static fn (string $interface): bool => !$app->bound($interface), \ARRAY_FILTER_USE_KEY));
+            \Omnibridge\Laravel\Container\Aliases::bind($app, array_filter(class_exists(\Base\Discovery::class) ? \Base\Discovery::registry('repositories') : \Base\Repository\Aliases::INTERFACES, static fn (string $interface): bool => !$app->bound($interface), \ARRAY_FILTER_USE_KEY));
         }
         self::singleton($app, Translator::class, static function (Application $app): Translator {
             $translator = $app->make(CatalogueTranslations::class)->translator();
@@ -126,19 +129,52 @@ final class OmnibaseServices
         if (!$app->bound(MentionEnhancerInterface::class)) {
             $app->singleton(MentionEnhancerInterface::class, MentionEnhancer::class);
         }
-        foreach (self::DISPATCHERS as $dispatcher) {
-            self::singleton($app, $dispatcher, static fn (Application $app) => new $dispatcher(
-                $app->make(\Psr\EventDispatcher\EventDispatcherInterface::class),
-                $app->make(EntityHydratorInterface::class),
-                $app->make(UnitOfWork::class),
-                $app->bound(Requests::class) ? $app->make(Requests::class) : null,
-            ));
+        // The entity listeners (the dispatchers, ThreadSubscriber): the core's declaration binds them (Base\Services, through
+        // Container\Definitions) since step F5e slice 4c; by hand for a core without Base\Discovery (4.x).
+        if (!class_exists(\Base\Discovery::class)) {
+            EntityListeners::bind($app);
         }
-        self::singleton($app, 'Base\EntitySubscriber\ThreadSubscriber', static fn (Application $app) => new \Base\EntitySubscriber\ThreadSubscriber(static fn () => $app->make(MentionEnhancerInterface::class)));
 
         if (null !== self::policy($app)) {
             self::registerNotifier($app);
         }
+    }
+
+    /**
+     * The Doctrine listeners of omnibase and the events each listens to: the services the core's declaration tags
+     * doctrine.event_listener, its own tags or those its autoconfiguration gives (Base\Discovery, step F5e slice 4c) - the
+     * dispatchers, ThreadSubscriber, UserSubscriber (which mails through the Notifier: without it, nothing of it) -, each
+     * where it is bound, then an application's dispatchers (omnibridge.omnibase.entity_dispatchers) on the events the
+     * autoconfiguration gives their class. The former hand-written list for a core without Base\Discovery (4.x).
+     *
+     * @return array<string, list<string>> class => events
+     */
+    private static function entityListeners(Application $app): array
+    {
+        $own = (array) $app['config']->get('omnibridge.omnibase.entity_dispatchers', []);
+        if (!class_exists(\Base\Discovery::class)) {
+            return EntityListeners::listeners($app, $own);
+        }
+        $autoconfigure = \Base\Discovery::registry('autoconfigure');
+        $listeners = [];
+        foreach (Definitions::entityListeners(\Base\Services::definitions(), $autoconfigure) as $id => $names) {
+            if ([] !== $names && $app->bound($id) && ('Base\EntitySubscriber\UserSubscriber' !== $id || $app->bound(Notifier::class))) {
+                $listeners[$id] = $names;
+            }
+        }
+        foreach ($own as $class) {
+            $names = [];
+            foreach (\Omnibridge\Container\Discovery::tags($autoconfigure, $class) as $tag) {
+                if (\is_array($tag) && 'doctrine.event_listener' === $tag['name'] && \is_string($tag['event'] ?? null)) {
+                    $names[] = $tag['event'];
+                }
+            }
+            if ([] !== $names) {
+                $listeners[$class] ??= array_values(array_unique($names));
+            }
+        }
+
+        return $listeners;
     }
 
     /** Whether omnibase's list of services (Base\Services::definitions()) defines that class. */
@@ -163,16 +199,8 @@ final class OmnibaseServices
         // The entity events: the dispatchers and the core's hooks on the entity manager, once it is built.
         $hook = static function (EntityManagerInterface $entities) use ($app): void {
             $events = $entities->getEventManager();
-            foreach ([...self::DISPATCHERS, ...(array) $app['config']->get('omnibridge.omnibase.entity_dispatchers', [])] as $class) {
-                if (class_exists($class)) {
-                    $events->addEventListener(self::DISPATCHER_EVENTS, new LazyListener(static fn () => $app->make($class)));
-                }
-            }
-            if (class_exists('Base\EntitySubscriber\ThreadSubscriber')) {
-                $events->addEventListener([Events::prePersist, Events::onFlush], new LazyListener(static fn () => $app->make('Base\EntitySubscriber\ThreadSubscriber')));
-            }
-            if (class_exists('Base\EntitySubscriber\UserSubscriber') && $app->bound(Notifier::class)) {
-                $events->addEventListener([Events::preFlush], new LazyListener(static fn () => $app->make('Base\EntitySubscriber\UserSubscriber')));
+            foreach (self::entityListeners($app) as $class => $names) {
+                $events->addEventListener($names, new LazyListener(static fn () => $app->make($class)));
             }
         };
         $app->afterResolving(EntityManagerInterface::class, $hook);
