@@ -13,11 +13,19 @@ use Omnibridge\Options\Placeholders;
  * with the defaults it leaves out, their placeholders resolved by the application (%kernel.project_dir%: its base
  * path; %kernel.cache_dir%; %env(NAME)%). Done once, when the provider boots: the parameters
  * (Runtime::parameters(), ConfigParameters) then read every option, as a Symfony site's container has them all.
+ *
+ * A configuration processed already is not processed again: `php artisan config:cache` writes the configuration as the
+ * booted application holds it - the options processed, PROCESSED set beside them -, and processing that output again
+ * refused the defaults it holds (base.obfuscator.encoding: null where the schema asks an int, as Symfony's IntegerNode
+ * refuses an explicit null; omnisense/omnibase's plan "omnibase agnostic", step F7d-2).
  */
 final class BaseOptions
 {
     /** Bound once the options are applied. */
     public const APPLIED = 'omnibridge.options';
+
+    /** Laravel's config key set once omnibase's options are processed (true): a cached configuration carries it. */
+    public const PROCESSED = 'omnibridge.base_options_processed';
 
     /**
      * @param \Closure(string $name): mixed $parameter a placeholder's value ('kernel.project_dir', 'env(APP_ENV)'...)
@@ -33,6 +41,10 @@ final class BaseOptions
         }
         $app->instance(self::APPLIED, true);
         $config = $app['config'];
+        if (true === $config->get(self::PROCESSED)) {
+            return;
+        }
         $config->set(Options::ROOT, Placeholders::resolve(Options::process((array) $config->get(Options::ROOT, [])), $parameter));
+        $config->set(self::PROCESSED, true);
     }
 }

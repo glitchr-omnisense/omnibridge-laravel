@@ -97,6 +97,15 @@ final class EntitiesHostTest extends TestCase
         $this->assertSame($this->app->make(MediaService::class), \Base\Service\BaseService::getMediaService());
     }
 
+    /** The image route's crops by omnibase's interface (step F7d-2): the persistence chosen answers it, omnibase's entity manager's here. */
+    public function testTheImageRoutesCropsAreTheRepositoryOfOmnibasesInterface(): void
+    {
+        $route = $this->app->make(\Base\Service\ImageRoute::class);
+        $crops = (new \ReflectionProperty($route, 'imageCropRepository'))->getValue($route);
+        $this->assertInstanceOf(\Base\Repository\Layout\ImageCrops::class, $crops);
+        $this->assertSame($this->app->make(\Base\Repository\Layout\ImageCrops::class), $crops);
+    }
+
     public function testTheEditorsPicturesAreOmnibasesImageRoutes(): void
     {
         $this->assertInstanceOf(MediaEnhancer::class, $this->app->make(MediaEnhancerInterface::class));

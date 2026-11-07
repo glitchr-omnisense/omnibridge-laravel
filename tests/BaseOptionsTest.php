@@ -57,6 +57,7 @@ final class BaseOptionsTest extends TestCase
             [['twig' => ['themes' => ['modes' => [['class' => 'c']]]]], 'The attribute "name" must be set for path "base.twig.themes.modes".'],
         ] as [$base, $message]) {
             $this->app->forgetInstance(BaseOptions::APPLIED);
+            $this->app['config']->set(BaseOptions::PROCESSED, null);
             $this->app['config']->set('base', $base);
             try {
                 BaseOptions::apply($this->app, static fn (string $name): mixed => null);
@@ -65,6 +66,29 @@ final class BaseOptionsTest extends TestCase
                 $this->assertSame($message, $e->getMessage());
             }
         }
+    }
+
+    /**
+     * The configuration `php artisan config:cache` writes - the options as the booted application holds them, processed,
+     * BaseOptions::PROCESSED beside them - boots again as it is (step F7d-2): processing it a second time refused the
+     * defaults it holds (base.obfuscator.encoding: null where the schema asks an int).
+     */
+    public function testACachedConfigurationBootsAsItWasWritten(): void
+    {
+        $cached = $this->app['config']->all();
+        $this->assertTrue($this->app['config']->get(BaseOptions::PROCESSED), 'the processed configuration says so');
+        try {
+            Options::process($cached['base']);
+            $this->fail('the processed options are not processed twice');
+        } catch (InvalidOption $e) {
+            $this->assertStringContainsString('Expected "int", but got "null"', $e->getMessage());
+        }
+
+        $this->app->forgetInstance(BaseOptions::APPLIED);
+        $this->app['config']->set($cached);
+        BaseOptions::apply($this->app, static fn (string $name): mixed => null);
+        $this->assertSame($cached['base'], $this->app['config']->get('base'));
+        $this->assertSame(10, $this->app['config']->get('base.paginator.page_size'));
     }
 
     public function testTheEnvironmentsDefaultsAreTheCores(): void

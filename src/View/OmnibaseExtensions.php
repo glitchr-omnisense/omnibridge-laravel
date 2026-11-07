@@ -258,17 +258,19 @@ final class OmnibaseExtensions
     {
         $push = (array) $this->config('omnibridge.push', []);
         $public = $push['public_key'] ?? null;
-        if (!\is_string($public) || '' === $public || !$this->app->bound(EntityManagerInterface::class)) {
+        // The subscriptions by omnibase's interface and the unit of work, from the persistence chosen (omnisense/omnibase's
+        // plan "omnibase agnostic", step F7d-2): omnibase's entity manager's on Doctrine, omnibridge/eloquent's on Eloquent.
+        if (!\is_string($public) || '' === $public || !$this->app->bound(\Base\Repository\User\PushSubscriptions::class)) {
             return null;
         }
         $private = $push['private_key'] ?? null;
         $subject = $push['subject'] ?? null;
-        $entities = $this->app->make(EntityManagerInterface::class);
-        $repository = $entities->getRepository(\Base\Entity\User\PushSubscription::class);
+        $unitOfWork = $this->app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $this->app->make(\Omnibridge\Persistence\UnitOfWork::class) : $this->app->make(EntityManagerInterface::class);
+        $repository = $this->app->make(\Base\Repository\User\PushSubscriptions::class);
         $logger = $this->app->make('log');
 
-        return $repository instanceof \Base\Repository\User\PushSubscriptionRepository
-            ? new WebPushService($entities, $repository, $logger instanceof \Psr\Log\LoggerInterface ? $logger : null, $public, \is_string($private) ? $private : null, \is_string($subject) ? $subject : null)
+        return $repository instanceof \Base\Repository\User\PushSubscriptions
+            ? new WebPushService($unitOfWork, $repository, $logger instanceof \Psr\Log\LoggerInterface ? $logger : null, $public, \is_string($private) ? $private : null, \is_string($subject) ? $subject : null)
             : null;
     }
 

@@ -11,7 +11,7 @@ use Base\Service\HotParameters;
 use Base\Service\Model\EntityNouns;
 use Base\Service\ParameterBagInterface;
 use Base\Imagine\Svg\Imagine as SvgImagine;
-use Base\Repository\Layout\ImageCropRepository;
+use Base\Repository\Layout\ImageCrops;
 use Base\Service\Flysystem;
 use Base\Service\ImageRoute;
 use Base\Service\MediaService;
@@ -237,6 +237,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         Runtime::setContainer($this->app);
         // Refused aloud now rather than at the first query: two persistences installed and base.persistence naming none.
         Persistence::name($this->app);
+        Persistence::boot($this->app, null !== self::omnibase($this->app));
         // omnibase's options (config/base.php) checked against the core's schema and completed with its defaults (Base\Options,
         // its plan's step F5e slice 4b), before anything reads them.
         Parameters\BaseOptions::apply($this->app, fn (string $name): mixed => self::optionParameter($this->app, $name));
@@ -666,12 +667,16 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         return $imagine;
     }
 
-    /** The crops' repository on omnibase's entity manager (crops by slug, ratio or size), when it is one. */
-    private static function crops(Application $app): ?ImageCropRepository
+    /**
+     * The crops' repository (crops by slug, ratio or size) by omnibase's interface, from the persistence chosen
+     * (omnisense/omnibase's plan "omnibase agnostic", step F7d-2): omnibase's entity manager's on Doctrine (its aliases,
+     * Container\Aliases), omnibridge/eloquent's on Eloquent (Persistence) - never Doctrine's beside Eloquent.
+     */
+    private static function crops(Application $app): ?ImageCrops
     {
-        $repository = $app->make(EntityManagerInterface::class)->getRepository(\Base\Entity\Layout\ImageCrop::class);
+        $repository = $app->bound(ImageCrops::class) ? $app->make(ImageCrops::class) : null;
 
-        return $repository instanceof ImageCropRepository ? $repository : null;
+        return $repository instanceof ImageCrops ? $repository : null;
     }
 
     /**

@@ -60,7 +60,9 @@ defaults it leaves out (`Parameters\BaseOptions`):
   `omnibridge.cache_dir` (else `storage/framework/cache/omnibase`), `%env(NAME)%` the environment, with the core's
   default where it has none (`BASE_TRADING_LIVE`: live).
 
-A value set later (`config()->set('base.x', ...)` in a test) is not checked again. With omnibase 4.x nothing is
+A value set later (`config()->set('base.x', ...)` in a test) is not checked again. A cached configuration (`php artisan
+config:cache`) holds the options processed and `omnibridge.base_options_processed`: it is read as it was written, not
+processed a second time. With omnibase 4.x nothing is
 checked; the media's and the paginator's defaults are this bridge's, as before (`Legacy\Parameters\OptionDefaults`).
 
 The other files: `config/omniauth.php` ([Signing in](omniauth.md#configomniauthphp)),
@@ -81,5 +83,6 @@ omnibridge/doctrine and omnibridge/eloquent both installed and it naming none (n
   `doctrine.omnibase.project_dir` and the core's, the trash and vault scopes on; omnibase's lifecycle from the
   container (the AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list). The
   account's effects (the connections' tracker, TrackConnections, UpdateAccount, WelcomeBack, omniauth's stores) write
-  through the unit of work chosen.
+  through the unit of work chosen. The image route's crops and the push subscriptions are read through the core's interfaces;
+  omnibase's entity manager is still made at boot, for the AttributeReader its mapping registers (step F7d-2).
 
