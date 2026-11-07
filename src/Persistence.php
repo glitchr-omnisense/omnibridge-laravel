@@ -44,6 +44,24 @@ final class Persistence
     }
 
     /**
+     * On Eloquent, with omnibase's mapping on (omnisense/omnibase's plan "omnibase agnostic", step F7d-2): omnibase's
+     * entity manager made once the application has booted, for what it registers beside Doctrine - the AttributeReader
+     * the entities' attributes are read through (#[Uploader]'s public address of an avatar read before any query, the
+     * behaviours), the column types Twig's enum filters name. On Doctrine nothing: the entity manager is made by its
+     * first user, as before. Neither unit of work is cleared between two requests one application serves (a test's):
+     * Laravel keeps its guards' accounts across them, as it keeps Doctrine's entity manager.
+     */
+    public static function boot(Application $app, bool $omnibase): void
+    {
+        if (!$omnibase || !class_exists(self::ELOQUENT) || !self::eloquent($app) || !$app->bound(\Doctrine\ORM\EntityManagerInterface::class)) {
+            return;
+        }
+        $app->booted(static function (Application $app): void {
+            $app->make(\Doctrine\ORM\EntityManagerInterface::class);
+        });
+    }
+
+    /**
      * omnibridge/eloquent's services, bound where it is installed, each answering from Eloquent when it is the one
      * chosen and from what was bound before otherwise (Doctrine's).
      *

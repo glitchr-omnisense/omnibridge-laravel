@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Fixed: the twin in eloquent mode (omnisense/omnibase's plan "omnibase agnostic", step F7d-2)
+
+- The image route's crops (`Base\Repository\Layout\ImageCrops`) and omnibase's WebPushService (the unit of work,
+  `User\PushSubscriptions`) by the core's interfaces, from the persistence chosen, instead of omnibase's entity manager's
+  repositories.
+- `Persistence::boot()`: on Eloquent with omnibase's mapping on, omnibase's entity manager is made once the application
+  has booted, for the AttributeReader it registers (an avatar's public address read before any query refused "Target
+  class [config] does not exist") and the column types Twig's enum filters name. Neither unit of work is cleared between
+  two requests one application serves (a test's), as Laravel keeps its guards' accounts across them.
+- `Parameters\BaseOptions`: a configuration processed already is not processed again (`BaseOptions::PROCESSED`, set
+  beside the options): the application boots from `php artisan config:cache`, whose file holds the processed options -
+  processing them twice refused the defaults they hold ("Invalid type for path base.obfuscator.encoding. Expected int,
+  got null", as Symfony's IntegerNode refuses an explicit null). Found by the F7e bench.
+
 ### Added: the persistence chosen, Eloquent's when it is the one (omnisense/omnibase's plan "omnibase agnostic", step F7d)
 
 - `Persistence`: omnibase's option `base.persistence` (config/base.php), chosen by omnisense/omnibridge's `Persistences`
