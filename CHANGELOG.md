@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added: the packages' listeners of the writes on eloquent (omnisense/omnibase's plan "omnibase agnostic", step B2)
+
+- `Persistence::register()` hands omnibridge/eloquent's persistence what the application tagged
+  `omnibridge.lifecycle_listener` (omnisense/omnibridge's `Lifecycle\Listeners::TAG`, `$app->tagged()`, made at the
+  first event): a package following the writes (a search index) hears Eloquent's, as under Symfony.
+
 ### Fixed: the twin in eloquent mode (omnisense/omnibase's plan "omnibase agnostic", step F7d-2)
 
 - The image route's crops (`Base\Repository\Layout\ImageCrops`) and omnibase's WebPushService (the unit of work,

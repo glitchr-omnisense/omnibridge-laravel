@@ -61,6 +61,9 @@ final class Persistence
         });
     }
 
+    /** omnisense/omnibridge's Lifecycle\Listeners::TAG (by value: an omnisense/omnibridge that predates it still runs). */
+    public const LIFECYCLE_LISTENER = 'omnibridge.lifecycle_listener';
+
     /**
      * omnibridge/eloquent's services, bound where it is installed, each answering from Eloquent when it is the one
      * chosen and from what was bound before otherwise (Doctrine's).
@@ -92,6 +95,9 @@ final class Persistence
                     },
                     'entity_dispatchers' => static fn (): array => array_map($app->make(...), $dispatchers($app)),
                 ],
+                // The packages' listeners of the Lifecycle events (omnisense/omnibridge's Lifecycle\Listeners, step B2):
+                // what the application tagged omnibridge.lifecycle_listener, made at the first event.
+                'listeners' => static fn (): iterable => $app->tagged(self::LIFECYCLE_LISTENER),
             ]);
             $persistence->backend()->enableScope('trash');
             $persistence->backend()->enableScope('vault', ['environment' => $options['environment'] ?? (string) $app->environment()]);
