@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+### Changed: Doctrine a suggestion; the core's attribute reader on Eloquent (omnisense/omnibase's plan "omnibase agnostic", step B3)
+
+- composer.json: `omnibridge/doctrine`, `doctrine/orm` and `doctrine/dbal` move from `require` to `suggest` (and
+  `require-dev`, for the suite). An application on omnibridge/eloquent installs none of them.
+- `Persistence::hasDoctrine()`: omnibridge/doctrine and doctrine/orm installed. Doctrine's wiring (`registerDoctrine()`: the
+  DBAL connection, omnibase's entity manager and mapping, the repositories by their class, `Mapping`) is given only then;
+  omnibase's services are given with omnibase's mapping on and a persistence to run on, Doctrine's or Eloquent chosen.
+- On Eloquent, with a core that has `Base\Database\Mapping\MetadataManipulator` (step E3), the attribute reader is the
+  core's, bound from omnibase's list of services on the persistence's shapes (`Persistence::neutralReader()`), instead of
+  the one `Mapping::register()` makes on a Doctrine entity manager: `Persistence::boot()` makes omnibridge/eloquent's
+  persistence (its casts register the enumerations Twig's `enum()` reads) and that reader once the application has booted,
+  no entity manager; `View\OmnibaseExtensions` no longer makes one for the DBAL types either.
+- `Parameters\DatabaseSettings` reads through Doctrine's connection or Laravel's (`Illuminate\Database\ConnectionInterface`):
+  Laravel's, on `omnibridge.doctrine.connection` else `omnibridge.eloquent.connection`, where Doctrine is not installed;
+  a database that does not answer leaves the config as before (a `QueryException`/`PDOException` too).
+- omnibase's list's `%kernel.project_dir%` and `%kernel.environment%`, where the parameters give none: omnibase's mapping's
+  (`omnibridge.doctrine.omnibase`'s project folder and environment), as `Mapping::register()` took them.
+- Proof: a scratch Laravel application with `conflict` on doctrine/orm, doctrine/dbal and omnibridge/doctrine boots, creates
+  its schema (omnibridge:schema:create), writes a user through Eloquent with #[Hashify] run, reads it back by findOneBy and a
+  finder, writes and reads a setting, the reader on the Description with no entity manager.
+
 ### Added: the packages' listeners of the writes on eloquent (omnisense/omnibase's plan "omnibase agnostic", step B2)
 
 - `Persistence::register()` hands omnibridge/eloquent's persistence what the application tagged

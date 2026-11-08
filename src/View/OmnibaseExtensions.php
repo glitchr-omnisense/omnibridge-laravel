@@ -135,8 +135,9 @@ final class OmnibaseExtensions
         if (null !== $theme) {
             $extensions[] = new MenuTwigExtension($app->make(Locales::class), $theme);
         }
-        // The DBAL types enum() names (thread_state) are registered with the entity manager.
-        if ($app->bound(EntityManagerInterface::class)) {
+        // The DBAL types enum() names (thread_state) are registered with the entity manager; on Eloquent with the core's
+        // reader, omnibridge/eloquent's casts register them as enumerations (Persistence::boot(), step B3).
+        if (!\Omnibridge\Laravel\Persistence::neutralReader($app) && $app->bound(EntityManagerInterface::class)) {
             $app->make(EntityManagerInterface::class);
         }
         $extensions[] = new EnumTwigExtension($translations);

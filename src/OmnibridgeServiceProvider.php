@@ -360,11 +360,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     {
         $this->app->singleton(ParameterBagInterface::class, function (Application $app) {
             $parameters = new HotParameters(new ConfigParameters($app['config']), $app['config']->get('omnibridge.parameters.hot'));
-            if ($parameters->isEnabled() && null !== $app['config']->get('omnibridge.doctrine.connection')) {
+            if ($parameters->isEnabled() && null !== self::settingsConnection($app)) {
                 try {
                     $parameters->add($app->make(DatabaseSettings::class)->parameters($app->make(Host\Locales::class)->getDefaultLocale()));
                     $parameters->markAsReady();
-                } catch (DBALException) {
+                } catch (DBALException|\Illuminate\Database\QueryException|\PDOException) {
                 }
             }
 
@@ -390,12 +390,18 @@ final class OmnibridgeServiceProvider extends ServiceProvider
      */
     private function registerDoctrine(): void
     {
+        // The settings, through Doctrine's connection where Doctrine is there (as before), else through Laravel's own
+        // (omnisense/omnibase's plan "omnibase agnostic", step B3: Doctrine a suggestion of this bridge).
+        $this->app->singleton(DatabaseSettings::class, fn (Application $app) => new DatabaseSettings(Persistence::hasDoctrine() ? $app->make(Connection::class) : $app['db']->connection(self::settingsConnection($app) ?? throw new \LogicException('No database connection for the settings: omnibridge.eloquent.connection and omnibridge.doctrine.connection name none.'))));
+        if (!Persistence::hasDoctrine()) {
+            return;
+        }
+
         $this->app->singleton(Connection::class, function (Application $app) {
             $name = $app['config']->get('omnibridge.doctrine.connection') ?? throw new \LogicException('No Doctrine connection: omnibridge.doctrine.connection names none of config/database.php.');
 
             return Connections::create($app['config']->get('database.connections.'.$name) ?? throw new \InvalidArgumentException(\sprintf('No database connection "%s" (omnibridge.doctrine.connection).', $name)));
         });
-        $this->app->singleton(DatabaseSettings::class, fn (Application $app) => new DatabaseSettings($app->make(Connection::class)));
         $this->app->singleton(EntityManagerInterface::class, function (Application $app) {
             $paths = $app['config']->get('omnibridge.doctrine.entities', []);
             $options = self::omnibase($app);
@@ -460,7 +466,14 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             return $app['config']->get('omnibridge.cache_dir') ?? $app->storagePath('framework/cache/omnibase');
         }
 
-        return $app->make(ParameterBagInterface::class)->get($name);
+        $value = $app->make(ParameterBagInterface::class)->get($name);
+        // The project's folder and the environment's name, where the parameters give none, as omnibase's mapping takes
+        // them (omnibridge.doctrine.omnibase): the core's attribute reader declared with them (step B3).
+        if (null === $value && ('kernel.project_dir' === $name || 'kernel.environment' === $name) && null !== ($omnibase = self::omnibase($app))) {
+            return 'kernel.project_dir' === $name ? $omnibase['project_dir'] : $omnibase['environment'];
+        }
+
+        return $value;
     }
 
     /**
@@ -492,10 +505,22 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         return null !== (new ConfigParameters($app['config']))->get($name);
     }
 
-    /** Whether omnibase's services are given here: omnibase installed, its mapping on (omnibridge.doctrine.omnibase). */
+    /**
+     * Whether omnibase's services are given here: omnibase installed, its mapping on (omnibridge.doctrine.omnibase), a
+     * persistence to run on - omnibridge/doctrine's mapping, or omnibridge/eloquent chosen (step B3).
+     */
     private static function omnibaseServices(Application $app): bool
     {
-        return class_exists(\Base\Services::class) && class_exists(Mapping::class) && null !== self::omnibase($app);
+        return class_exists(\Base\Services::class) && null !== self::omnibase($app)
+            && (class_exists(Mapping::class) && Persistence::hasDoctrine() || Persistence::eloquent($app));
+    }
+
+    /** The connection the settings are read on: omnibridge.doctrine.connection, else omnibridge.eloquent.connection. */
+    private static function settingsConnection(Application $app): ?string
+    {
+        $name = $app['config']->get('omnibridge.doctrine.connection') ?? $app['config']->get('omnibridge.eloquent.connection');
+
+        return \is_string($name) && '' !== $name ? $name : null;
     }
 
     /** Laravel's environments by omnibase's names (the vault filter's, the rows Symfony wrote). */

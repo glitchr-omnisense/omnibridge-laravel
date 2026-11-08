@@ -5,7 +5,9 @@ namespace Omnibridge\Laravel\Tests;
 use Base\Contract\Runtime;
 use Base\Service\HotParameters;
 use Base\Service\ParameterBagInterface;
+use Illuminate\Support\Facades\DB;
 use Omnibridge\Laravel\Parameters\ConfigParameters;
+use Omnibridge\Laravel\Parameters\DatabaseSettings;
 
 /**
  * Runtime::parameters(): Laravel's config, with the settings the back office
@@ -81,6 +83,24 @@ final class ParametersTest extends TestCase
         $parameters = Runtime::parameters();
         $this->assertTrue($parameters->get('base.user.register'));
         $this->assertFalse($parameters->isReady());
+    }
+
+    /**
+     * Without Doctrine (omnisense/omnibase's plan "omnibase agnostic", step B3), the settings are read through Laravel's
+     * own connection: the same values and linked parameters as through DBAL.
+     */
+    public function testTheSettingsAreReadThroughLaravelsConnection(): void
+    {
+        $this->settings([
+            'base.settings.register' => ['base.user.register', ['fr-FR' => false, 'en-GB' => true]],
+            'base.settings.title' => [null, ['en-GB' => 'The Ringo Stars']],
+        ]);
+
+        $settings = new DatabaseSettings(DB::connection());
+        $this->assertFalse($settings->value('base.settings.register', 'fr-FR'));
+        $this->assertSame('The Ringo Stars', $settings->value('base.settings.title', 'fr-FR'));
+        $this->assertNull($settings->value('base.settings.none', 'fr-FR'));
+        $this->assertSame(['base.user.register' => false], $settings->parameters('fr-FR'));
     }
 
     public function testSetWritesTheConfigOrTheBagGiven(): void

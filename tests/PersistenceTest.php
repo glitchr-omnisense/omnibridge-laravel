@@ -34,6 +34,17 @@ final class PersistenceTest extends TestCase
         $this->assertSame($this->app->make(EntityManagerInterface::class), $unitOfWork->entityManager());
     }
 
+    /**
+     * Doctrine's wiring is given where omnibridge/doctrine and doctrine/orm are installed (step B3: a suggestion of this
+     * bridge), and the attribute reader stays the one omnibase's Doctrine mapping makes when Doctrine is chosen.
+     */
+    public function testDoctrineInstalledGivesItsWiring(): void
+    {
+        $this->assertTrue(Persistence::hasDoctrine());
+        $this->assertFalse(Persistence::neutralReader($this->app));
+        $this->assertTrue($this->app->bound(EntityManagerInterface::class));
+    }
+
     public function testDoctrineNamedIsDoctrine(): void
     {
         $this->app['config']->set('base.persistence', 'doctrine');

@@ -44,16 +44,52 @@ final class Persistence
     }
 
     /**
-     * On Eloquent, with omnibase's mapping on (omnisense/omnibase's plan "omnibase agnostic", step F7d-2): omnibase's
-     * entity manager made once the application has booted, for what it registers beside Doctrine - the AttributeReader
-     * the entities' attributes are read through (#[Uploader]'s public address of an avatar read before any query, the
-     * behaviours), the column types Twig's enum filters name. On Doctrine nothing: the entity manager is made by its
-     * first user, as before. Neither unit of work is cleared between two requests one application serves (a test's):
+     * Whether Doctrine's wiring is given (omnisense/omnibase's plan "omnibase agnostic", step B3: Doctrine a suggestion
+     * of this bridge): omnibridge/doctrine installed, doctrine/orm with it.
+     */
+    public static function hasDoctrine(): bool
+    {
+        if (class_exists(Persistences::class)) {
+            return Persistences::isInstalled(Persistences::DOCTRINE) && interface_exists(\Doctrine\ORM\EntityManagerInterface::class);
+        }
+
+        return class_exists(\Omnibridge\Doctrine\EntityManagers::class);
+    }
+
+    /**
+     * Whether the attribute reader is the core's own, on its MetadataManipulator over the persistence's shapes (step E3),
+     * bound from omnibase's list of services (Base\Services), rather than the one omnibase's Doctrine mapping makes
+     * (Mapping::register()): on Eloquent with a core that has it.
+     */
+    public static function neutralReader(Application $app): bool
+    {
+        return class_exists(\Base\Database\Mapping\MetadataManipulator::class) && self::eloquent($app);
+    }
+
+    /**
+     * On Eloquent, with omnibase's mapping on (omnisense/omnibase's plan "omnibase agnostic", step F7d-2): the
+     * AttributeReader the entities' attributes are read through (#[Uploader]'s public address of an avatar read before
+     * any query, the behaviours) and the enumerations Twig's enum filters name, made once the application has booted:
+     * the core's reader and omnibridge/eloquent's persistence (its casts register the enumerations) where the core has
+     * its MetadataManipulator (step B3: no entity manager made, Doctrine need not be installed), else omnibase's entity
+     * manager, for what its mapping registers. On Doctrine nothing: the entity manager is made by its first user, as
+     * before. Neither unit of work is cleared between two requests one application serves (a test's):
      * Laravel keeps its guards' accounts across them, as it keeps Doctrine's entity manager.
      */
     public static function boot(Application $app, bool $omnibase): void
     {
-        if (!$omnibase || !class_exists(self::ELOQUENT) || !self::eloquent($app) || !$app->bound(\Doctrine\ORM\EntityManagerInterface::class)) {
+        if (!$omnibase || !class_exists(self::ELOQUENT) || !self::eloquent($app)) {
+            return;
+        }
+        if (self::neutralReader($app)) {
+            $app->booted(static function (Application $app): void {
+                $app->make(self::ELOQUENT);
+                $app->make(\Base\Attributes\AttributeReader::class);
+            });
+
+            return;
+        }
+        if (!$app->bound(\Doctrine\ORM\EntityManagerInterface::class)) {
             return;
         }
         $app->booted(static function (Application $app): void {
@@ -87,8 +123,12 @@ final class Persistence
                 'lifecycle' => [
                     'empty_trash' => $parameter('base.extension.empty_trash', '+7 days'),
                     'max_revisions' => (int) $parameter('base.extension.max_revisions', 5),
-                    // The reader omnibase's Doctrine mapping makes, with its entity manager (Mapping::register()).
+                    // The core's reader, bound from omnibase's list (step B3); else the one omnibase's Doctrine mapping
+                    // makes, with its entity manager (Mapping::register()).
                     'attribute_reader' => static function () use ($app): ?object {
+                        if (self::neutralReader($app) && $app->bound(\Base\Attributes\AttributeReader::class)) {
+                            return $app->make(\Base\Attributes\AttributeReader::class);
+                        }
                         $app->bound(\Doctrine\ORM\EntityManagerInterface::class) && $app->make(\Doctrine\ORM\EntityManagerInterface::class);
 
                         return \Base\Attributes\AttributeReader::hasInstance() ? \Base\Attributes\AttributeReader::getInstance(false) : null;

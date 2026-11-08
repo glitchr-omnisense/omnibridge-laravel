@@ -1,6 +1,6 @@
 {
     "name": "omnibridge/laravel",
-    "description": "The Laravel host of omnisense/omnibase: its Foundation contracts (urls, translations, locales, access, parameters with the database settings laid over Laravel's config, clock, events...) answered by Laravel's services and seeded in Base\\Contract\\Runtime, Doctrine through omnibridge/doctrine, Twig through omnibridge/twig, and the pieces an omnibase page asks of its framework (Encore tags, the app variable, simple forms).",
+    "description": "The Laravel host of omnisense/omnibase: its Foundation contracts (urls, translations, locales, access, parameters with the database settings laid over Laravel's config, clock, events...) answered by Laravel's services and seeded in Base\\Contract\\Runtime, the persistence through omnibridge/eloquent or omnibridge/doctrine, Twig through omnibridge/twig, and the pieces an omnibase page asks of its framework (Encore tags, the app variable, simple forms).",
     "type": "library",
     "keywords": [
         "laravel",
@@ -28,8 +28,6 @@
     ],
     "require": {
         "php": "^8.4",
-        "doctrine/dbal": "^4.2",
-        "doctrine/orm": "^3.4",
         "illuminate/auth": "^12.0|^13.0",
         "illuminate/config": "^12.0|^13.0",
         "illuminate/contracts": "^12.0|^13.0",
@@ -37,7 +35,6 @@
         "illuminate/routing": "^12.0|^13.0",
         "illuminate/support": "^12.0|^13.0",
         "illuminate/validation": "^12.0|^13.0",
-        "omnibridge/doctrine": "^1.0",
         "omnibridge/twig": "^1.0",
         "omnisense/omnibase": "^4.0 || ^5.0",
         "omnisense/omnibridge": "^1.0",
@@ -54,9 +51,12 @@
         "twig/twig": "^3.10"
     },
     "require-dev": {
+        "doctrine/dbal": "^4.2",
+        "doctrine/orm": "^3.4",
         "omniauth/google": "1.x-dev",
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
+        "omnibridge/doctrine": "^1.0",
         "omnibridge/static": "1.x-dev",
         "omnimap/maplibre": "^1.0@dev",
         "omnimap/openstreetmap": "^1.0@dev",
@@ -69,6 +69,8 @@
         "symfony/dependency-injection": "^7.0|^8.0"
     },
     "suggest": {
+        "omnibridge/doctrine": "omnisense/omnibase on Doctrine (with doctrine/orm and doctrine/dbal): omnibase's entity manager over Laravel's connection (omnibridge.doctrine), its mapping, the settings read through DBAL; a suggestion since omnisense/omnibase's plan \"omnibase agnostic\", step B3 - omnibridge/eloquent runs omnibase without it",
+        "omnibridge/eloquent": "omnisense/omnibase on Eloquent (base.persistence: eloquent), on Laravel's own connection: the core's attribute reader on the persistence's shapes, no Doctrine installed",
         "omnibridge/static": "Static\\BuildCommand: php artisan omnibridge:static:build, omnibridge/static's export of the site a static.php declares, rendered by the application's HTTP kernel",
         "omnisense/omniauth": "Omnibridge\\Laravel\\Auth\\: Laravel's guard and user provider over omniauth, one controller for every way of signing in (password, sign-in link, e-mailed code, backup codes, trusted devices), the second factor's page, the routes; config/omnibridge.php 'auth' => true and config/omniauth.php (nothing of Auth\\ without it)",
         "omniauth/webauthn": "Passkeys through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: passkey), formerly omniauth/passkey",

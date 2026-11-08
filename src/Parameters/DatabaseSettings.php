@@ -3,10 +3,13 @@
 namespace Omnibridge\Laravel\Parameters;
 
 use Doctrine\DBAL\Connection;
+use Illuminate\Database\ConnectionInterface;
 
 /**
  * The settings an omnibase site keeps in its database (layoutSetting and its
- * translations, layoutSettingIntl), read through Doctrine DBAL in one query:
+ * translations, layoutSettingIntl), read in one query through Doctrine DBAL, or
+ * through Laravel's connection without it (omnisense/omnibase's plan "omnibase
+ * agnostic", step B3):
  * each setting's value in each language (a JSON value, as omnibase stores it,
  * none of a vault), and the parameter a setting stands for when the back
  * office links it to one (its "bag").
@@ -23,7 +26,7 @@ final class DatabaseSettings
     /** @var array<string, string> parameter => path */
     private array $bags = [];
 
-    public function __construct(private readonly Connection $db)
+    public function __construct(private readonly Connection|ConnectionInterface $db)
     {
     }
 
@@ -32,9 +35,10 @@ final class DatabaseSettings
     {
         if (null === $this->values) {
             $this->values = [];
-            $rows = $this->db->fetchAllAssociative(
-                'SELECT s.path, s.bag, i.locale, i.value FROM layoutSetting s JOIN layoutSettingIntl i ON i.translatable_id = s.id WHERE i.vault IS NULL',
-            );
+            $query = 'SELECT s.path, s.bag, i.locale, i.value FROM layoutSetting s JOIN layoutSettingIntl i ON i.translatable_id = s.id WHERE i.vault IS NULL';
+            $rows = $this->db instanceof ConnectionInterface
+                ? array_map(static fn (object $row): array => (array) $row, $this->db->select($query))
+                : $this->db->fetchAllAssociative($query);
             foreach ($rows as $row) {
                 $this->values[$row['path']][(string) $row['locale']] = json_decode((string) $row['value'], true);
                 if (null !== $row['bag'] && '' !== $row['bag']) {
