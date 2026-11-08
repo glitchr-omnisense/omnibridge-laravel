@@ -20,6 +20,7 @@ use Base\Service\Model\Wysiwyg\MediaEnhancer;
 use Base\Service\Model\Wysiwyg\MediaEnhancerInterface;
 use Imagine\Image\Metadata\ExifMetadataReader;
 use Omnibridge\Laravel\Media\DiskStorages;
+use Omnibridge\Laravel\Omnibase\OmnibaseOption;
 use Omnidrive\Drives;
 use Omnidrive\Flysystem\OperatorDrives;
 use Omnibridge\Laravel\Media\ImageController;
@@ -378,7 +379,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
      * manager over omnibridge.doctrine.entities. Asked without a connection
      * configured, they say so.
      *
-     * With omnibridge.doctrine.omnibase on, the entity manager is omnibase's,
+     * With omnibridge.omnibase on, the entity manager is omnibase's,
      * as under Symfony: built with Omnibridge\Doctrine\Omnibase\Mapping::configure()
      * (omnibridge/doctrine's configure:, the repositories from omnibase's
      * registry), over the core's entities beside the application's, then
@@ -437,7 +438,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         });
         // The core's repositories by their interfaces, as Symfony aliases them: omnibase's own list
         // (Base\Repository\Aliases, R27; an application's own are its #[AsAlias], Container\Aliases).
-        // Only with omnibase's mapping (omnibridge.doctrine.omnibase): its entities name those repositories.
+        // Only with omnibase on (omnibridge.omnibase): its entities name those repositories.
         if (class_exists(\Base\Repository\Aliases::class) && null !== self::omnibase($this->app)) {
             Container\Aliases::bind($this->app, class_exists(\Base\Discovery::class) ? \Base\Discovery::registry('repositories') : \Base\Repository\Aliases::INTERFACES);
         }
@@ -445,7 +446,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         $this->app->singleton(Mapping::class, function (Application $app) {
             $app->make(EntityManagerInterface::class);
 
-            return $this->mapping ?? throw new \LogicException('omnibase\'s Doctrine mapping is off: omnibridge.doctrine.omnibase.');
+            return $this->mapping ?? throw new \LogicException('omnibase\'s Doctrine mapping is off: omnibridge.omnibase.');
         });
         // Its former name (Base\Bridge\Doctrine\Mapping, before omnisense/omnibase's step F3 moved it to
         // omnibridge/doctrine), which the core aliases: the same binding.
@@ -468,7 +469,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
         $value = $app->make(ParameterBagInterface::class)->get($name);
         // The project's folder and the environment's name, where the parameters give none, as omnibase's mapping takes
-        // them (omnibridge.doctrine.omnibase): the core's attribute reader declared with them (step B3).
+        // them (omnibridge.omnibase): the core's attribute reader declared with them (step B3).
         if (null === $value && ('kernel.project_dir' === $name || 'kernel.environment' === $name) && null !== ($omnibase = self::omnibase($app))) {
             return 'kernel.project_dir' === $name ? $omnibase['project_dir'] : $omnibase['environment'];
         }
@@ -506,7 +507,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     }
 
     /**
-     * Whether omnibase's services are given here: omnibase installed, its mapping on (omnibridge.doctrine.omnibase), a
+     * Whether omnibase's services are given here: omnibase installed and on (omnibridge.omnibase), a
      * persistence to run on - omnibridge/doctrine's mapping, or omnibridge/eloquent chosen (step B3).
      */
     private static function omnibaseServices(Application $app): bool
@@ -528,7 +529,8 @@ final class OmnibridgeServiceProvider extends ServiceProvider
 
     /**
      * Omnibridge\Doctrine\Omnibase\Mapping::register()'s options when
-     * omnibridge.doctrine.omnibase is on (true, or the options themselves),
+     * omnibridge.omnibase is on (true, or the options themselves; its former name
+     * omnibridge.doctrine.omnibase, deprecated: Omnibase\OmnibaseOption),
      * null when off: the project's folder (its src/Enum, src/Attribute),
      * the environment by omnibase's name, a cache folder under storage/, and
      * the parameters - Laravel's config under "base" by full name
@@ -538,7 +540,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
      */
     private static function omnibase(Application $app): ?array
     {
-        $option = $app['config']->get('omnibridge.doctrine.omnibase', false);
+        $option = OmnibaseOption::get($app['config']);
         if (null === $option || false === $option) {
             return null;
         }

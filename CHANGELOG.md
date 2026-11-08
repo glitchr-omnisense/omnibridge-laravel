@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Changed: omnibase's option under a neutral name, `omnibridge.omnibase` (omnisense/omnibase's plan "omnibase agnostic", step B leftovers)
+
+- `omnibridge.omnibase` (config/omnibridge.php, beside `doctrine`) turns omnibase on whichever persistence is chosen - its
+  services, its entities' description (omnibridge:schema:create), on Doctrine its mapping on the entity manager -: false,
+  true, or its options (project_dir, environment, cache_dir, parameters, and Doctrine's Mapping::register() options). It
+  was `omnibridge.doctrine.omnibase`, a Doctrine option that Eloquent read too.
+- `omnibridge.doctrine.omnibase` is deprecated (removed at 2.0): still read where `omnibridge.omnibase` is not given
+  (`null`, the published default), said once (`E_USER_DEPRECATED`). `Omnibase\OmnibaseOption::get()` reads either, for
+  the provider, OmnibaseServices and omnibridge:schema:create. The published config no longer carries `doctrine.omnibase`.
+- Tests: OmnibaseOptionTest (the former name still turns omnibase's mapping on; the new one read and winning; the
+  deprecation said once); the suite's cases on the new name.
+
 ### Changed: Doctrine a suggestion; the core's attribute reader on Eloquent (omnisense/omnibase's plan "omnibase agnostic", step B3)
 
 - composer.json: `omnibridge/doctrine`, `doctrine/orm` and `doctrine/dbal` move from `require` to `suggest` (and

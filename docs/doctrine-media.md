@@ -15,7 +15,6 @@ omnibase stays on Doctrine for storage: this package opens Doctrine on one of La
 'doctrine' => [
     'connection' => 'mysql',              // a connection of config/database.php
     'entities' => [app_path('Entity')],   // the folders the entity manager maps
-    'omnibase' => false,
 ],
 ```
 
@@ -30,14 +29,15 @@ omnibase stays on Doctrine for storage: this package opens Doctrine on one of La
 
 ```php
 // config/omnibridge.php
+'omnibase' => ['project_dir' => base_path()],   // or true; false (the default) leaves it off
 'doctrine' => [
     'connection' => 'mysql',
     'entities' => [app_path('Entity')],
-    'omnibase' => ['project_dir' => base_path()],   // or true; false (the default) leaves it off
 ],
 ```
 
-With `omnibridge.doctrine.omnibase` on, the bound entity manager is omnibase's, as
+`omnibridge.omnibase` turns omnibase on whichever persistence is chosen (its former name `omnibridge.doctrine.omnibase`
+is still read where it is not given, deprecated, removed at 2.0). With it on and Doctrine chosen, the bound entity manager is omnibase's, as
 under Symfony: built by omnibridge/doctrine with `Omnibridge\Doctrine\Omnibase\Mapping::configure()` (formerly `Base\Bridge\Doctrine\Mapping`)
 (the repositories from omnibase's registry), over the core's entities beside the
 application's, then `Mapping::register()` - the class convention (`App\Entity\X` is

@@ -43,7 +43,7 @@ final class DiscoveryTest extends TestCase
         $app['config']->set('omnibridge.storages', ['local.cache' => 'omnibase-cache']);
         $app['config']->set('base.obfuscator.cache_dir', $this->root.'/obfuscator');
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
-        $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
+        $app['config']->set('omnibridge.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         $app['config']->set('base.database.use_custom', true);
         $app['config']->set('base.attributes.use_custom', true);
     }

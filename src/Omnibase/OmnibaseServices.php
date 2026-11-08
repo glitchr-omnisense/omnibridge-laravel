@@ -200,7 +200,7 @@ final class OmnibaseServices
     public static function boot(Application $app): void
     {
         // The project's folder, as BaseBundle::boot() seeds it (an e-mail's pictures read from its public folder).
-        $option = $app['config']->get('omnibridge.doctrine.omnibase');
+        $option = OmnibaseOption::get($app['config']);
         \Base\Service\Locator::setProjectDir(\is_array($option) && \is_string($option['project_dir'] ?? null) ? $option['project_dir'] : $app->basePath());
 
         // The page's language, as omnibase's LocaleSubscriber gives it to the translator under Symfony.

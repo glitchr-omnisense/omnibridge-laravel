@@ -8,7 +8,7 @@ use Base\Bridge\Doctrine\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * omnibase's Doctrine mapping under Laravel (omnibridge.doctrine.omnibase): the
+ * omnibase's Doctrine mapping under Laravel (omnibridge.omnibase): the
  * entity manager built with Base\Bridge\Doctrine\Mapping, as omnibase's own is
  * under Symfony, keeps omnibase's Base/App invariants (master plan §5):
  *
@@ -28,7 +28,7 @@ final class OmnibaseMappingTest extends TestCase
     {
         parent::defineEnvironment($app);
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
-        $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
+        $app['config']->set('omnibridge.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         // omnibase's parameters the entities read (Runtime::parameters(), Laravel's config): those of
         // the harness whose metadata Symfony recorded (its config/packages/base.yaml).
         $app['config']->set('base', [
@@ -123,7 +123,7 @@ final class OmnibaseMappingTest extends TestCase
 
     public function testOffByDefault(): void
     {
-        $this->app['config']->set('omnibridge.doctrine.omnibase', false);
+        $this->app['config']->set('omnibridge.omnibase', false);
         $this->app->forgetInstance(EntityManagerInterface::class);
         $this->app->forgetInstance(Mapping::class);
         $provider = new \Omnibridge\Laravel\OmnibridgeServiceProvider($this->app);

@@ -20,7 +20,8 @@ order: 40
 | `twig.timezone` | `?string` | null: `app.timezone` | `HelperExtension` | the zone `\|datetime` prints in |
 | `doctrine.connection` | `?string` | null | `Doctrine\DBAL\Connection`, the settings, the screens' site | a connection of `config/database.php`; none: Doctrine asked is a `LogicException`, no settings read |
 | `doctrine.entities` | `list<string>` | `[]` | the entity manager | the entities' folders |
-| `doctrine.omnibase` | `bool\|array` | false | the entity manager | omnibase's own mapping: true, or `Mapping::register()`'s options (`project_dir`, `environment`, `cache_dir`, `parameters`, `types`, `enumerations`, `attribute_paths`, `resolve_target_entities`, `entity_listeners`) ([Doctrine and images](doctrine-media.md)) |
+| `omnibase` | `null\|bool\|array` | null: `doctrine.omnibase`, else false | omnibase's services, its entities' description, on Doctrine the entity manager | omnibase on, whichever persistence: true, or its options (`project_dir`, `environment`, `cache_dir`, `parameters`; on Doctrine `Mapping::register()`'s `types`, `enumerations`, `attribute_paths`, `resolve_target_entities`, `entity_listeners`) ([Doctrine and images](doctrine-media.md)) |
+| `doctrine.omnibase` | `bool\|array` | - | the same | **deprecated** (removed at 2.0): the former name of `omnibase`, read where that one is not given (E_USER_DEPRECATED, once) |
 | `eloquent.connection` | `?string` | null: `doctrine.connection`, else the default | omnibridge/eloquent's persistence | the connection of `config/database.php` it reads, when `base.persistence` is `eloquent` ([The persistence](configuration.md#the-persistence-basepersistence)) |
 | `parameters.hot` | `?bool` | null: the config's `base.parameter_bag.use_hot_bag` | `HotParameters` | the database settings laid over the config ([Parameters](contracts.md#parameters)) |
 | `theme.modes` | `array` | `[]` | `Page\Theme`, `ScreenContext`, `MenuTwigExtension` | id => `{id, class, icon, prefers}`; no colour scheme without modes |
@@ -80,7 +81,7 @@ omnibridge/doctrine and omnibridge/eloquent both installed and it naming none (n
 - `eloquent` (omnibridge/eloquent installed): `Omnibridge\Persistence\UnitOfWork`, `Snapshots`, `Backend`,
   `Base\Database\Repository\Repositories` and the core's repository interfaces answer from omnibridge/eloquent, on
   Laravel's connection `eloquent.connection` (else `doctrine.connection`, else the default one), the entities of
-  `doctrine.omnibase.project_dir` and the core's, the trash and vault scopes on; omnibase's lifecycle from the
+  `omnibase.project_dir` and the core's, the trash and vault scopes on; omnibase's lifecycle from the
   container (the AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list). The
   account's effects (the connections' tracker, TrackConnections, UpdateAccount, WelcomeBack, omniauth's stores) write
   through the unit of work chosen. The image route's crops and the push subscriptions are read through the core's interfaces;

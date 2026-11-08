@@ -32,7 +32,7 @@ final class SearchTest extends TestCase
         $app['config']->set('base.obfuscator.cache_dir', $root.'/obfuscator');
         // omnibase's services (its translator names the entries), on the mapping omnibase's harness records.
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
-        $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
+        $app['config']->set('omnibridge.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         $app['config']->set('omnibridge.translations.paths', [self::FIXTURES.'/translations', \dirname((new \ReflectionClass(RemoteSearch::class))->getFileName(), 4).'/translations']);
         // One adapter of three icons, in place of the metadata of Font Awesome's.
         $app->singleton(Icons::class, static fn (): Icons => new Icons([new SearchTestIcons()]));

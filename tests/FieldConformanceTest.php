@@ -52,7 +52,7 @@ final class FieldConformanceTest extends TestCase
         // omnibase's entities mapped, as an application has them: a translations field lists its translation
         // entity's fields from its shape (a thread's translations, the sample's record).
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
-        $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
+        $app['config']->set('omnibridge.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         $app['config']->set('base.database.use_custom', true);
         $app['config']->set('base.attributes.use_custom', true);
         // omnibase's templates, as a site under Twig has them: a wysiwyg's text is printed by its |wysiwyg (quill.html.twig).

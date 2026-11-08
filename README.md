@@ -272,14 +272,15 @@ $this->app->extend(RouterUrls::class, fn (RouterUrls $urls) => $urls->elsewhere(
 
 ```php
 // config/omnibridge.php
+'omnibase' => ['project_dir' => base_path()],   // or true; false (the default) leaves it off
 'doctrine' => [
     'connection' => 'mysql',
     'entities' => [app_path('Entity')],
-    'omnibase' => ['project_dir' => base_path()],   // or true; false (the default) leaves it off
 ],
 ```
 
-With `omnibridge.doctrine.omnibase` on, the bound entity manager is omnibase's, as
+`omnibridge.omnibase` turns omnibase on whichever persistence is chosen (its former name `omnibridge.doctrine.omnibase`
+is still read where it is not given, deprecated, removed at 2.0). With it on and Doctrine chosen, the bound entity manager is omnibase's, as
 under Symfony: built by omnibridge/doctrine with `Omnibridge\Doctrine\Omnibase\Mapping::configure()` (formerly `Base\Bridge\Doctrine\Mapping`)
 (the repositories from omnibase's registry), over the core's entities beside the
 application's, then `Mapping::register()` - the class convention (`App\Entity\X` is
@@ -392,9 +393,9 @@ php artisan translation:entities --locale=fr
 
 ## The schema created from the description: `omnibridge:schema:create`
 
-With omnibase 5.0 and its mapping on (`omnibridge.doctrine.omnibase`), `OmnibridgeServiceProvider` registers
+With omnibase 5.0 and its mapping on (`omnibridge.omnibase`), `OmnibridgeServiceProvider` registers
 `omnibridge:schema:create` (`Console\SchemaCreateCommand`; omnibase's plan "omnibase agnostic", step F7a): the tables of
-the installed entities - `omnibridge.doctrine.entities` beside the core's, with `omnibridge.doctrine.omnibase`'s options
+the installed entities - `omnibridge.doctrine.entities` beside the core's, with `omnibridge.omnibase`'s options
 (the project's folder and its enumerations, the targets) - created from their description (omnibase's
 `Base\Database\Schema\EntitySchema`) by omnisense/omnibridge's `SchemaCreator`, no ORM, in the empty database of the
 connection `omnibridge.doctrine.connection` names (Laravel's default otherwise), through Laravel's own PDO and with the

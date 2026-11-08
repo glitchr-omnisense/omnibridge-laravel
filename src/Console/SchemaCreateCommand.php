@@ -3,6 +3,7 @@
 namespace Omnibridge\Laravel\Console;
 
 use Base\Database\Schema\EntitySchema;
+use Omnibridge\Laravel\Omnibase\OmnibaseOption;
 use Illuminate\Console\Command;
 use Omnibridge\Schema\Database\SchemaCreator;
 use Omnibridge\Schema\Database\SchemaNotEmpty;
@@ -15,7 +16,7 @@ use Omnibridge\Schema\Database\SchemaNotEmpty;
  *     php artisan omnibridge:schema:create [--dump-sql]
  *
  * Where the entities are, as this bridge maps them (omnibridge.doctrine.entities beside the core's, the options of
- * omnibridge.doctrine.omnibase: the project's folder, its enumerations, the targets), on the database connection
+ * omnibridge.omnibase: the project's folder, its enumerations, the targets), on the database connection
  * omnibridge.doctrine.connection names (Laravel's default one otherwise), through Laravel's own PDO.
  */
 final class SchemaCreateCommand extends Command
@@ -28,8 +29,7 @@ final class SchemaCreateCommand extends Command
     public function handle(): int
     {
         $config = $this->laravel['config'];
-        $omnibase = $config->get('omnibridge.doctrine.omnibase');
-        $options = (\is_array($omnibase) ? $omnibase : []) + ['project_dir' => $this->laravel->basePath()];
+        $options = OmnibaseOption::options($config) + ['project_dir' => $this->laravel->basePath()];
         $paths = array_values(array_unique([...(array) $config->get('omnibridge.doctrine.entities', []), EntitySchema::coreDirectory('Entity')]));
         $description = EntitySchema::describe($paths, $options);
 

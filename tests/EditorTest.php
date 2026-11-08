@@ -31,7 +31,7 @@ final class EditorTest extends TestCase
         $app['config']->set('base.twig.editor.storage', 'local.editor');
         $app['config']->set('base.obfuscator.cache_dir', $this->root.'/obfuscator');
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
-        $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
+        $app['config']->set('omnibridge.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
     }
 
     public function testNoEditorRoutesWithoutMedia(): void

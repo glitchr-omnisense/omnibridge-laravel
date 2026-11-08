@@ -19,7 +19,7 @@ final class RepositoriesTest extends TestCase
     {
         parent::defineEnvironment($app);
         $app['config']->set('omnibridge.doctrine.entities', [self::FIXTURES.'/Omnibase/Entity']);
-        $app['config']->set('omnibridge.doctrine.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
+        $app['config']->set('omnibridge.omnibase', ['project_dir' => self::FIXTURES.'/Omnibase']);
         $app['config']->set('base', [
             'database' => ['use_custom' => true],
             'attributes' => ['use_custom' => true],

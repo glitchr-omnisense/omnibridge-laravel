@@ -33,20 +33,24 @@ return [
         'timezone' => null,
     ],
 
+    // omnibase in this application, whichever persistence (Doctrine's or omnibridge/eloquent's):
+    // its services, its entities beside the application's, and on Doctrine its own mapping on the
+    // entity manager, as under Symfony (Omnibridge\Doctrine\Omnibase\Mapping: the class convention,
+    // the core's entities, its types, discriminators, translations, listeners and filters) - false
+    // (off), true, or its options: project_dir (base_path() when not given: its src/Enum and
+    // src/Attribute), environment (omnibase's name, the vault's: prod, dev, test from production,
+    // local, testing), cache_dir, parameters (over the config's "base" by full name), and on Doctrine
+    // Mapping::register()'s types, enumerations, attribute_paths, resolve_target_entities,
+    // entity_listeners. null: its former name, doctrine.omnibase (deprecated), else off.
+    'omnibase' => null,
+
     // Doctrine: the Laravel connection (config/database.php) Doctrine DBAL opens,
     // and the entities' folders the entity manager maps (omnibridge/doctrine).
-    // omnibase: omnibase's own mapping on that entity manager, as under Symfony
-    // (Omnibridge\Doctrine\Omnibase\Mapping: the class convention, the core's entities,
-    // its types, discriminators, translations, listeners and filters) - false
-    // (off), true, or Mapping::register()'s options: project_dir (base_path()
-    // when not given: its src/Enum and src/Attribute), environment (omnibase's
-    // name, the vault's: prod, dev, test from production, local, testing),
-    // cache_dir, parameters (over the config's "base" by full name), types,
-    // enumerations, attribute_paths, resolve_target_entities, entity_listeners.
+    // doctrine.omnibase, the former name of "omnibase" above, is still read when
+    // that one is not given (deprecated, removed at 2.0).
     'doctrine' => [
         'connection' => null,
         'entities' => [],
-        'omnibase' => false,
     ],
 
     // omnibridge/eloquent, when omnibase's option base.persistence (config/base.php) is
