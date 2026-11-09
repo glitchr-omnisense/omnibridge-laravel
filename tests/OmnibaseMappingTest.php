@@ -93,7 +93,7 @@ final class OmnibaseMappingTest extends TestCase
      * entities and its App\Entity\User) are Symfony's. Set aside, being what this application does
      * not install: the omnibase/* bundles' classes in Symfony's discriminator maps and subclasses
      * (the harness registers every bundle), the core's entities that are entities only with a
-     * package installed (Base\Entity\Signature\Envelope, glitchr/omnisign), and the fields Base\Entity\User\Passkey inherits from
+     * package installed (Base\Entity\Signature\Envelope, omnisense/omnisign), and the fields Base\Entity\User\Passkey inherits from
      * web-auth's CredentialRecord, which WebauthnBundle maps in XML under Symfony (as the core's
      * HandBuiltEntityManagerTest sets them aside).
      */
@@ -137,7 +137,7 @@ final class OmnibaseMappingTest extends TestCase
     /** The core's entities that are entities only where a package is installed, by that package's class. */
     private const OPTIONAL = ['Base\\Entity\\Signature\\Envelope' => 'Omnisign\\Registry'];
 
-    /** A class of the core that is an entity only with a package this application does not install (glitchr/omnisign's envelope). */
+    /** A class of the core that is an entity only with a package this application does not install (omnisense/omnisign's envelope). */
     private static function optional(string $className): bool
     {
         return isset(self::OPTIONAL[$className]) && !class_exists(self::OPTIONAL[$className]);

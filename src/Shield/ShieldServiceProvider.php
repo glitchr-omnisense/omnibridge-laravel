@@ -14,7 +14,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
- * glitchr/omnishield wired into a Laravel application, from
+ * omnisense/omnishield wired into a Laravel application, from
  * config/omnishield.php - the keys of its Symfony bundle (plan "omniauth",
  * step AU8b: omnibase's captcha after failed sign-ins, under both hosts):
  * the Registry of the gateways named (each built by its package's factory,

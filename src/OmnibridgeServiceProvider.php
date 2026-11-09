@@ -223,7 +223,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         if (class_exists(\Omnimap\Registry::class)) {
             $this->app->register(Map\MapServiceProvider::class);
         }
-        // Forms guarded by omnishield (captchas, spam, reputation), where glitchr/omnishield is installed:
+        // Forms guarded by omnishield (captchas, spam, reputation), where omnisense/omnishield is installed:
         // Shield\ShieldServiceProvider, which wires nothing unless config/omnishield.php names a gateway.
         if (class_exists(\Omnishield\Registry::class)) {
             $this->app->register(Shield\ShieldServiceProvider::class);

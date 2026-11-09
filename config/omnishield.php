@@ -1,6 +1,6 @@
 <?php
 
-// glitchr/omnishield on Laravel (Omnibridge\Laravel\Shield\ShieldServiceProvider): the keys of
+// omnisense/omnishield on Laravel (Omnibridge\Laravel\Shield\ShieldServiceProvider): the keys of
 // the Symfony bundle's omnishield.yaml - the gateways by name (a factory and its options), the
 // captcha a form asks by default, whether a captcha that does not answer lets a form through,
 // whether ALTCHA's widget is served by the application itself, and where the tokens already
