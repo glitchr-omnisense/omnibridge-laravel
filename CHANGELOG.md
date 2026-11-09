@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+### Fixed: omnibase's declared local storages and the icons' cache on Laravel
+
+- `Media\DiskStorages` gives the local storages omnibase declares (`Base\Discovery`'s `storages`, 5.x: `local.cache`,
+  `local.uploads`, `local.wysiwyg` and each one's `.public`) that the application leaves to the declaration - mapped to no
+  disk by `omnibridge.storages`, no disk of their name - as a local operator on the folder the core declares, its
+  placeholders resolved as omnibase's options' are (`%kernel.project_dir%`: the base path), made when first written to: as
+  omnibridge/symfony registers them where the application names none (§2.5 of the plan "omnibase agnostic": the core
+  declares, the bridge compiles). A disk the application gives still wins. A file, image, avatar, audio or video field drawn
+  with only the cache and the uploads mapped failed with `"local.wysiwyg" storage not found`; `Omnidrive\Drives` lists the
+  declared storages after the disks.
+- `View\OmnibaseExtensions::bindIcons()`: one cache per metadata folder (`storage/framework/cache/omnibase-icons/<hash>`).
+  The adapters key what they read by their class alone, so a folder read first (a missing one: no icon) answered for any
+  other read in the same cache afterwards - `|iconify` gave nothing.
+- Tests: DiskStoragesTest (a declared storage on its folder, a mapped or same-named disk winning, any other name refused,
+  the declared ones listed last, omnibase's Flysystem with the editor's storage), IconsCacheTest; DrivesTest lists the
+  declared storages. FieldConformanceTest (file, image, avatar, audio, video) and OmnibaseTwigTest's icon, red on a fresh
+  install, are green.
+
 ### Changed: omnibase's option under a neutral name, `omnibridge.omnibase` (omnisense/omnibase's plan "omnibase agnostic", step B leftovers)
 
 - `omnibridge.omnibase` (config/omnibridge.php, beside `doctrine`) turns omnibase on whichever persistence is chosen - its

@@ -240,7 +240,9 @@ final class OmnibaseExtensions
         }
         $metadata = \is_string($metadata) && '' !== $metadata ? $metadata : $app->publicPath('bundles/base/metadata');
         $app->singleton(Icons::class, static function (Application $app) use ($metadata): Icons {
-            $cache = $app->storagePath('framework/cache/omnibase-icons');
+            // One cache per metadata folder: the adapters key their contents by their class alone, so a folder read
+            // first (a missing one: no icon at all) would answer for any other read in the same cache afterwards.
+            $cache = $app->storagePath('framework/cache/omnibase-icons/'.hash('xxh128', $metadata));
             $routes = $app->make(Routes::class);
 
             return new Icons(

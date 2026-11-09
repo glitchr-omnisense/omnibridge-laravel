@@ -15,7 +15,7 @@ the configuration key to set.
 | `LogicException` | `Omnibridge\Doctrine\Omnibase\Mapping` (resolved) | `omnibase's Doctrine mapping is off: omnibridge.omnibase.` |
 | `LogicException` | a repository class resolved | `No mapped entity names <class> as its repository (repositoryClass).` |
 | `LogicException` | the media's parameters | `omnibase's media are off: omnibridge.media.` |
-| `InvalidArgumentException` (a PSR-11 `NotFoundExceptionInterface`) | `Media\DiskStorages::get()` | `No storage "<id>": omnibridge.storages names no disk for it, and config/filesystems.php has no disk of that name.` |
+| `InvalidArgumentException` (a PSR-11 `NotFoundExceptionInterface`) | `Media\DiskStorages::get()` | `No storage "<id>": omnibridge.storages names no disk for it, config/filesystems.php has no disk of that name, and omnibase declares no local storage by it.` |
 | `LogicException` | `Media\ImageController` | a route that is no image route |
 | `NotFoundHttpException` | `Base\Service\ImageRoute`, `Map\TileController`, `Screen\Responder::respond()` | an image that does not resolve, a missing tile (`No such map tile.`), an action that answered null (404) |
 | `RuntimeException` | `Page\Theme::getLayout()` | `No layout: omnibridge.theme.layouts names no folder of layoutN.html.twig.` |

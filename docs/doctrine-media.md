@@ -107,8 +107,12 @@ With `omnibridge.media` on, omnibase's media rule runs under Laravel as under Sy
 `MediaService` (thumbnails, formats, the image route's obfuscated addresses) built on
 Laravel's router (`Media\LaravelMediaRouter`, the core's `Base\Contract\MediaRouter`),
 omnibase's `Obfuscator` and `Flysystem` (its storages are Laravel's disks,
-`Media\DiskStorages`: `omnibridge.storages`, else the disk of the storage's name;
-`local.cache`, where the thumbnails are kept, is required) and Imagine (Imagick, else GD).
+`Media\DiskStorages`: `omnibridge.storages`, else the disk of the storage's name, else,
+for a local storage omnibase 5.x declares (`Base\Discovery`'s `storages`: `local.cache`,
+`local.uploads`, `local.wysiwyg` and each one's `.public`), the folder it declares under the
+application's base path (`var/storage/wysiwyg`...), made when first written to, as
+omnibridge/symfony registers one where the application names none; `local.cache`, where the
+thumbnails are kept, is required) and Imagine (Imagick, else GD).
 The image routes (`/images/...`, `/contents/...`) are declared under their Symfony names
 in Symfony's order (`Base\Service\ImageRoute::ROUTES`) and answered by the core's
 `Base\Service\ImageRoute` (`Media\ImageController`, a line per request): the same

@@ -10,7 +10,9 @@ use Omnidrive\Flysystem\FlysystemDrive;
  * Laravel's disks as omnidrive's drives: Omnidrive\Drives by the storage
  * names omnibridge.storages maps (and the disks' own names), a file written
  * through a drive on the disk behind it, a local disk's files files of this
- * machine, a bucket's not; omnibase's Flysystem reads the same drives.
+ * machine, a bucket's not; then the local storages omnibase declares that no
+ * disk gives (Base\Discovery's `storages`, 5.x: local.wysiwyg and the public
+ * ones), on the folders it declares; omnibase's Flysystem reads the same drives.
  */
 final class DrivesTest extends TestCase
 {
@@ -36,7 +38,9 @@ final class DrivesTest extends TestCase
         $drives = $this->app?->make(Drives::class);
         self::assertInstanceOf(Drives::class, $drives);
 
-        self::assertSame(['local.cache', 'local.uploads', 's3.private', 'omnibase-cache', 'omnibase-uploads', 'cloud'], $drives->names());
+        // omnibase's local storages that no disk gives last, as omnibridge/symfony registers them where the application names none.
+        $declared = class_exists(\Base\Discovery::class) ? ['local.cache.public', 'local.uploads.public', 'local.wysiwyg', 'local.wysiwyg.public'] : [];
+        self::assertSame(['local.cache', 'local.uploads', 's3.private', 'omnibase-cache', 'omnibase-uploads', 'cloud', ...$declared], $drives->names());
         $uploads = $drives->get('local.uploads');
         self::assertInstanceOf(FlysystemDrive::class, $uploads);
         $uploads->write('avatars/1.txt', 'ringo');
@@ -48,7 +52,7 @@ final class DrivesTest extends TestCase
         if (class_exists(\League\Flysystem\AwsS3V3\AwsS3V3Adapter::class)) {
             self::assertFalse($drives->get('s3.private')->capabilities()->local);
         }
-        self::assertFalse($drives->has('local.wysiwyg'));
+        self::assertSame([] !== $declared, $drives->has('local.wysiwyg'));
         exec('rm -rf '.escapeshellarg($this->root));
     }
 

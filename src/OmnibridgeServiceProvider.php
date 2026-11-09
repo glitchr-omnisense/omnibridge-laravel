@@ -575,7 +575,11 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         return $flat;
     }
 
-    /** Laravel's disks by omnibase's storage names (omnibridge.storages), as a container of Flysystem operators. */
+    /**
+     * Laravel's disks by omnibase's storage names (omnibridge.storages), as a container of Flysystem operators; for the
+     * local storages omnibase declares (Base\Discovery's `storages`, 5.x) and the application gives no disk, the folder
+     * the core declares, its placeholders (%kernel.project_dir%, %kernel.environment%) resolved as its options' are.
+     */
     private static function diskStorages(Application $app): DiskStorages
     {
         $disks = $app->make('filesystem');
@@ -583,8 +587,22 @@ final class OmnibridgeServiceProvider extends ServiceProvider
         \assert($disks instanceof DiskFactory && $config instanceof ConfigRepository);
         /** @var array<string, string> $storages */
         $storages = (array) $config->get('omnibridge.storages', []);
+        $local = [];
+        if (class_exists(\Base\Discovery::class)) {
+            $declared = \Base\Discovery::registry('storages')['local'] ?? [];
+            foreach (\is_array($declared) ? $declared : [] as $storage => $folder) {
+                if (!\is_string($folder)) {
+                    continue;
+                }
+                $local[(string) $storage] = (string) preg_replace_callback('/%([^%]+)%/', static function (array $match) use ($app): string {
+                    $value = self::optionParameter($app, $match[1]);
 
-        return new DiskStorages($disks, $storages);
+                    return \is_scalar($value) ? (string) $value : $match[0];
+                }, $folder);
+            }
+        }
+
+        return new DiskStorages($disks, $storages, $local);
     }
 
     /**

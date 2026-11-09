@@ -27,7 +27,7 @@ order: 40
 | `theme.modes` | `array` | `[]` | `Page\Theme`, `ScreenContext`, `MenuTwigExtension` | id => `{id, class, icon, prefers}`; no colour scheme without modes |
 | `theme.filters`, `theme.no_filter` | `array` | `[]` | `Page\Theme` | the filters, the one for no filter |
 | `theme.layouts` | `?string` | not in the published file | `Page\Theme::getLayout()` | the folder of the site's `layoutN.html.twig` (`app.theme.layout(1)`) |
-| `storages` | `array<string, string>` | `[]` | `DiskFiles`, `Media\DiskStorages`, `Omnidrive\Drives` | omnibase's storage name => Laravel's disk; `default` for a storage not named |
+| `storages` | `array<string, string>` | `[]` | `DiskFiles`, `Media\DiskStorages`, `Omnidrive\Drives` | omnibase's storage name => Laravel's disk; `default` for a storage not named; a local storage omnibase declares and left out here (nor a disk of its name) is the folder it declares |
 | `media` | `bool\|array` | false | the provider | omnibase's media rule: true, or `{routes: bool (true), secret: ?string (app.key)}` ([Doctrine and images](doctrine-media.md#omnibases-images)) |
 | `entity_namespaces` | `array<string, string>` | `[]` | `EntityNouns` | a bundle's entity namespace and its prefix in the "entities" catalogues (`Base\Marketplace\Entity\` => `marketplace\`) |
 | `auth` | `bool` | false | `Auth\AuthServiceProvider` | the sign-in through omniauth ([Signing in](omniauth.md)) |
