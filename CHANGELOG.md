@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed: omnibase's App\ classes from the start on Laravel
+
+- `OmnibridgeServiceProvider::register()` registers omnibase's class convention (`Base\Service\Model\ClassAliases`:
+  `App\Entity\X`, `App\Enum\X`, `App\Repository\X`... is the `Base\` class an application does not define), as omnibase's
+  `BaseBundle` answers it under Symfony. Until now omnibridge/doctrine's `Mapping` registered it when the entity manager was
+  first built, so a request that read no entity found no `App\Enum\CommentState` (omnibridge/parity's `/aliases`: `null` on
+  Laravel, `Base\Enum\CommentState` on Symfony). Test: ClassAliasesTest (in a process of its own, no entity manager built).
+
 ### Fixed: omnibase's declared local storages and the icons' cache on Laravel
 
 - `Media\DiskStorages` gives the local storages omnibase declares (`Base\Discovery`'s `storages`, 5.x: `local.cache`,

@@ -8,6 +8,7 @@ use Base\Contract\Runtime;
 use Base\Screen\ContextProvider;
 use Base\Screen\Negotiation;
 use Base\Service\HotParameters;
+use Base\Service\Model\ClassAliases;
 use Base\Service\Model\EntityNouns;
 use Base\Service\ParameterBagInterface;
 use Base\Imagine\Svg\Imagine as SvgImagine;
@@ -132,6 +133,9 @@ final class OmnibridgeServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/omnibridge.php', 'omnibridge');
+        // omnibase's class convention (App\Entity\X, App\Enum\X... is the Base\ class the application does not define),
+        // from the start, as omnibase's BaseBundle answers it under Symfony: not only once Doctrine's entity manager is built.
+        ClassAliases::register();
 
         $this->app->singleton(RouterUrls::class, fn (Application $app) => new RouterUrls(null, $app['config']->get('omnibridge.assets.manifest')));
         $this->app->alias(RouterUrls::class, Host\Urls::class);
