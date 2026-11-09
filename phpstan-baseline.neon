@@ -1,10 +1,796 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserAccounts constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserBackupCodes constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserEmailCodes constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserIdentities constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserLinkTokens constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserPasskeys constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserPasswords constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserTotpSecrets constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\UserTrustedVersion constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$arguments of method Omnibridge\\Laravel\\Auth\\Policies\:\:decide\(\) expects list\<mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/AuthServiceProvider.php
+
+		-
+			message: '#^Cannot call method csrf\(\) on Omnibridge\\Contract\\Tokens\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Auth/Controllers/SignIn.php
+
+		-
+			message: '#^Cannot call method getName\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Auth/Controllers/SignIn.php
+
+		-
+			message: '#^Offset ''intent'' might not exist on array\{field\: string, intent\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Auth/Controllers/SignIn.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Auth\\Middleware\\AccessRestriction\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Auth/Middleware/AccessRestriction.php
+
+		-
+			message: '#^Cannot call method getName\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Auth/Middleware/SecondFactorPending.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Container\\Container\:\:getLocale\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Middleware/SitePages.php
+
+		-
+			message: '#^Parameter \#2 \$route of class Base\\Request\\Rule\\MaintenancePage constructor expects string\|null, array\|bool\|float\|int\|string\|UnitEnum\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/Middleware/SitePages.php
+
+		-
+			message: '#^Parameter \#3 \$index of class Base\\Request\\Rule\\LaunchPage constructor expects string\|null, array\|bool\|float\|int\|string\|UnitEnum\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/Middleware/SitePages.php
+
+		-
+			message: '#^Parameter \#3 \$index of class Base\\Request\\Rule\\MaintenancePage constructor expects string\|null, array\|bool\|float\|int\|string\|UnitEnum\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/Middleware/SitePages.php
+
+		-
+			message: '#^Parameter \#3 \$locale of method Base\\Request\\Rule\\LaunchPage\:\:decide\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/Middleware/SitePages.php
+
+		-
+			message: '#^Call to function class_exists\(\) with ''Twig\\\\Extra…''\|''Twig\\\\Extra\\\\Inky…'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<mixed, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Parameter \#1 \$extension of method Twig\\Environment\:\:addExtension\(\) expects Twig\\Extension\\ExtensionInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\Listener\\UpdateAccount constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Auth\\Listener\\WelcomeBack constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Base\\Security\\ConnectionTracker constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Parameter \#2 \$unitOfWork of class Base\\Auth\\Listener\\TrackConnections constructor expects Doctrine\\ORM\\EntityManagerInterface\|Omnibridge\\Persistence\\UnitOfWork, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Auth/OmnibaseEffects.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Container\\Container\:\:environment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Auth/Policies.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Auth/Policies.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Auth\\Policies\:\:request\(\) should return Illuminate\\Http\\Request\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Auth/Policies.php
+
+		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: src/CatalogueTranslations.php
+
+		-
+			message: '#^Parameter \#2 \$entity of class Base\\Console\\Task\\EntitiesInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/AutocompleteEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$id of class Base\\Console\\Task\\EntitiesInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/AutocompleteEntitiesCommand.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Console/CacheClearSessionsCommand.php
+
+		-
+			message: '#^Instantiated class Symfony\\Component\\Lock\\Store\\FlockStore not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Console/DemoResetCommand.php
+
+		-
+			message: '#^Parameter \#1 \$environment of class Base\\Demo\\DemoMode constructor expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/DemoResetCommand.php
+
+		-
+			message: '#^Parameter \#2 \$purge of class Base\\Console\\Task\\DemoResetInput constructor expects list\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/DemoResetCommand.php
+
+		-
+			message: '#^Parameter \#3 \$productionDatabase of class Base\\Demo\\DemoGuard constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/DemoResetCommand.php
+
+		-
+			message: '#^Parameter \#4 \$groups of class Base\\Console\\Task\\DemoResetInput constructor expects list\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/DemoResetCommand.php
+
+		-
+			message: '#^Parameter \#6 \$logger of class Base\\Console\\Task\\DemoReset constructor expects Psr\\Log\\LoggerInterface\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/DemoResetCommand.php
+
+		-
+			message: '#^Cannot cast array\|bool\|float\|int\|string\|null to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Console/EntityDiscriminatorCommand.php
+
+		-
+			message: '#^Parameter \#1 \$entity of class Base\\Console\\Task\\EntityDiscriminatorInput constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/EntityDiscriminatorCommand.php
+
+		-
+			message: '#^Parameter \#2 \$entity of class Base\\Console\\Task\\EntitiesInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/IconEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$id of class Base\\Console\\Task\\EntitiesInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/IconEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#1 \$user of class Base\\Console\\Task\\NotifierMailTestInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/NotifierMailTestCommand.php
+
+		-
+			message: '#^Parameter \#1 \$headers of method Symfony\\Component\\Console\\Helper\\Table\:\:setHeaders\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:comment\(\) expects array\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:error\(\) expects array\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:info\(\) expects array\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:note\(\) expects array\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:success\(\) expects array\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:warning\(\) expects array\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$messages of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:write\(\) expects iterable\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#1 \$rows of method Symfony\\Component\\Console\\Helper\\Table\:\:setRows\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#2 \$newline of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:write\(\) expects bool, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Parameter \#3 \$type of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:write\(\) expects int\<0, 511\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Reports.php
+
+		-
+			message: '#^Binary operation "\." between ''database…'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Cannot access offset ''db'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Cannot call method connection\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Cannot call method getPdo\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$config of static method Omnibridge\\Laravel\\Omnibase\\OmnibaseOption\:\:options\(\) expects Illuminate\\Contracts\\Config\\Repository, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$directories of static method Base\\Database\\Schema\\EntitySchema\:\:describe\(\) expects list\<string\>, non\-empty\-list given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$options of static method Base\\Database\\Schema\\EntitySchema\:\:columnTypes\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$pdo of class Omnibridge\\Schema\\Database\\SchemaCreator constructor expects PDO, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Parameter \#2 \$options of static method Base\\Database\\Schema\\EntitySchema\:\:describe\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/SchemaCreateCommand.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Foundation\\Application\:\:path\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Console/TaskCommand.php
+
+		-
+			message: '#^Cannot cast array\|bool\|float\|int\|string\|null to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Console/TaskCommand.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Console\\TaskCommand\:\:source\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Console/TaskCommand.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Console\\TaskCommand\:\:text\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Console/TaskCommand.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Console/TranslationControllersCommand.php
+
+		-
+			message: '#^Cannot call method getRoutes\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Console/TranslationControllersCommand.php
+
+		-
+			message: '#^Parameter \#4 \$locale of class Base\\Console\\Task\\TranslationControllersInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/TranslationControllersCommand.php
+
+		-
+			message: '#^Parameter \#5 \$locale of class Base\\Console\\Task\\TranslationCrudInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/TranslationCrudCommand.php
+
+		-
+			message: '#^Parameter \#4 \$locale of class Base\\Console\\Task\\TranslationEntitiesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/TranslationEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#4 \$locale of class Base\\Console\\Task\\TranslationEnumsInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/TranslationEnumsCommand.php
+
+		-
+			message: '#^Parameter \#1 \$path of class Base\\Console\\Task\\TranslationSettingsInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/TranslationSettingsCommand.php
+
+		-
+			message: '#^Parameter \#3 \$locale of class Base\\Console\\Task\\TranslationSettingsInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/TranslationSettingsCommand.php
+
+		-
+			message: '#^Parameter \#2 \$entity of class Base\\Console\\Task\\UploaderEntitiesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$property of class Base\\Console\\Task\\UploaderEntitiesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#4 \$uuid of class Base\\Console\\Task\\UploaderEntitiesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderEntitiesCommand.php
+
+		-
+			message: '#^Parameter \#2 \$entity of class Base\\Console\\Task\\UploaderImagesCropInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#2 \$entity of class Base\\Console\\Task\\UploaderImagesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$defaultFormats of class Base\\Console\\Task\\UploaderImages constructor expects list\<array\<string, mixed\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$defaultFormats of class Base\\Console\\Task\\UploaderImagesCrop constructor expects list\<array\<string, mixed\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$property of class Base\\Console\\Task\\UploaderImagesCropInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#3 \$property of class Base\\Console\\Task\\UploaderImagesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#4 \$uuid of class Base\\Console\\Task\\UploaderImagesCropInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#4 \$uuid of class Base\\Console\\Task\\UploaderImagesInput constructor expects string\|null, array\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#9 \$format of class Base\\Console\\Task\\UploaderImagesCropInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \#9 \$format of class Base\\Console\\Task\\UploaderImagesInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Parameter \$maxDefinition of class Base\\Console\\Task\\UploaderImagesCropInput constructor expects object\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UploaderImagesCommand.php
+
+		-
+			message: '#^Cannot cast array\|bool\|float\|int\|string\|null to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Console/UserCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$username of class Base\\Console\\Task\\UserCreateInput constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UserCreateCommand.php
+
+		-
+			message: '#^Parameter \#2 \$email of class Base\\Console\\Task\\UserCreateInput constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UserCreateCommand.php
+
+		-
+			message: '#^Parameter \#3 \$roles of class Base\\Console\\Task\\UserCreateInput constructor expects list\<string\>, non\-empty\-list given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UserCreateCommand.php
+
+		-
+			message: '#^Parameter \#4 \$password of class Base\\Console\\Task\\UserCreateInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UserCreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$user of class Base\\Console\\Task\\UserNotificationInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UserNotificationCommand.php
+
+		-
+			message: '#^Parameter \#2 \$expiry of class Base\\Console\\Task\\UserNotificationInput constructor expects string\|null, array\|float\|int\<min, \-1\>\|int\<1, max\>\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/UserNotificationCommand.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Binary operation "\." between ''%%env\('' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Cannot access offset ''arguments'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Cannot access offset ''class'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Container\\Definitions\:\:build\(\) should return object but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Offset 1 might not exist on array\{0\: non\-falsy\-string, 1\?\: non\-empty\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$abstract of method Illuminate\\Contracts\\Container\\Container\:\:bound\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$abstract of method Illuminate\\Contracts\\Container\\Container\:\:make\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$abstract of method Illuminate\\Contracts\\Container\\Container\:\:singleton\(\) expects Closure\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$autoconfigure of static method Omnibridge\\Container\\Discovery\:\:tags\(\) expects list\<array\{instanceof\: string, tags\: list\<array\<string, mixed\>\|string\>, requires\?\: list\<string\>\}\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$callback of static method Closure\:\:fromCallable\(\) expects callable\(\)\: mixed, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$class of static method Omnibridge\\Container\\Declarations\:\:loadable\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$fallback of static method Omnibridge\\Container\\Discovery\:\:fallback\(\) expects array\{candidates\?\: list\<string\>, default\: string\}, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$objectOrClass of class ReflectionClass constructor expects class\-string\<T of object\>\|T of object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$objectOrClass of class ReflectionClass constructor expects class\-string\<T of object\>\|T of object, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$objectOrMethod of class ReflectionMethod constructor expects object\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#1 \$tag of method Illuminate\\Contracts\\Container\\Container\:\:tagged\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$alias of method Illuminate\\Contracts\\Container\\Container\:\:alias\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, array\<int\|string, mixed\>\|Closure given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$autoconfigure of static method Omnibridge\\Container\\Discovery\:\:autoconfigure\(\) expects list\<array\<string, mixed\>\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$class of static method Omnibridge\\Container\\Discovery\:\:tags\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$collect of static method Omnibridge\\Container\\Discovery\:\:collected\(\) expects list\<array\<string, mixed\>\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$definition of static method Omnibridge\\Laravel\\Container\\Definitions\:\:build\(\) expects array\{class\: class\-string, arguments\?\: array\<int\|string, mixed\>, bind\?\: array\<string, mixed\>, calls\?\: list\<array\<mixed\>\>, factory\?\: mixed\}\|class\-string, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$definition of static method Omnibridge\\Laravel\\Container\\Definitions\:\:build\(\) expects array\{class\: class\-string, arguments\?\: array\<int\|string, mixed\>, bind\?\: array\<string, mixed\>, calls\?\: list\<array\<mixed\>\>, factory\?\: mixed\}\|class\-string, array\{class\: mixed, arguments\: mixed\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$id of static method Omnibridge\\Laravel\\Container\\Definitions\:\:satisfiable\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Parameter \#2 \$method of class ReflectionMethod constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 3
+			path: src/Container/Definitions.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: src/Container/Definitions.php
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
@@ -41,6 +827,42 @@ parameters:
 			identifier: cast.string
 			count: 1
 			path: src/Contract/GateAccess.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Contract\\LaravelRequests\:\:flashes\(\) should return array\<string, list\<string\>\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Contract/LaravelRequests.php
+
+		-
+			message: '#^Cannot call method trans\(\) on Omnibridge\\Contract\\Translations\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Contract/LaravelValidation.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Contract/LaravelValidation.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(bool\|float\|GMP\|int\|resource\|string\|null\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Contract/LaravelValidation.php
+
+		-
+			message: '#^Parameter \#2 \$message of class Omnibridge\\Contract\\Violation constructor expects string, array\<string\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Contract/LaravelValidation.php
+
+		-
+			message: '#^Property Omnibridge\\Laravel\\Contract\\LaravelValidation\:\:\$exists \(\(Closure\(string, array\<string, mixed\>, object\|null\)\: bool\)\|null\) does not accept \(Closure\(\)\: mixed\)\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Contract/LaravelValidation.php
 
 		-
 			message: '#^Cannot call method token\(\) on mixed\.$#'
@@ -97,8 +919,104 @@ parameters:
 			path: src/Doctrine/Connections.php
 
 		-
+			message: '#^Cannot call method getName\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Cannot call method parameter\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Parameter \#1 \$body of method Base\\Field\\Editor\\EditorJs\:\:autosave\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Parameter \#1 \$body of method Base\\Field\\Editor\\EditorJs\:\:ticket\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Parameter \#3 \$body of method Base\\Field\\Editor\\EditorJs\:\:users\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Base\\Field\\Editor\\EditorJs\:\:keywords\(\) expects int\|string\|null, int\|object\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Base\\Field\\Editor\\EditorJs\:\:threads\(\) expects int\|string\|null, int\|object\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Parameter \#4 \$page of method Base\\Field\\Editor\\EditorJs\:\:users\(\) expects int\|string\|null, int\|object\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/EditorController.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 20
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$rendered\.$#'
+			identifier: property.notFound
+			count: 14
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$vars\.$#'
+			identifier: property.notFound
+			count: 14
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Anonymous function has an unused use \$field\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
+			count: 12
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\+" between array\{class\: string\} and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\+" between array\{id\: mixed, name\: mixed, required\: bool, disabled\: bool, class\: string\} and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\+" between array\{id\: mixed, name\: string, multiple\: bool, required\: bool, class\: string\} and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\+" between array\{id\: non\-falsy\-string, name\: non\-falsy\-string, class\: string\} and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
 			count: 1
 			path: src/Form/FormRenderer.php
 
@@ -109,13 +1027,91 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
+			message: '#^Binary operation "\+" between array\{type\: mixed, id\: mixed, name\: mixed\} and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\+" between mixed and array\{data\-boolean\-field\: string, data\-boolean\-confirmation\-check\: bool, data\-boolean\-confirmation\-uncheck\: bool, data\-toggle\-url\: string, value\: string, checked\: bool, disabled\: bool\} results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\+\=" between array\{type\: ''hidden'', id\: mixed, name\: mixed, class\: string\} and mixed results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Binary operation "\+\=" between array\{type\: mixed, id\: mixed, name\: mixed, required\?\: ''required'', class\?\: string\} and mixed results in an error\.$#'
 			identifier: assignOp.invalid
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
+			message: '#^Binary operation "\-" between mixed and int results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''''\|''form\-check form…''\|''inline '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''''\|''form\-check\-input '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''field\-association '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Binary operation "\." between ''form\-control '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 5
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''form\-select2 form…'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''form\-translatable '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''is\-invalid '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and '' form\-group'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''''\|''\[\]'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''\['' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Form/FormRenderer.php
@@ -127,7 +1123,37 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
+			message: '#^Binary operation "\." between mixed and ''\[_rendered\]'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''\[choice\]'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Binary operation "\." between mixed and ''_'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''_choice'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''_editor'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''_label'' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Form/FormRenderer.php
@@ -139,9 +1165,87 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Cannot access offset ''class'' on mixed\.$#'
+			message: '#^Cannot access offset ''_collection'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''action'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''attr'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''choice'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''class'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 16
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''data'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''errors'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''help'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''key'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''label'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 7
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''placeholder'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
 			path: src/Form/FormRenderer.php
 
 		-
@@ -151,9 +1255,69 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
+			message: '#^Cannot access offset ''search'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access offset ''value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access property \$children on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access property \$rendered on mixed\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot access property \$vars on mixed\.$#'
+			identifier: property.nonObject
+			count: 6
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot cast array\|string\|null to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 6
+			count: 65
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayEmpty\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayList\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
@@ -163,19 +1327,145 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_replace expects array, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionEntry\(\) has parameter \$list with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$attributes of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array given\.$#'
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:dateTimePicker\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:entity\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:flat\(\) has parameter \$choices with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:flat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:hidden\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:isExpanded\(\) should return bool but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:labelled\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:number\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:select\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:slug\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:toggle\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_filter expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
 
 		-
+			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_replace expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 7
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$attributes of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 15
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$attributes of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 10
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(bool\|float\|GMP\|int\|resource\|string\|null\)\: string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$choices of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:flat\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 5
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$field of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionRow\(\) expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$field of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:row\(\) expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$field of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:widget\(\) expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 7
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Parameter \#1 \$for of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:label\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$part of closure expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
@@ -183,7 +1473,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$string of function htmlspecialchars expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 4
 			path: src/Form/FormRenderer.php
 
 		-
@@ -193,8 +1483,218 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:avatarUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:button\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:checkbox\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:editor\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:fileUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:imageUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:input\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:input\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:isExpanded\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:password\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:select2\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:textarea\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:wysiwyg\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$vars of static method Omnibridge\\Laravel\\Form\\FormRenderer\:\:refuse\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, list\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, Closure\(object\)\: bool given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$entry of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayEntry\(\) expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$entry of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionEntry\(\) expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:action\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:association\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:associationFile\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:associationRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attribute\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collection\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionRow\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:translation\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
 			message: '#^Parameter \#2 \.\.\.\$replacements of function array_replace expects array, mixed given\.$#'
 			identifier: argument.type
+			count: 2
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Parameter \#3 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayEntry\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/FormRenderer.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: src/Form/FormRenderer.php
 
@@ -217,40 +1717,292 @@ parameters:
 			path: src/Form/FormView.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
+			message: '#^Cannot call method getName\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Cannot call method parameter\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Cannot cast object\|string\|null to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Cannot cast object\|string\|null to string\.$#'
 			identifier: cast.string
+			count: 3
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Base\\Field\\Search\\RemoteSearch\:\:records\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Parameter \#1 \$provider of method Base\\Field\\Search\\RemoteSearch\:\:icons\(\) expects Base\\Service\\Model\\IconProvider\\IconAdapterInterface\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Parameter \#2 \$pageSize of method Base\\Field\\Search\\RemoteSearch\:\:icons\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Parameter \#3 \$data of method Base\\Field\\Search\\RemoteSearch\:\:icons\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/SearchController.php
+
+		-
+			message: '#^Cannot call method getName\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Cannot call method parameter\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Cannot cast object\|string\|null to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Base\\Field\\Upload\\Dropzone\:\:delete\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Base\\Field\\Upload\\Dropzone\:\:preview\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Base\\Field\\Upload\\Dropzone\:\:store\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Parameter \#2 \$uuid of method Base\\Field\\Upload\\Dropzone\:\:delete\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Parameter \#2 \$uuid of method Base\\Field\\Upload\\Dropzone\:\:preview\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/UploadController.php
+
+		-
+			message: '#^Parameter \#1 \$entries of class Base\\Request\\Rule\\AccessControl constructor expects list\<array\{path\: string, roles\: list\<string\>\|string\}\>, non\-empty\-array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/AccessControl.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Http\\Localize\:\:locale\(\) has parameter \$available with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Http/Localize.php
 
 		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: string given\.$#'
-			identifier: argument.type
+			message: '#^Method Omnibridge\\Laravel\\Http\\Localize\:\:locale\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Http/Localize.php
 
 		-
 			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, mixed given\.$#'
 			identifier: argument.type
+			count: 2
+			path: src/Http/Localize.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strlen expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Http/Localize.php
+
+		-
+			message: '#^Parameter \#2 \$defaultLocale of static method Base\\Service\\Model\\LocaleNormalizer\:\:normalize\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Localize.php
+
+		-
+			message: '#^Parameter \#2 \$needle of function str_starts_with expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Localize.php
+
+		-
+			message: '#^Parameter \#3 \$availableLocales of static method Base\\Service\\Model\\LocaleNormalizer\:\:normalize\(\) expects list\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Localize.php
+
+		-
+			message: '#^Parameter \#3 \$member of method Base\\Request\\Rule\\Locale\:\:decide\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Localize.php
+
+		-
+			message: '#^Call to an undefined method object\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Http/RequestPage.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Http\\RequestPage\:\:redirectsOnDeny\(\) should return list\<string\> but returns list\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/RequestPage.php
+
+		-
+			message: '#^Cannot call method getName\(\) on mixed\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Cannot call method getRoutes\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Cannot call method match\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Cannot call method parameters\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Http\\SwitchLocale\:\:match\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_filter expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Parameter \#1 \$requested of method Base\\Request\\LocaleSwitch\:\:remember\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Parameter \#2 \$requested of method Base\\Request\\LocaleSwitch\:\:back\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/SwitchLocale.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Legacy/Http/Localize.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Legacy/Http/SwitchLocale.php
 
 		-
 			message: '#^Parameter \#2 \$value of static method Symfony\\Component\\HttpFoundation\\Cookie\:\:create\(\) expects string\|null, array\<string\>\|string given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Http/SwitchLocale.php
+			path: src/Legacy/Http/SwitchLocale.php
 
 		-
 			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Http/SwitchLocale.php
+			path: src/Legacy/Http/SwitchLocale.php
+
+		-
+			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: src/Legacy/Parameters/OptionDefaults.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 5
+			path: src/Legacy/Parameters/OptionDefaults.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Legacy/Parameters/OptionDefaults.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Legacy/Parameters/OptionDefaults.php
+
+		-
+			message: '#^Parameter \#1 \$parameterBag of class Base\\Service\\Obfuscator constructor expects Base\\Service\\ParameterBagInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Legacy/Parameters/OptionDefaults.php
+
+		-
+			message: '#^Cannot call method store\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Map/MapServiceProvider.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem\:\:getDriver\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: src/Media/DiskStorages.php
+
+		-
+			message: '#^Cannot call method getName\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Media/ImageController.php
+
+		-
+			message: '#^Cannot call method parameters\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Media/ImageController.php
 
 		-
 			message: '#^Method Omnibridge\\Laravel\\Media\\LaravelMediaRouter\:\:getRouteName\(\) should return string\|null but returns mixed\.$#'
@@ -263,6 +2015,198 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Media/LaravelMediaRouter.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Omnibase\\FlushEntityEvents\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Omnibase/FlushEntityEvents.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Omnibase\\OmnibaseOption\:\:options\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Omnibase/OmnibaseOption.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 12
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Cannot access offset ''events'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 11
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Cannot call method getSymfonyTransport\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Cannot call method listen\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Omnibase\\OmnibaseServices\:\:entityListeners\(\) should return array\<string, list\<string\>\> but returns array\<non\-empty\-list\<string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Omnibase\\OmnibaseServices\:\:policy\(\) should return array\<string, list\<string\>\>\|null but returns non\-empty\-array\<mixed, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Omnibase\\OmnibaseServices\:\:transport\(\) should return Symfony\\Component\\Mailer\\Transport\\TransportInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#1 \$app of static method Omnibridge\\Laravel\\Legacy\\Omnibase\\EntityListeners\:\:bind\(\) expects Illuminate\\Foundation\\Application, Illuminate\\Contracts\\Foundation\\Application given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#1 \$app of static method Omnibridge\\Laravel\\Legacy\\Omnibase\\EntityListeners\:\:listeners\(\) expects Illuminate\\Foundation\\Application, Illuminate\\Contracts\\Foundation\\Application given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#1 \$autoconfigure of static method Omnibridge\\Container\\Discovery\:\:tags\(\) expects list\<array\{instanceof\: string, tags\: list\<array\<string, mixed\>\|string\>, requires\?\: list\<string\>\}\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#1 \$class of function class_exists expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#1 \$config of static method Omnibridge\\Laravel\\Omnibase\\OmnibaseOption\:\:get\(\) expects Illuminate\\Contracts\\Config\\Repository, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#1 \$factory of class Omnibridge\\Laravel\\Omnibase\\LazyListener constructor expects Closure\(\)\: object, Closure\(\)\: mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#2 \$aliases of static method Omnibridge\\Laravel\\Container\\Aliases\:\:bind\(\) expects array\<class\-string, class\-string\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#2 \$autoconfigure of static method Omnibridge\\Laravel\\Container\\Definitions\:\:entityListeners\(\) expects list\<array\<string, mixed\>\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#2 \$class of static method Omnibridge\\Container\\Discovery\:\:tags\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#2 \$own of static method Omnibridge\\Laravel\\Legacy\\Omnibase\\EntityListeners\:\:listeners\(\) expects list\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#3 \$logger of class Base\\Service\\Push\\WebPushService constructor expects Psr\\Log\\LoggerInterface\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#4 \$publicKey of class Base\\Service\\Push\\WebPushService constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#5 \$available of class Omnibridge\\Laravel\\Omnibase\\SiteLocalizer constructor expects list\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#5 \$privateKey of class Base\\Service\\Push\\WebPushService constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#6 \$subject of class Base\\Service\\Push\\WebPushService constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Parameter \#9 \$logger of class Base\\Service\\SpamChecker constructor expects Psr\\Log\\LoggerInterface\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: src/Omnibase/OmnibaseServices.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Omnibase/SiteLocalizer.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_diff expects array, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Omnibase/SiteLocalizer.php
+
+		-
+			message: '#^Static property Base\\Service\\Localizer\:\:\$defaultLocale \(string\|null\) does not accept array\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Omnibase/SiteLocalizer.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to function array_values$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Omnibase/SiteLocalizer.php
 
 		-
 			message: '#^Anonymous function should return object\|null but returns mixed\.$#'
@@ -291,23 +2235,41 @@ parameters:
 		-
 			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 31
+			count: 37
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Cannot call method get\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 31
+			message: '#^Cannot access offset ''db'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Cannot call method name\(\) on mixed\.$#'
+			message: '#^Cannot call method connection\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Cannot call method set\(\) on mixed\.$#'
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 35
+			path: src/OmnibridgeServiceProvider.php
+
+		-
+			message: '#^Cannot call method group\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: src/OmnibridgeServiceProvider.php
+
+		-
+			message: '#^Cannot call method middleware\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: src/OmnibridgeServiceProvider.php
+
+		-
+			message: '#^Cannot call method name\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -319,15 +2281,15 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Cannot cast array\|bool\|float\|int\|string\|UnitEnum\|null to string\.$#'
-			identifier: cast.string
-			count: 1
+			message: '#^Cannot call method withoutMiddleware\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
 			path: src/OmnibridgeServiceProvider.php
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 3
+			count: 2
 			path: src/OmnibridgeServiceProvider.php
 
 		-
@@ -375,7 +2337,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$config of class Omnibridge\\Laravel\\Parameters\\ConfigParameters constructor expects Illuminate\\Contracts\\Config\\Repository, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/OmnibridgeServiceProvider.php
 
 		-
@@ -385,7 +2347,13 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$directories of class Omnibridge\\Laravel\\CatalogueTranslations constructor expects list\<string\>\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$config of static method Omnibridge\\Laravel\\Omnibase\\OmnibaseOption\:\:get\(\) expects Illuminate\\Contracts\\Config\\Repository, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/OmnibridgeServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$db of class Omnibridge\\Laravel\\Parameters\\DatabaseSettings constructor expects Doctrine\\DBAL\\Connection\|Illuminate\\Database\\ConnectionInterface, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -397,13 +2365,19 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$disks of class Omnibridge\\Laravel\\Media\\DiskStorages constructor expects Illuminate\\Contracts\\Filesystem\\Factory, mixed given\.$#'
+			message: '#^Parameter \#1 \$events of class Omnibridge\\Laravel\\Contract\\DispatcherEvents constructor expects Illuminate\\Contracts\\Events\\Dispatcher, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$events of class Omnibridge\\Laravel\\Contract\\DispatcherEvents constructor expects Illuminate\\Contracts\\Events\\Dispatcher, mixed given\.$#'
+			message: '#^Parameter \#1 \$factory of class Omnibridge\\Laravel\\Contract\\LaravelValidation constructor expects Illuminate\\Contracts\\Validation\\Factory, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/OmnibridgeServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$paths of static method Omnibridge\\Laravel\\OmnibridgeServiceProvider\:\:translationPaths\(\) expects list\<string\>, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -427,13 +2401,19 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
+			message: '#^Parameter \#2 \$aliases of static method Omnibridge\\Laravel\\Container\\Aliases\:\:bind\(\) expects array\<class\-string, class\-string\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/OmnibridgeServiceProvider.php
+
+		-
 			message: '#^Parameter \#2 \$auth of class Omnibridge\\Laravel\\Contract\\GateAccess constructor expects Illuminate\\Contracts\\Auth\\Factory, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#2 \$cacheDir of class Base\\Service\\Obfuscator constructor expects string, mixed given\.$#'
+			message: '#^Parameter \#2 \$criteria of callable Base\\Form\\Definition\\UniqueLookup expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -481,12 +2461,6 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#2 \$storages of class Omnibridge\\Laravel\\Media\\DiskStorages constructor expects array\<string, string\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/OmnibridgeServiceProvider.php
-
-		-
 			message: '#^Parameter \#2 \$urls of class Omnibridge\\Laravel\\Media\\LaravelMediaRouter constructor expects Illuminate\\Contracts\\Routing\\UrlGenerator, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -511,6 +2485,18 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
+			message: '#^Parameter \#4 \$environment of static method Omnibridge\\Laravel\\Container\\Definitions\:\:bind\(\) expects string\|null, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/OmnibridgeServiceProvider.php
+
+		-
+			message: '#^Parameter \#4 \$environment of static method Omnibridge\\Laravel\\Container\\Definitions\:\:discover\(\) expects string\|null, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/OmnibridgeServiceProvider.php
+
+		-
 			message: '#^Parameter \#5 \$timezone of static method Omnibridge\\Laravel\\View\\Twig\:\:create\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -521,18 +2507,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
-
-		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Bag\:\:all\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Page/Bag.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Routing\\Route\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: src/Page/RequestView.php
 
 		-
 			message: '#^Binary operation "\-" between float and mixed results in an error\.$#'
@@ -679,6 +2653,24 @@ parameters:
 			path: src/Page/Theme.php
 
 		-
+			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Parameters/BaseOptions.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Parameters/BaseOptions.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Parameters/BaseOptions.php
+
+		-
 			message: '#^Method Omnibridge\\Laravel\\Parameters\\ConfigParameters\:\:all\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -733,13 +2725,19 @@ parameters:
 			path: src/Parameters/DatabaseSettings.php
 
 		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(object\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Parameters/DatabaseSettings.php
+
+		-
 			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 2
 			path: src/Parameters/DatabaseSettings.php
 
 		-
-			message: '#^Property Omnibridge\\Laravel\\Parameters\\DatabaseSettings\:\:\$bags \(array\<string, string\>\) does not accept array\<mixed\>\.$#'
+			message: '#^Property Omnibridge\\Laravel\\Parameters\\DatabaseSettings\:\:\$bags \(array\<string, string\>\) does not accept array\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Parameters/DatabaseSettings.php
@@ -749,6 +2747,120 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: src/Parameters/DatabaseSettings.php
+
+		-
+			message: '#^Anonymous function should return object but returns mixed\.$#'
+			identifier: return.type
+			count: 3
+			path: src/Persistence.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Foundation\\Application\:\:getBindings\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Call to static method interfaces\(\) on an unknown class Omnibridge\\Eloquent\\Container\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Call to static method laravel\(\) on an unknown class Omnibridge\\Eloquent\\Connections\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot access offset ''concrete'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot access offset ''db'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot call method backend\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot call method enableScope\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot call method implementing\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot call method repositories\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Persistence\:\:interfaces\(\) should return array\<class\-string, Closure\(Illuminate\\Contracts\\Foundation\\Application\)\: object\> but returns array\<Closure\(Illuminate\\Contracts\\Foundation\\Application\)\: object\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Parameter \#1 \$abstract of method Illuminate\\Contracts\\Container\\Container\:\:make\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Parameter \#1 \$unitOfWork of class Omnibridge\\Doctrine\\Omnibase\\DoctrineBackend constructor expects Omnibridge\\Doctrine\\Omnibase\\DoctrineUnitOfWork, Omnibridge\\Persistence\\UnitOfWork given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persistence.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: src/Persistence.php
 
 		-
 			message: '#^Method Omnibridge\\Laravel\\RouterUrlGenerator\:\:generate\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
@@ -781,10 +2893,10 @@ parameters:
 			path: src/RouterUrls.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
+			message: '#^Parameter \#1 \$string of function rtrim expects string, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
-			path: src/Screen/Responder.php
+			path: src/Routing/TrailingSlash.php
 
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Container\\Container\:\:call\(\) expects \(callable\(\)\: mixed\)\|string, array\{object, string\} given\.$#'
@@ -799,18 +2911,6 @@ parameters:
 			path: src/Screen/Responder.php
 
 		-
-			message: '#^Parameter \#2 \$result of method Omnibridge\\Laravel\\Screen\\Responder\:\:respond\(\) expects Base\\Screen\\File\|Base\\Screen\\Json\|Base\\Screen\\Shell\|Base\\Screen\\Template\|Base\\Screen\\View\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Screen/Responder.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Routing\\Route\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: src/Screen/Responder.php
-
-		-
 			message: '#^Binary operation "\." between mixed and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -819,30 +2919,6 @@ parameters:
 		-
 			message: '#^Cannot access offset ''config'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Cannot access offset ''filters'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Cannot access offset ''modes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Cannot access offset ''no_filter'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Cannot call method cookie\(\) on mixed\.$#'
-			identifier: method.nonObject
 			count: 2
 			path: src/Screen/ScreenContext.php
 
@@ -895,37 +2971,7 @@ parameters:
 			path: src/Screen/ScreenContext.php
 
 		-
-			message: '#^Parameter \#1 \$modes of class Omnibridge\\Laravel\\Page\\Theme constructor expects array\<string, array\<string, string\>\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Parameter \#2 \$filters of class Omnibridge\\Laravel\\Page\\Theme constructor expects array\<string, array\<string, string\>\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
 			message: '#^Parameter \#2 \$parameters of method Omnibridge\\Contract\\Urls\:\:path\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Parameter \#3 \$modeId of class Omnibridge\\Laravel\\Page\\Theme constructor expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Parameter \#4 \$filterId of class Omnibridge\\Laravel\\Page\\Theme constructor expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Screen/ScreenContext.php
-
-		-
-			message: '#^Parameter \#5 \$noFilter of class Omnibridge\\Laravel\\Page\\Theme constructor expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Screen/ScreenContext.php
@@ -1117,6 +3163,84 @@ parameters:
 			path: src/View/Encore.php
 
 		-
+			message: '#^Instanceof between Base\\Repository\\User\\PushSubscriptions and Base\\Repository\\User\\PushSubscriptions will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/View/OmnibaseExtensions.php
+
+		-
+			message: '#^Cannot access offset ''base'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method all\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method basePath\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method forgetInstance\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method storagePath\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Offset ''config'' might not exist on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 7
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Parameter \#1 \$app of static method Omnibridge\\Laravel\\Parameters\\BaseOptions\:\:apply\(\) expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Foundation\\Application\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$configs of static method Base\\Options\:\:process\(\) expects array\<mixed\>\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/BaseOptionsTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/ConsoleTasksTest.php
+
+		-
 			message: '#^Cannot access property \$id on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -1141,13 +3265,13 @@ parameters:
 			path: tests/ContractsTest.php
 
 		-
-			message: '#^Cannot call method getRoutes\(\) on mixed\.$#'
+			message: '#^Cannot call method get\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: tests/ContractsTest.php
 
 		-
-			message: '#^Cannot call method isAlias\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			message: '#^Cannot call method getRoutes\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: tests/ContractsTest.php
@@ -1155,7 +3279,19 @@ parameters:
 		-
 			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
 			identifier: method.nonObject
-			count: 5
+			count: 3
+			path: tests/ContractsTest.php
+
+		-
+			message: '#^Cannot call method middleware\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/ContractsTest.php
+
+		-
+			message: '#^Cannot call method name\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
 			path: tests/ContractsTest.php
 
 		-
@@ -1179,7 +3315,7 @@ parameters:
 		-
 			message: '#^Offset ''router'' might not exist on Illuminate\\Foundation\\Application\|null\.$#'
 			identifier: offsetAccess.notFound
-			count: 1
+			count: 2
 			path: tests/ContractsTest.php
 
 		-
@@ -1193,6 +3329,18 @@ parameters:
 			identifier: offsetAccess.notFound
 			count: 1
 			path: tests/ContractsTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/DiscoveryTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/DiscoveryTest.php
 
 		-
 			message: '#^Call to static method insert\(\) on an unknown class DB\.$#'
@@ -1249,6 +3397,30 @@ parameters:
 			path: tests/DoctrinePageTest.php
 
 		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/EditorTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/EditorTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: tests/EditorTest.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, Closure\(SplFileInfo\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/EditorTest.php
+
+		-
 			message: '#^Call to an undefined method Psr\\Cache\\CacheItemPoolInterface\:\:get\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1257,7 +3429,7 @@ parameters:
 		-
 			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
 			identifier: method.nonObject
-			count: 12
+			count: 14
 			path: tests/EntitiesHostTest.php
 
 		-
@@ -1279,6 +3451,30 @@ parameters:
 			path: tests/EntitiesHostTest.php
 
 		-
+			message: '#^Call to an undefined method Base\\Database\\Entity\\Extension\\TranslationInterface\|Doctrine\\Common\\Collections\\Collection\:\:containsKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FieldConformanceTest.php
+
+		-
+			message: '#^Cannot call method getTitle\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/FieldConformanceTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/FieldConformanceTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 11
+			path: tests/FieldConformanceTest.php
+
+		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
@@ -1295,6 +3491,72 @@ parameters:
 			identifier: missingType.property
 			count: 1
 			path: tests/Fixtures/Omnibase/Entity/User.php
+
+		-
+			message: '#^Cannot call method instance\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/LocaleTest.php
+
+		-
+			message: '#^Method Base\\Service\\Localizer@anonymous/tests/LocaleTest\.php\:62\:\:getAvailableLocaleLangs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/LocaleTest.php
+
+		-
+			message: '#^Method Base\\Service\\Localizer@anonymous/tests/LocaleTest\.php\:62\:\:getAvailableLocales\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/LocaleTest.php
+
+		-
+			message: '#^Cannot call method has\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 6
+			path: tests/MapTest.php
+
+		-
+			message: '#^Cannot call method start\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Cannot call method store\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset ''session'' might not exist on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset 2 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
+
+		-
+			message: '#^Offset 3 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/MapTest.php
 
 		-
 			message: '#^Binary operation "\." between ''/images/cacheless/'' and mixed results in an error\.$#'
@@ -1567,6 +3829,54 @@ parameters:
 			path: tests/OmnibaseMappingTest.php
 
 		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/OmnibaseOptionTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/OmnibaseOptionTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Http\\Kernel\:\:hasMiddleware\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/OmnibaseServicesTest.php
+
+		-
+			message: '#^Cannot call method bound\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/OmnibaseServicesTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 12
+			path: tests/OmnibaseServicesTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/OmnibaseServicesTest.php
+
+		-
+			message: '#^Cannot call method setLocale\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/OmnibaseServicesTest.php
+
+		-
+			message: '#^Parameter \#1 \$factory of class Omnibridge\\Laravel\\Contract\\LaravelValidation constructor expects Illuminate\\Contracts\\Validation\\Factory, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/OmnibaseServicesTest.php
+
+		-
 			message: '#^Call to an undefined method Base\\Service\\ParameterBagInterface\:\:isReady\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -1583,6 +3893,48 @@ parameters:
 			identifier: argument.unknown
 			count: 1
 			path: tests/ParametersTest.php
+
+		-
+			message: '#^Cannot call method bound\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/PersistenceTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/PersistenceTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/PersistenceTest.php
+
+		-
+			message: '#^Offset ''config'' might not exist on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: tests/PersistenceTest.php
+
+		-
+			message: '#^Parameter \#1 \$app of static method Omnibridge\\Laravel\\Persistence\:\:eloquent\(\) expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Foundation\\Application\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/PersistenceTest.php
+
+		-
+			message: '#^Parameter \#1 \$app of static method Omnibridge\\Laravel\\Persistence\:\:name\(\) expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Foundation\\Application\|null given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/PersistenceTest.php
+
+		-
+			message: '#^Parameter \#1 \$app of static method Omnibridge\\Laravel\\Persistence\:\:neutralReader\(\) expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Foundation\\Application\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/PersistenceTest.php
 
 		-
 			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
@@ -1631,6 +3983,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/ResponderTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/SchemaCreateTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/SchemaCreateTest.php
 
 		-
 			message: '#^Call to an undefined method Base\\Contract\\Pictures\:\:stored\(\)\.$#'
@@ -1729,6 +4093,78 @@ parameters:
 			path: tests/ScreensTest.php
 
 		-
+			message: '#^Binary operation "\." between ''\<i class\="'' and Base\\Service\\Model\\IconizeInterface\|string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''"\>\</i\>'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Cannot call method set\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Cannot call method uri\(\) on Illuminate\\Routing\\Route\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Tests\\SearchTestIcons\:\:getAssets\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Tests\\SearchTestIcons\:\:getChoices\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Tests\\SearchTestIcons\:\:getOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Method Omnibridge\\Laravel\\Tests\\SearchTestIcons\:\:iconify\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Parameter \#1 \$path of function dirname expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/SearchTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/SearchTest.php
+
+		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
@@ -1797,41 +4233,29 @@ parameters:
 		-
 			message: '#^Cannot call method make\(\) on Illuminate\\Foundation\\Application\|null\.$#'
 			identifier: method.nonObject
+			count: 4
+			path: tests/ValidationTest.php
+
+		-
+			message: '#^Cannot call method setLocale\(\) on Illuminate\\Foundation\\Application\|null\.$#'
+			identifier: method.nonObject
 			count: 3
-			path: tests/MapTest.php
+			path: tests/ValidationTest.php
 
 		-
-			message: '#^Cannot call method set\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Method Omnibridge\\Laravel\\Tests\\ValidationTest\:\:messages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: tests/MapTest.php
+			path: tests/ValidationTest.php
 
 		-
-			message: '#^Cannot call method start\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Parameter \#1 \$factory of class Omnibridge\\Laravel\\Contract\\LaravelValidation constructor expects Illuminate\\Contracts\\Validation\\Factory, mixed given\.$#'
+			identifier: argument.type
 			count: 1
-			path: tests/MapTest.php
+			path: tests/ValidationTest.php
 
 		-
-			message: '#^Offset ''session'' might not exist on Illuminate\\Foundation\\Application\|null\.$#'
-			identifier: offsetAccess.notFound
+			message: '#^Parameter \#2 \$constraints of method Omnibridge\\Contract\\Validation\:\:validate\(\) expects list\<object\>, array\{''integer''\} given\.$#'
+			identifier: argument.type
 			count: 1
-			path: tests/MapTest.php
-
-		-
-			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: tests/MapTest.php
-
-		-
-			message: '#^Offset 2 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: tests/MapTest.php
-
-		-
-			message: '#^Offset 3 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string, numeric\-string, numeric\-string\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: tests/MapTest.php
+			path: tests/ValidationTest.php

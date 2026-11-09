@@ -1,6 +1,7 @@
 # PHPStan at the highest level. phpstan-baseline.neon lists the violations there were when the CI
-# started (2026-10-21, written by glitchr-studio/ci's baseline workflow): the CI fails on any other.
-# Fix one, then drop its entry.
+# started (2026-10-21, written by glitchr-studio/ci's baseline workflow), re-generated on 2026-11-09 with the
+# debt left by the moves of omnisense/omnibase's plan "omnibase agnostic", to be paid down gradually: the CI
+# fails on any other. Fix one, then drop its entry.
 includes:
     - phpstan-baseline.neon
 
