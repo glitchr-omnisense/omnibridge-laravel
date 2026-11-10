@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Added: the pages sent counted in omnibase's analytics, as under Symfony
+
+- `Omnibase\PageViews`, a terminable global middleware (pushed with omnibase's services, `OmnibaseServices::boot()`):
+  once the answer is sent, a GET answered 2xx in `text/html`, not a speculative request (`Base\Service\SpeculativeRequest`:
+  a prefetch, a prerender), its path under none of `omnibridge.page_views.excluded_prefixes` (`/admin`, `/_`, `/api`), is
+  given to `Base\Service\Analytics::track()` with the visitor's `ANALYTICS/VISITOR_ID` cookie, the account signed in
+  (`Omnibridge\Contract\Access`) and the User-Agent: omnibridge/symfony's `PageViewSubscriber` on `kernel.terminate`, the
+  same rule. Whichever persistence answers `Base\Repository\Analytics\*` (omnibridge/doctrine's, omnibridge/eloquent's).
+  Until now a Laravel site counted no page (omnibridge/parity's `page-views` difference). The visitor's cookie, written by
+  the page's script, is left out of Laravel's cookie encryption (`EncryptCookies::except()`), which dropped it as
+  undecryptable. A failed write is reported, never shown. `omnibridge.page_views.enabled` false counts nothing.
+- Test: PageViewsTest (pages counted, what is no page view not counted, a consented visitor's presence and unique view, a
+  crawler's hit a bot's, turned off).
+
 ### Fixed: omnibase's App\ classes from the start on Laravel
 
 - `OmnibridgeServiceProvider::register()` registers omnibase's class convention (`Base\Service\Model\ClassAliases`:

@@ -244,6 +244,14 @@ final class OmnibaseServices
             if (method_exists($kernel, 'pushMiddleware') && !(method_exists($kernel, 'hasMiddleware') && $kernel->hasMiddleware(FlushEntityEvents::class))) {
                 $kernel->pushMiddleware(FlushEntityEvents::class);
             }
+            // The pages sent, counted once they are (PageViewSubscriber's kernel.terminate under Symfony).
+            if (class_exists(\Base\Service\Analytics::class) && false !== $app->make(\Illuminate\Contracts\Config\Repository::class)->get('omnibridge.page_views.enabled', true)
+                && method_exists($kernel, 'pushMiddleware') && !(method_exists($kernel, 'hasMiddleware') && $kernel->hasMiddleware(PageViews::class))) {
+                $kernel->pushMiddleware(PageViews::class);
+                if (class_exists(\Illuminate\Cookie\Middleware\EncryptCookies::class)) {
+                    \Illuminate\Cookie\Middleware\EncryptCookies::except([PageViews::VISITOR_COOKIE]);
+                }
+            }
         }
         $app->terminating(static function (): void {
             foreach (AbstractEventDispatcher::live() as $dispatcher) {

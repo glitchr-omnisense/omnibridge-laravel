@@ -29,6 +29,7 @@ order: 40
 | `theme.layouts` | `?string` | not in the published file | `Page\Theme::getLayout()` | the folder of the site's `layoutN.html.twig` (`app.theme.layout(1)`) |
 | `storages` | `array<string, string>` | `[]` | `DiskFiles`, `Media\DiskStorages`, `Omnidrive\Drives` | omnibase's storage name => Laravel's disk; `default` for a storage not named; a local storage omnibase declares and left out here (nor a disk of its name) is the folder it declares |
 | `media` | `bool\|array` | false | the provider | omnibase's media rule: true, or `{routes: bool (true), secret: ?string (app.key)}` ([Doctrine and images](doctrine-media.md#omnibases-images)) |
+| `page_views.enabled`, `page_views.excluded_prefixes` | `bool`, `list<string>` | true, `['/admin', '/_', '/api']` | `Omnibase\PageViews` | with omnibase on, the pages sent counted in omnibase's analytics once answered (a GET, 2xx, `text/html`, not a prefetch, its path under none of the prefixes), as omnibridge/symfony's `PageViewSubscriber`; false counts nothing |
 | `entity_namespaces` | `array<string, string>` | `[]` | `EntityNouns` | a bundle's entity namespace and its prefix in the "entities" catalogues (`Base\Marketplace\Entity\` => `marketplace\`) |
 | `auth` | `bool` | false | `Auth\AuthServiceProvider` | the sign-in through omniauth ([Signing in](omniauth.md)) |
 | `encore.builds` | `list<array{entrypoints: string, manifest: string}>` | `[]` | `View\Encore` | the Encore builds, in the order they are looked into; no Encore tags without |

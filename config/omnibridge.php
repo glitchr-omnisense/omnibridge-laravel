@@ -108,6 +108,15 @@ return [
     // ticket and autosave), answered by Base\Field\Editor\EditorJs.
     'forms' => ['search' => true, 'uploads' => true, 'editor' => true],
 
+    // The pages sent, counted in omnibase's analytics once they are (with omnibase on,
+    // either persistence; Omnibase\PageViews, omnibridge/symfony's PageViewSubscriber):
+    // a GET answered 2xx in text/html, not a prefetch, its path under none of
+    // excluded_prefixes. enabled false counts nothing.
+    'page_views' => [
+        'enabled' => true,
+        'excluded_prefixes' => ['/admin', '/_', '/api'],
+    ],
+
     // The entity namespaces of the bundles the site uses, and their prefix in
     // the "entities" catalogues (Base\Marketplace\Entity\ => marketplace\).
     'entity_namespaces' => [],
