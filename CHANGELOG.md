@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-10
+
 ### Added: the pages sent counted in omnibase's analytics, as under Symfony
 
 - `Omnibase\PageViews`, a terminable global middleware (pushed with omnibase's services, `OmnibaseServices::boot()`):
