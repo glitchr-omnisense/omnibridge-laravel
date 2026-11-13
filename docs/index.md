@@ -2,7 +2,7 @@
 
 ```sh
 composer config allow-plugins.omnibridge/composer true
-composer require omnisense/omnibase:4.x-dev omnibridge/laravel:1.x-dev
+composer require omnibridge/laravel
 php artisan vendor:publish --tag=omnibridge-config
 ```
 

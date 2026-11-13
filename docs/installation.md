@@ -11,9 +11,8 @@ order: 10
 |---|---|
 | PHP | ^8.4 |
 | Laravel (`illuminate/auth`, `config`, `contracts`, `http`, `routing`, `support`) | 12 or 13 |
-| `omnisense/omnibase` | ^4.0 |
+| `omnisense/omnibase` | ^4.0 or ^5.0 (a stable project: 5.0.1 or later) |
 | `omnisense/omnibridge`, `omnibridge/twig`, `omnibridge/doctrine` | ^1.0 |
-| `omnisense/omnidrive` | ^1.0 |
 | `doctrine/orm` ^3.4, `doctrine/dbal` ^4.2 | |
 | `symfony/cache`, `mailer`, `routing`, `translation`, `yaml` | 7 or 8 |
 | `twig/twig` | ^3.10 |
@@ -22,11 +21,12 @@ order: 10
 omnibase asks for the extensions its own packages need (bcmath, intl, gd, exif, ftp, imagick,
 igbinary). Suggested, each wired only when installed: `omnisense/omniauth` (with `omniauth/webauthn`,
 `omniauth/otp`, `omniauth/google`), `omnisense/omnimap`, `omnisense/omnishield` (with
-`omnishield/altcha`), `omnibase/consent`, `omnibridge/static`.
+`omnishield/altcha`), `omnibase/consent`, `omnibridge/static`, `omnisense/omnidrive` (which omnisense/omnibase 5.0
+requires itself).
 
 ```sh
 composer config allow-plugins.omnibridge/composer true
-composer require omnisense/omnibase:4.x-dev omnibridge/laravel:1.x-dev
+composer require omnibridge/laravel
 php artisan vendor:publish --tag=omnibridge-config     # config/omnibridge.php
 php artisan vendor:publish --tag=omniauth-config       # config/omniauth.php, for the sign-in
 ```

@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-13
+
+### Added: `omnibridge:static:build --cache`, `--only` and `--full`
+
+- `Static\BuildCommand` hands omnibridge/static's command line its incremental export options. `--cache=<folder>`
+  keeps the renderer's answers between builds (`Site::cache()`), relative to `base_path()` unless absolute, as `--out`
+  is. A page whose declared inputs did not change (`Site::dependsOn()`, the site's file among them) is not rendered
+  again. `--only=<pattern>,...` renders the addresses it names whatever the cache holds (a targeted rebuild). `--full`
+  renders everything and rewrites every file. An empty `--cache` is invalid (`INVALID`, the command line's message).
+  `--out` takes an empty folder or an earlier export; only the files that changed are written there.
+- Tests: `Static\BuildCommandTest` runs the artisan command on a site file whose pages declare their content files. A
+  second build reuses both pages, a changed file renders its page alone, `--only` renders the address it names,
+  `--full` renders both, a build without `--cache` reuses nothing, a relative `--cache` is under `base_path()`, and
+  the offer the site's file receives is this host's.
+
+### Changed: omnisense/omnidrive is suggested, no longer required
+
+- Every use of omnidrive here already waits for it: `Omnidrive\Flysystem\OperatorDrives` is bound only where the
+  class exists, omnibase's `Flysystem` takes `Omnidrive\Drives` only where it is bound, and omnimap's `cache.drive` is
+  an application's choice. The application decides whether it installs omnidrive; omnisense/omnibase 5.0 requires it
+  itself, so an omnibase site still has it. It stays in `require-dev` for `DrivesTest`.
+- The installation line is `composer require omnibridge/laravel`, without `4.x-dev` or `1.x-dev`. A project of the
+  default (stable) minimum-stability installs it once omnisense/omnibase 5.0.1 is released.
+
 ## [1.0.0] - 2026-11-10
 
 ### Added: the pages sent counted in omnibase's analytics, as under Symfony

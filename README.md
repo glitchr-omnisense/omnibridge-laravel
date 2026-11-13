@@ -2,7 +2,7 @@
 
 ```sh
 composer config allow-plugins.omnibridge/composer true
-composer require omnisense/omnibase:4.x-dev omnibridge/laravel:1.x-dev
+composer require omnibridge/laravel
 php artisan vendor:publish --tag=omnibridge-config
 ```
 
@@ -419,7 +419,12 @@ folders declare (`Routing\ActionRoutes`).
 
 ```sh
 php artisan omnibridge:static:build static.php --out=storage/static --actions='App\Action\=src/Action'
+php artisan omnibridge:static:build static.php --cache=storage/static-cache [--only=/news/*] [--full]
 ```
+
+`--cache`, `--only` and `--full` are omnibridge/static's incremental exports:
+the renderer's answers kept between builds for the pages whose declared inputs
+did not change, a targeted rebuild, a full one.
 
 Run on lesringostars-laravel (2026-10-24, the working copy loaded by hand): the
 twin's home, intro, destinations, two articles and the travels pages rendered

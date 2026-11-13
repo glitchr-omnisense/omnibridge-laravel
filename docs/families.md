@@ -97,10 +97,13 @@ by Laravel and written, the routes read from lesringostars' actions.
 | Argument or option | Default | Effect |
 |---|---|---|
 | `site` | `static.php` | relative to `base_path()` unless absolute |
-| `--out` | `storage/static` | relative to `base_path()` unless absolute |
+| `--out` | `storage/static` | relative to `base_path()` unless absolute: empty, or an earlier export (only the files that changed are written, those no longer exported removed) |
 | `--render-origin` | `app.url`, else `http://localhost` | the origin the pages are rendered at |
 | `--actions=Namespace\=folder` | none, repeatable | the routes the actions of those folders declare (`Routing\ActionRoutes`, Laravel's environment by Symfony's name), handed as the offer's `routes` |
 | `--verify`, `--strict`, `--quiet-progress` | off | omnibridge/static's `--verify`, `--strict`, `--quiet` |
+| `--cache` | none | relative to `base_path()` unless absolute: a folder that keeps the renderer's answers between builds (`Site::cache()`); a page whose declared inputs (`Site::dependsOn()`, the site's file among them) did not change is not rendered again; an empty value is invalid |
+| `--only` | none | comma-separated path patterns rendered whatever the cache holds, a targeted rebuild (`/news/*,/`) |
+| `--full` | off | render everything and rewrite every file, the cache aside |
 
 Each page goes through the HTTP kernel as `Illuminate\Http\Request::createFromBase()` of the renderer's
 request; the offer also holds the container and `public_path()`. An invalid argument prints its message

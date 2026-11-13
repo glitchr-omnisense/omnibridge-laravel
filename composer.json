@@ -38,7 +38,6 @@
         "omnibridge/twig": "^1.0",
         "omnisense/omnibase": "^4.0 || ^5.0",
         "omnisense/omnibridge": "^1.0",
-        "omnisense/omnidrive": "^1.0",
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "symfony/cache": "^7.0|^8.0",
@@ -61,6 +60,7 @@
         "omnimap/maplibre": "^1.0@dev",
         "omnimap/openstreetmap": "^1.0@dev",
         "omnisense/omniauth": "1.x-dev",
+        "omnisense/omnidrive": "^1.0@dev",
         "omnisense/omnimap": "^1.0@dev",
         "omnisense/omnishield": "1.x-dev",
         "omnishield/altcha": "1.x-dev",
@@ -79,6 +79,7 @@
         "omnisense/omnimap": "Omnibridge\\Laravel\\Map\\: maps through omnimap (config/omnimap.php) - its providers, the map cache over a directory or a bound Omnimap\\Snapshot\\Storage, omnibridge/twig's MapExtension in every page's Twig, the tiles' route",
         "omnisense/omnishield": "Omnibridge\\Laravel\\Shield\\: omnishield's Registry from config/omnishield.php (the Symfony bundle's keys), ALTCHA's widget served by the application; with omnibase, its captcha after failed sign-ins (Auth\\OmnibaseEffects); not on Packagist yet - a vcs repository, https://github.com/glitchr-omnisense/omnishield",
         "omnishield/altcha": "ALTCHA, the captcha omnibase asks after failed sign-ins: served and checked by the application, no third party",
+        "omnisense/omnidrive": "Omnidrive\\Drives: Laravel's disks as omnidrive's drives by their storage names (Omnidrive\\Flysystem\\OperatorDrives over Media\\DiskStorages), omnibase's Flysystem on them, and omnimap's cache.drive; bound only where it is installed (omnisense/omnibase 5.0 requires it)",
         "omnibase/consent": "omnibase/consent's cookie answer in the pages (View\\OmnibaseExtensions: consent_options(), consent_settings() on config/omnibridge.php's consent.config)"
     },
     "autoload": {
