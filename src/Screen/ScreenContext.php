@@ -14,7 +14,7 @@ use Omnibridge\Laravel\Page\Theme;
 use Omnibridge\Laravel\Parameters\DatabaseSettings;
 
 /**
- * omnibase's screen context under Laravel, as Base\Bridge\Symfony\SymfonyScreenContext
+ * omnibase's screen context under Laravel, as Omnibridge\Symfony\Omnibase\SymfonyScreenContext
  * gives it under Symfony, asked once for the screen being answered:
  *
  * - the locale: the site's locale of Laravel's (Locales: fr is fr-FR) in the

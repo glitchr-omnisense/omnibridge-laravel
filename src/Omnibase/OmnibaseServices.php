@@ -114,7 +114,8 @@ final class OmnibaseServices
             self::singleton($app, EntityHydratorInterface::class, static function (Application $app): EntityHydrator {
                 $mapping = $app->make(Mapping::class);
 
-                return new EntityHydrator($mapping->entityManager, $mapping->classMetadataManipulator);
+                // omnisense/omnibase 6.0's hydrator takes the unit of work and the shapes only.
+                return new EntityHydrator(\Base\Database\UnitOfWorks::of($mapping->entityManager), $mapping->classMetadataManipulator->getShapes());
             });
         }
         self::singleton($app, SpamChecker::class, static fn (Application $app) => new SpamChecker(

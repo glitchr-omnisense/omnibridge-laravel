@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel\Tests;
 
-use Base\Bridge\Doctrine\Mapping;
+use Omnibridge\Doctrine\Omnibase\Mapping;
 use Illuminate\Config\Repository;
 use Omnibridge\Laravel\Omnibase\OmnibaseOption;
 

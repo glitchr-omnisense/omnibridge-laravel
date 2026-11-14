@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-14
+
+### Changed: omnisense/omnibase 6.0 allowed
+
+- `omnisense/omnibase` is required at `^4.0 || ^5.0 || ^6.0`, and omnibridge/doctrine (require-dev) at `^1.0 || ^2.0`: 6.0
+  removes the former names of the classes the core moved to the bridges and the deprecated union types of its
+  constructors, nothing this package calls. The core 6.0 conflicts with omnibridge/laravel < 1.2.
+- The tests and the docs name the moved classes by their names (`Omnibridge\Doctrine\Omnibase\Mapping`,
+  `...\Repository\UserRepository`, `Omnibridge\Symfony\Omnibase\ScreenResponder`), which every core since 5.0 declares.
+- The container id `Base\Bridge\Doctrine\Mapping` (the mapping's former name, an alias of the binding) is kept for 1.x.
+- The core's services are built on the unit of work, never on Doctrine's entity manager (6.0 takes the contract only):
+  `Auth\OmnibaseEffects::unitOfWork()` answers a `UnitOfWork` (the entity manager made one by `UnitOfWorks::of()` where
+  none is bound), the entity hydrator gets `UnitOfWorks::of()` of the mapping's entity manager and its manipulator's
+  shapes, and `WebPushService` the same unit of work. Nothing changes under 5.x, which accepted both.
+
 ## [1.1.1] - 2026-11-14
 
 ### Fixed: on Eloquent, the entities of `omnibridge.doctrine.entities`

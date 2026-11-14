@@ -87,7 +87,7 @@ An action written once for every host (no Request, no Response: its inputs,
 and a result of omnibase's - `Base\Screen\Template`, `Json`, `Shell`, `File`, a `View`, or
 null for no such page) is a route here, answered by omnibase's `Base\Screen\Negotiation`
 (HTML, JSON when the template allows it and the client prefers it, omnibridge/react's
-protocol and its 409) through `Screen\Responder`, as `Base\Bridge\Symfony\ScreenResponder`
+protocol and its 409) through `Screen\Responder`, as `Omnibridge\Symfony\Omnibase\ScreenResponder`
 answers it under Symfony:
 
 ```php

@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /**
  * An action's result answered under Laravel: Laravel's adapter of omnibase's
  * Base\Screen\Negotiation (step R10 of the audit "lesringostars face au
- * master plan"; Base\Bridge\Symfony\ScreenResponder is Symfony's). What an
+ * master plan"; Omnibridge\Symfony\Omnibase\ScreenResponder is Symfony's). What an
  * application's action hands back - a View, a Template, Json, a Shell, a
  * File, a Redirect, or null for no such page (404) - becomes Laravel's response: the
  * request read as a Visit, the Answer made a Response (a JsonResponse for

@@ -268,7 +268,7 @@ final class OmnibaseExtensions
         }
         $private = $push['private_key'] ?? null;
         $subject = $push['subject'] ?? null;
-        $unitOfWork = $this->app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $this->app->make(\Omnibridge\Persistence\UnitOfWork::class) : $this->app->make(EntityManagerInterface::class);
+        $unitOfWork = $this->app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $this->app->make(\Omnibridge\Persistence\UnitOfWork::class) : \Base\Database\UnitOfWorks::of($this->app->make(EntityManagerInterface::class));
         $repository = $this->app->make(\Base\Repository\User\PushSubscriptions::class);
         $logger = $this->app->make('log');
 

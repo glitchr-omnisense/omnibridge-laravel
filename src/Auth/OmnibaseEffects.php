@@ -426,9 +426,10 @@ final class OmnibaseEffects
      * The unit of work the account's effects write through: the persistence chosen (omnisense/omnibridge's contract,
      * Doctrine's or Eloquent's: step F7d), else the entity manager.
      */
-    public static function unitOfWork(Application $app): object
+    public static function unitOfWork(Application $app): \Omnibridge\Persistence\UnitOfWork
     {
-        return $app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $app->make(\Omnibridge\Persistence\UnitOfWork::class) : $app->make(EntityManagerInterface::class);
+        // omnisense/omnibase 6.0's services take the unit of work only: Doctrine's entity manager is made one.
+        return $app->bound(\Omnibridge\Persistence\UnitOfWork::class) ? $app->make(\Omnibridge\Persistence\UnitOfWork::class) : \Base\Database\UnitOfWorks::of($app->make(EntityManagerInterface::class));
     }
 
     /** @return array<string, mixed> */

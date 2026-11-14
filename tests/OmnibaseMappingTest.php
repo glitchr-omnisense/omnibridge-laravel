@@ -2,14 +2,14 @@
 
 namespace Omnibridge\Laravel\Tests;
 
-use Base\Bridge\Doctrine\Mapping;
-use Base\Bridge\Doctrine\MetadataSnapshot;
-use Base\Bridge\Doctrine\RepositoryFactory;
+use Omnibridge\Doctrine\Omnibase\Mapping;
+use Omnibridge\Doctrine\Omnibase\MetadataSnapshot;
+use Omnibridge\Doctrine\Omnibase\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * omnibase's Doctrine mapping under Laravel (omnibridge.omnibase): the
- * entity manager built with Base\Bridge\Doctrine\Mapping, as omnibase's own is
+ * entity manager built with Omnibridge\Doctrine\Omnibase\Mapping, as omnibase's own is
  * under Symfony, keeps omnibase's Base/App invariants (master plan §5):
  *
  * 1. an application's own App\ class wins over the convention's alias;
@@ -67,7 +67,7 @@ final class OmnibaseMappingTest extends TestCase
         // Its repository, which extends the core's users' repository: it loads without Security (audit R2).
         $repository = $entities->getRepository('App\\Entity\\User');
         $this->assertSame('App\\Repository\\UserRepository', $repository::class);
-        $this->assertInstanceOf(\Base\Repository\UserRepository::class, $repository);
+        $this->assertInstanceOf(\Omnibridge\Doctrine\Omnibase\Repository\UserRepository::class, $repository);
     }
 
     /** Invariants 1 and 8: what the application lacks is the core's class by alias, not a subclass. */

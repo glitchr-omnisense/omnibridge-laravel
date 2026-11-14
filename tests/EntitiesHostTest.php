@@ -2,7 +2,7 @@
 
 namespace Omnibridge\Laravel\Tests;
 
-use Base\Bridge\Doctrine\Mapping;
+use Omnibridge\Doctrine\Omnibase\Mapping;
 use Base\Contract\Texts;
 use Base\Service\Flysystem;
 use Base\Service\MediaService;
@@ -86,7 +86,7 @@ final class EntitiesHostTest extends TestCase
         $this->assertSame(42, $pool->getItem('answer')->get());
 
         $this->app->make(EntityManagerInterface::class);
-        $services = (new \ReflectionProperty(\Base\Bridge\Doctrine\RepositoryFactory::class, 'services'))->getValue($this->app->make(Mapping::class)->repositories);
+        $services = (new \ReflectionProperty(\Omnibridge\Doctrine\Omnibase\RepositoryFactory::class, 'services'))->getValue($this->app->make(Mapping::class)->repositories);
         $this->assertInstanceOf(\Closure::class, $services, 'Mapping::register() was given the host\'s services');
         $this->assertSame($pool, $services(CacheItemPoolInterface::class));
         $this->assertNull($services('Nowhere\\Service'), 'a service Laravel has not: null');

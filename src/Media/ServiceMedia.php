@@ -7,7 +7,7 @@ use Base\Service\MediaService;
 
 /**
  * omnibase's Media contract under Laravel (audit "lesringostars face au
- * master plan", R6): MediaService's answers, as Base\Bridge\Symfony\ServiceMedia
+ * master plan", R6): MediaService's answers, as Omnibridge\Symfony\Omnibase\ServiceMedia
  * gives them under Symfony - the extension of a file, the image route's
  * obfuscated data, the route's address -, MediaService built on Laravel's
  * router (LaravelMediaRouter).

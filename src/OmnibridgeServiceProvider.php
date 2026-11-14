@@ -453,7 +453,8 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             return $this->mapping ?? throw new \LogicException('omnibase\'s Doctrine mapping is off: omnibridge.omnibase.');
         });
         // Its former name (Base\Bridge\Doctrine\Mapping, before omnisense/omnibase's step F3 moved it to
-        // omnibridge/doctrine), which the core aliases: the same binding.
+        // omnibridge/doctrine): the same binding, a container id only (omnisense/omnibase 6.0 declares no class by
+        // that name any more). Kept for the 1.x series; it goes with omnibridge/laravel 2.0.
         $this->app->alias(Mapping::class, 'Base\Bridge\Doctrine\Mapping');
     }
 
