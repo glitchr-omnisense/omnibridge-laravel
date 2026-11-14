@@ -20,7 +20,7 @@ order: 40
 | `twig.timezone` | `?string` | null: `app.timezone` | `HelperExtension` | the zone `\|datetime` prints in |
 | `doctrine.connection` | `?string` | null | `Doctrine\DBAL\Connection`, the settings, the screens' site | a connection of `config/database.php`; none: Doctrine asked is a `LogicException`, no settings read |
 | `doctrine.entities` | `list<string>` | `[]` | the entity manager, omnibridge/eloquent's persistence, `omnibridge:schema:create` (`Persistence::ENTITIES`) | the application's entities' folders, whichever persistence runs (beside the core's; on Eloquent, `omnibase.project_dir`'s `src/Entity` too); its name is Doctrine's, it is the one key for both (1.1.1) |
-| `omnibase` | `null\|bool\|array` | null: `doctrine.omnibase`, else false | omnibase's services, its entities' description, on Doctrine the entity manager | omnibase on, whichever persistence: true, or its options (`project_dir`, `environment`, `cache_dir`, `parameters`; on Doctrine `Mapping::register()`'s `types`, `enumerations`, `attribute_paths`, `resolve_target_entities`, `entity_listeners`) ([Doctrine and images](doctrine-media.md)) |
+| `omnibase` | `null\|bool\|array` | null: `doctrine.omnibase`, else false | omnibase's services, its entities' description, on Doctrine the entity manager | omnibase on, whichever persistence: true, or its options (`project_dir`, `environment`, `cache_dir`, `parameters`; on Doctrine `Mapping::register()`'s `types`, `enumerations`, `attribute_paths`, `resolve_target_entities`, `entity_listeners`; the entities' description - omnibridge/eloquent's persistence, `omnibridge:schema:create` - reads `types`, `enumerations`, `resolve_target_entities`, `rules`, `column_types`: `Persistence::SCHEMA_OPTIONS`, on Eloquent since 1.2.1) ([Doctrine and images](doctrine-media.md)) |
 | `doctrine.omnibase` | `bool\|array` | - | the same | **deprecated** (removed at 2.0): the former name of `omnibase`, read where that one is not given (E_USER_DEPRECATED, once) |
 | `eloquent.connection` | `?string` | null: `doctrine.connection`, else the default | omnibridge/eloquent's persistence | the connection of `config/database.php` it reads, when `base.persistence` is `eloquent` ([The persistence](configuration.md#the-persistence-basepersistence)) |
 | `parameters.hot` | `?bool` | null: the config's `base.parameter_bag.use_hot_bag` | `HotParameters` | the database settings laid over the config ([Parameters](contracts.md#parameters)) |
@@ -84,7 +84,11 @@ omnibridge/doctrine and omnibridge/eloquent both installed and it naming none (n
   Laravel's connection `eloquent.connection` (else `doctrine.connection`, else the default one), the entities of
   the folders `doctrine.entities` declares - the same ones Doctrine's entity manager maps -, of
   `omnibase.project_dir`'s `src/Entity` and the core's (`Persistence::eloquentEntities()`; until 1.1.1 the declared
-  folders were left out, and an entity elsewhere was `... is no entity of the description`, a 500), the trash and vault scopes on; omnibase's lifecycle from the
+  folders were left out, and an entity elsewhere was `... is no entity of the description`, a 500), described with
+  the options of `omnibase` that Doctrine's mapping is given (`types`, `enumerations`, `resolve_target_entities`, and
+  EntitySchema's `rules` and `column_types`: `Persistence::SCHEMA_OPTIONS`; until 1.2.1 none of them, so a relation
+  toward an interface kept the interface - `No declaration for ...Interface` when the persistence was made, at boot -
+  and an enumeration of a folder given was no column type), the trash and vault scopes on; omnibase's lifecycle from the
   container (the AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list). The
   account's effects (the connections' tracker, TrackConnections, UpdateAccount, WelcomeBack, omniauth's stores) write
   through the unit of work chosen. The image route's crops and the push subscriptions are read through the core's interfaces;

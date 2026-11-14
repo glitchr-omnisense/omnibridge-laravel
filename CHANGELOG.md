@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-14
+
+### Fixed: on Eloquent, omnibase's options of the entities' description, and `omnibridge:schema:create`'s folders
+
+- On `base.persistence: eloquent`, omnibridge/eloquent's persistence was given none of `omnibridge.omnibase`'s
+  options that describe the entities, which Doctrine's entity manager gets through `Mapping::register()`:
+  `resolve_target_entities` (a relation toward an interface kept the interface: `No declaration for ...Interface`
+  when the persistence was made - at boot, with omnibase's mapping on), `types` and `enumerations` (an enumeration of a
+  folder given, or a bundle's type, was no column type: no cast, no ordering by its values). `Persistence::eloquentEntities()`
+  now gives omnibridge/eloquent's `EloquentPersistence::host()` those options (`Persistence::SCHEMA_OPTIONS`: `types`,
+  `enumerations`, `resolve_target_entities`, and EntitySchema's `rules` and `column_types`, which
+  `omnibridge:schema:create` already read), as omnibridge/symfony gives them on Eloquent; the others (`environment`,
+  `parameters`, `cache_dir`...) stay Doctrine's mapping's. One configuration, the same relations and column types on
+  both persistences.
+- `omnibridge:schema:create` describes the folders of the chosen persistence (`Persistence::describedDirectories()`):
+  on Eloquent the core's, `omnibase.project_dir`'s `src/Entity` and `omnibridge.doctrine.entities`, as its persistence
+  describes them (an entity of the project's `src/Entity` had no table); on Doctrine, as before, the declared folders and
+  the core's, the ones the entity manager maps.
+- omnibridge/eloquent unchanged: `EloquentPersistence::create()` already read EntitySchema's options.
+- Tests: `EloquentSchemaOptionsTest` (fixtures: an entity of a project's `src/Entity` with a relation toward an
+  interface and a column of an enumeration of a folder given): the options given, Doctrine's metadata and the
+  description from those options agreeing on the target and the column type, `describedDirectories()` on Doctrine;
+  where omnibridge/eloquent is installed, the container's persistence resolves the target and casts the enumeration,
+  and `omnibridge:schema:create --dump-sql` prints the statements of its description (this package's CI installs
+  omnibridge/doctrine only: skipped there). Each test in its own process (the enumeration stays in the type registries).
+
 ## [1.2.0] - 2026-11-14
 
 ### Changed: omnisense/omnibase 6.0 allowed

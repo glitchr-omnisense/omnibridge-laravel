@@ -92,7 +92,8 @@
             "Omnibridge\\Laravel\\Tests\\": "tests/",
             "App\\Entity\\": [
                 "tests/Fixtures/Entity/",
-                "tests/Fixtures/Omnibase/Entity/"
+                "tests/Fixtures/Omnibase/Entity/",
+                "tests/Fixtures/Project/src/Entity/"
             ],
             "App\\Repository\\": "tests/Fixtures/Omnibase/Repository/"
         }

@@ -16,7 +16,8 @@ use Omnibridge\Persistence\Persistences;
  * repositories and backend. On Eloquent (register()), omnibridge/eloquent's on Laravel's own connection
  * (omnibridge.eloquent.connection, else omnibridge.doctrine.connection, else the default one), the entities of the
  * folders the application declares (omnibridge.doctrine.entities, the ones Doctrine's entity manager maps: ENTITIES),
- * the omnibase project's src/Entity and the core's, omnibase's lifecycle from the container (EloquentPersistence::host(): the
+ * the omnibase project's src/Entity and the core's, described with the options omnibase's Doctrine mapping is given
+ * (SCHEMA_OPTIONS: types, enumerations, resolve_target_entities...), omnibase's lifecycle from the container (EloquentPersistence::host(): the
  * AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list), the trash and vault
  * scopes on as omnibase's Doctrine mapping enables its filters: the unit of work, Snapshots, the backend,
  * Repositories and the core's repository interfaces answer from it.
@@ -126,15 +127,28 @@ final class Persistence
     }
 
     /**
-     * Where omnibridge/eloquent finds the entities (EloquentPersistence's options project_dir and directories, which it
-     * describes with EntitySchema::directories()): the core's, the omnibase project's src/Entity, and the folders the
-     * application declares (ENTITIES), the ones Doctrine's entity manager maps - so that one configuration gives both
-     * persistences the same entities. Until 1.1.1 the declared folders were left out: an entity elsewhere than
-     * project_dir/src/Entity was "no entity of the description" on Eloquent, mapped on Doctrine.
+     * omnibase's options that describe the entities (omnisense/omnibase's Base\Database\Schema\EntitySchema): the column
+     * types by name (a bundle's enumerations), more folders of enumerations, the targets resolved (interface => class),
+     * more rules and column types. Doctrine's entity manager gets the first three through Mapping::register(), with all
+     * of omnibase's options; omnibridge/eloquent's persistence and omnibridge:schema:create describe the entities with
+     * them (since 1.2.1 on Eloquent: until then its persistence was given none of them).
+     */
+    public const SCHEMA_OPTIONS = ['types', 'enumerations', 'resolve_target_entities', 'rules', 'column_types'];
+
+    /**
+     * Where omnibridge/eloquent finds the entities and how it describes them (EloquentPersistence's options project_dir
+     * and directories, which it describes with EntitySchema::directories(), and EntitySchema's options of omnibase's,
+     * SCHEMA_OPTIONS): the core's, the omnibase project's src/Entity, and the folders the application declares
+     * (ENTITIES), the ones Doctrine's entity manager maps, with the enumerations and targets omnibase's options give
+     * Doctrine's mapping - so that one configuration gives both persistences the same entities, the same relations and
+     * the same column types. Until 1.1.1 the declared folders were left out (an entity elsewhere than
+     * project_dir/src/Entity was "no entity of the description" on Eloquent, mapped on Doctrine); until 1.2.1 the
+     * options (a relation toward an interface kept the interface, an enumeration of a folder given was no column type).
      *
-     * @param array<string, mixed>|null $omnibase omnibase's mapping options (project_dir), null when off
+     * @param array<string, mixed>|null $omnibase omnibase's mapping options (project_dir, types, enumerations,
+     *                                            resolve_target_entities...), null when off
      *
-     * @return array{project_dir: string, directories: list<string>}
+     * @return array{project_dir: string, directories: list<string>}&array<string, mixed>
      */
     public static function eloquentEntities(Application $app, ?array $omnibase = null): array
     {
@@ -143,7 +157,27 @@ final class Persistence
         return [
             'project_dir' => \is_string($projectDir) && '' !== $projectDir ? $projectDir : $app->basePath(),
             'directories' => self::entityDirectories($app),
-        ];
+        ] + array_intersect_key($omnibase ?? [], array_flip(self::SCHEMA_OPTIONS));
+    }
+
+    /**
+     * The entities' folders the chosen persistence describes, as omnibridge:schema:create reads them: on Eloquent its
+     * persistence's (EntitySchema::directories() of eloquentEntities(): the core's, the project's src/Entity, the
+     * declared ones), else those Doctrine's entity manager maps (the declared ones, then the core's). Until 1.2.1 the
+     * command read Doctrine's on Eloquent too: an entity of project_dir/src/Entity had no table.
+     *
+     * @param array<string, mixed>|null $omnibase omnibase's mapping options (project_dir), null when off
+     *
+     * @return list<string>
+     */
+    public static function describedDirectories(Application $app, ?array $omnibase = null): array
+    {
+        $entities = self::eloquentEntities($app, $omnibase);
+        if (self::eloquent($app)) {
+            return \Base\Database\Schema\EntitySchema::directories($entities['project_dir'], $entities['directories']);
+        }
+
+        return array_values(array_unique([...$entities['directories'], \Base\Database\Schema\EntitySchema::coreDirectory('Entity')]));
     }
 
     /** omnisense/omnibridge's Lifecycle\Listeners::TAG (by value: an omnisense/omnibridge that predates it still runs). */

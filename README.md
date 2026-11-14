@@ -395,8 +395,9 @@ php artisan translation:entities --locale=fr
 
 With omnibase 5.0 and its mapping on (`omnibridge.omnibase`), `OmnibridgeServiceProvider` registers
 `omnibridge:schema:create` (`Console\SchemaCreateCommand`; omnibase's plan "omnibase agnostic", step F7a): the tables of
-the installed entities - `omnibridge.doctrine.entities` beside the core's, with `omnibridge.omnibase`'s options
-(the project's folder and its enumerations, the targets) - created from their description (omnibase's
+the installed entities - those the chosen persistence describes (`Persistence::describedDirectories()`: on Doctrine
+`omnibridge.doctrine.entities` beside the core's, on Eloquent `omnibase.project_dir`'s `src/Entity` too, since 1.2.1),
+with `omnibridge.omnibase`'s options (the project's folder and its enumerations, the targets) - created from their description (omnibase's
 `Base\Database\Schema\EntitySchema`) by omnisense/omnibridge's `SchemaCreator`, no ORM, in the empty database of the
 connection `omnibridge.doctrine.connection` names (Laravel's default otherwise), through Laravel's own PDO and with the
 connection's charset and collation. The same statements as omnibridge/symfony's command and the plain-PHP

@@ -16,7 +16,8 @@ use Omnibridge\Schema\Database\SchemaNotEmpty;
  *
  *     php artisan omnibridge:schema:create [--dump-sql]
  *
- * Where the entities are, as this bridge maps them (omnibridge.doctrine.entities beside the core's, the options of
+ * Where the entities are, as the chosen persistence describes them (Persistence::describedDirectories(): on Doctrine
+ * omnibridge.doctrine.entities beside the core's, on Eloquent the project's src/Entity too; the options of
  * omnibridge.omnibase: the project's folder, its enumerations, the targets), on the database connection
  * omnibridge.doctrine.connection names (Laravel's default one otherwise), through Laravel's own PDO.
  */
@@ -30,9 +31,10 @@ final class SchemaCreateCommand extends Command
     public function handle(): int
     {
         $config = $this->laravel['config'];
+        /** @var array<string, mixed> $options */
         $options = OmnibaseOption::options($config) + ['project_dir' => $this->laravel->basePath()];
-        $paths = array_values(array_unique([...Persistence::entityDirectories($this->laravel), EntitySchema::coreDirectory('Entity')]));
-        $description = EntitySchema::describe($paths, $options);
+        // The folders the chosen persistence describes: on Eloquent the project's src/Entity among them (1.2.1).
+        $description = EntitySchema::describe(Persistence::describedDirectories($this->laravel, $options), $options);
 
         $name = $config->get('omnibridge.doctrine.connection') ?? $config->get('database.default');
         $connection = (array) $config->get('database.connections.'.$name, []);
