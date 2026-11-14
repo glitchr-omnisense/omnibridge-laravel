@@ -79,7 +79,8 @@ final class BuildCommandTest extends TestCase
         };
         $cache = ['--cache' => $this->dir.'/cache'];
 
-        $this->assertStringContainsString('incremental: 2 rendered, 0 reused;', $build($cache));
+        // The first build: no record of an earlier one in the cache, a full export (omnibridge/static 1.1.0).
+        $this->assertStringContainsString('full (no record of an earlier export in the cache): 2 rendered, 0 reused;', $build($cache));
         $this->assertStringContainsString('A by laravel', (string) file_get_contents($this->dir.'/out/index.html'), 'the host\'s offer reaches the site\'s file');
         $this->assertDirectoryExists($this->dir.'/cache');
 
@@ -101,7 +102,7 @@ final class BuildCommandTest extends TestCase
         $this->assertStringContainsString('incremental: 2 rendered, 0 reused;', $build([]));
 
         // A relative --cache is under base_path(), as --out is.
-        $this->assertStringContainsString('incremental: 2 rendered, 0 reused;', $build(['--cache' => 'omnibridge-static-cache-test']));
+        $this->assertStringContainsString('full (no record of an earlier export in the cache): 2 rendered, 0 reused;', $build(['--cache' => 'omnibridge-static-cache-test']));
         $this->assertDirectoryExists(base_path('omnibridge-static-cache-test'));
         $this->assertStringContainsString('incremental: 0 rendered, 2 reused;', $build(['--cache' => 'omnibridge-static-cache-test']));
     }

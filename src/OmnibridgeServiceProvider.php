@@ -408,7 +408,7 @@ final class OmnibridgeServiceProvider extends ServiceProvider
             return Connections::create($app['config']->get('database.connections.'.$name) ?? throw new \InvalidArgumentException(\sprintf('No database connection "%s" (omnibridge.doctrine.connection).', $name)));
         });
         $this->app->singleton(EntityManagerInterface::class, function (Application $app) {
-            $paths = $app['config']->get('omnibridge.doctrine.entities', []);
+            $paths = Persistence::entityDirectories($app);
             $options = self::omnibase($app);
             if (null === $options) {
                 return EntityManagers::create($app->make(Connection::class), $paths, (bool) $app['config']->get('app.debug'));

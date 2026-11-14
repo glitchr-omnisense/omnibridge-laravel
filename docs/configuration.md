@@ -19,7 +19,7 @@ order: 40
 | `twig.cache` | `?string` | null: `storage/framework/twig` | `View\Twig` | Twig's cache folder |
 | `twig.timezone` | `?string` | null: `app.timezone` | `HelperExtension` | the zone `\|datetime` prints in |
 | `doctrine.connection` | `?string` | null | `Doctrine\DBAL\Connection`, the settings, the screens' site | a connection of `config/database.php`; none: Doctrine asked is a `LogicException`, no settings read |
-| `doctrine.entities` | `list<string>` | `[]` | the entity manager | the entities' folders |
+| `doctrine.entities` | `list<string>` | `[]` | the entity manager, omnibridge/eloquent's persistence, `omnibridge:schema:create` (`Persistence::ENTITIES`) | the application's entities' folders, whichever persistence runs (beside the core's; on Eloquent, `omnibase.project_dir`'s `src/Entity` too); its name is Doctrine's, it is the one key for both (1.1.1) |
 | `omnibase` | `null\|bool\|array` | null: `doctrine.omnibase`, else false | omnibase's services, its entities' description, on Doctrine the entity manager | omnibase on, whichever persistence: true, or its options (`project_dir`, `environment`, `cache_dir`, `parameters`; on Doctrine `Mapping::register()`'s `types`, `enumerations`, `attribute_paths`, `resolve_target_entities`, `entity_listeners`) ([Doctrine and images](doctrine-media.md)) |
 | `doctrine.omnibase` | `bool\|array` | - | the same | **deprecated** (removed at 2.0): the former name of `omnibase`, read where that one is not given (E_USER_DEPRECATED, once) |
 | `eloquent.connection` | `?string` | null: `doctrine.connection`, else the default | omnibridge/eloquent's persistence | the connection of `config/database.php` it reads, when `base.persistence` is `eloquent` ([The persistence](configuration.md#the-persistence-basepersistence)) |
@@ -82,7 +82,9 @@ omnibridge/doctrine and omnibridge/eloquent both installed and it naming none (n
 - `eloquent` (omnibridge/eloquent installed): `Omnibridge\Persistence\UnitOfWork`, `Snapshots`, `Backend`,
   `Base\Database\Repository\Repositories` and the core's repository interfaces answer from omnibridge/eloquent, on
   Laravel's connection `eloquent.connection` (else `doctrine.connection`, else the default one), the entities of
-  `omnibase.project_dir` and the core's, the trash and vault scopes on; omnibase's lifecycle from the
+  the folders `doctrine.entities` declares - the same ones Doctrine's entity manager maps -, of
+  `omnibase.project_dir`'s `src/Entity` and the core's (`Persistence::eloquentEntities()`; until 1.1.1 the declared
+  folders were left out, and an entity elsewhere was `... is no entity of the description`, a 500), the trash and vault scopes on; omnibase's lifecycle from the
   container (the AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list). The
   account's effects (the connections' tracker, TrackConnections, UpdateAccount, WelcomeBack, omniauth's stores) write
   through the unit of work chosen. The image route's crops and the push subscriptions are read through the core's interfaces;

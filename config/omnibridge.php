@@ -45,7 +45,10 @@ return [
     'omnibase' => null,
 
     // Doctrine: the Laravel connection (config/database.php) Doctrine DBAL opens,
-    // and the entities' folders the entity manager maps (omnibridge/doctrine).
+    // and the application's entities' folders - the ones the entity manager maps
+    // (omnibridge/doctrine) and, on base.persistence "eloquent", the ones
+    // omnibridge/eloquent describes (beside omnibase.project_dir's src/Entity):
+    // one key for both persistences, whatever its name.
     // doctrine.omnibase, the former name of "omnibase" above, is still read when
     // that one is not given (deprecated, removed at 2.0).
     'doctrine' => [

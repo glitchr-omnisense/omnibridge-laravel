@@ -15,7 +15,8 @@ use Omnibridge\Persistence\Persistences;
  * On Doctrine nothing changes: the entity manager omnibridge.doctrine configures, omnibridge/doctrine's unit of work,
  * repositories and backend. On Eloquent (register()), omnibridge/eloquent's on Laravel's own connection
  * (omnibridge.eloquent.connection, else omnibridge.doctrine.connection, else the default one), the entities of the
- * omnibase project's folder and the core's, omnibase's lifecycle from the container (EloquentPersistence::host(): the
+ * folders the application declares (omnibridge.doctrine.entities, the ones Doctrine's entity manager maps: ENTITIES),
+ * the omnibase project's src/Entity and the core's, omnibase's lifecycle from the container (EloquentPersistence::host(): the
  * AttributeReader omnibase's Doctrine mapping makes, the entity dispatchers its listeners list), the trash and vault
  * scopes on as omnibase's Doctrine mapping enables its filters: the unit of work, Snapshots, the backend,
  * Repositories and the core's repository interfaces answer from it.
@@ -25,6 +26,33 @@ final class Persistence
     public const OPTION = 'base.persistence (config/base.php)';
 
     private const ELOQUENT = 'Omnibridge\Eloquent\Omnibase\EloquentPersistence';
+
+    /**
+     * The configuration key of the application's entity folders, read by both persistences: the folders Doctrine's
+     * entity manager maps beside the core's, and the ones omnibridge/eloquent describes beside the core's and the
+     * omnibase project's src/Entity (its `directories`), as omnibridge:schema:create reads them. Its name is Doctrine's
+     * for what came first; there is no second key.
+     */
+    public const ENTITIES = 'omnibridge.doctrine.entities';
+
+    /**
+     * The entity folders the application declares (ENTITIES), whichever persistence runs.
+     *
+     * @return list<string>
+     */
+    public static function entityDirectories(Application $app): array
+    {
+        $config = $app->make('config');
+        \assert($config instanceof \Illuminate\Contracts\Config\Repository);
+        $directories = [];
+        foreach ((array) $config->get(self::ENTITIES, []) as $directory) {
+            if (\is_string($directory) && '' !== $directory) {
+                $directories[] = $directory;
+            }
+        }
+
+        return array_values(array_unique($directories));
+    }
 
     /** The persistence chosen (doctrine, eloquent), null when none is installed. */
     public static function name(Application $app): ?string
@@ -97,6 +125,27 @@ final class Persistence
         });
     }
 
+    /**
+     * Where omnibridge/eloquent finds the entities (EloquentPersistence's options project_dir and directories, which it
+     * describes with EntitySchema::directories()): the core's, the omnibase project's src/Entity, and the folders the
+     * application declares (ENTITIES), the ones Doctrine's entity manager maps - so that one configuration gives both
+     * persistences the same entities. Until 1.1.1 the declared folders were left out: an entity elsewhere than
+     * project_dir/src/Entity was "no entity of the description" on Eloquent, mapped on Doctrine.
+     *
+     * @param array<string, mixed>|null $omnibase omnibase's mapping options (project_dir), null when off
+     *
+     * @return array{project_dir: string, directories: list<string>}
+     */
+    public static function eloquentEntities(Application $app, ?array $omnibase = null): array
+    {
+        $projectDir = $omnibase['project_dir'] ?? null;
+
+        return [
+            'project_dir' => \is_string($projectDir) && '' !== $projectDir ? $projectDir : $app->basePath(),
+            'directories' => self::entityDirectories($app),
+        ];
+    }
+
     /** omnisense/omnibridge's Lifecycle\Listeners::TAG (by value: an omnisense/omnibridge that predates it still runs). */
     public const LIFECYCLE_LISTENER = 'omnibridge.lifecycle_listener';
 
@@ -118,8 +167,7 @@ final class Persistence
             $options = $omnibase($app) ?? ['project_dir' => $app->basePath(), 'environment' => (string) $app->environment()];
             $parameters = $app->bound('Base\Service\ParameterBagInterface') ? $app->make('Base\Service\ParameterBagInterface') : null;
             $parameter = static fn (string $name, mixed $default): mixed => null !== $parameters && null !== ($value = $parameters->get($name)) ? $value : $default;
-            $persistence = \Omnibridge\Eloquent\Omnibase\EloquentPersistence::host($connection, $app, [
-                'project_dir' => $options['project_dir'],
+            $persistence = \Omnibridge\Eloquent\Omnibase\EloquentPersistence::host($connection, $app, self::eloquentEntities($app, $options) + [
                 'lifecycle' => [
                     'empty_trash' => $parameter('base.extension.empty_trash', '+7 days'),
                     'max_revisions' => (int) $parameter('base.extension.max_revisions', 5),

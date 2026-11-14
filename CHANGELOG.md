@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-14
+
+### Fixed: on Eloquent, the entities of `omnibridge.doctrine.entities`
+
+- On `base.persistence: eloquent`, omnibridge/eloquent's persistence described only the core's entities and those of
+  `omnibase.project_dir`'s `src/Entity`; the folders the application declares in `omnibridge.doctrine.entities`, which
+  Doctrine's entity manager maps, were left out. An entity there was `App\Entity\Note is no entity of the description`
+  (omnibridge/eloquent's `Mapping::of()`), a 500, where Laravel on Doctrine and Symfony on Eloquent answered.
+  `Persistence::eloquentEntities()` now gives omnibridge/eloquent those folders as its `directories`, beside
+  `project_dir`: one configuration, the same entities on both persistences.
+- `omnibridge.doctrine.entities` stays the one key (`Persistence::ENTITIES`), read through
+  `Persistence::entityDirectories()` by the entity manager, omnibridge/eloquent's persistence and
+  `omnibridge:schema:create`; no second key. A site that set `omnibase.project_dir` only so that Eloquent found its
+  entities no longer needs to.
+- Tests: `EloquentEntitiesTest`: the description built from these options, as `EloquentPersistence::create()` builds
+  it, holds the declared entity, and every entity Doctrine maps; where omnibridge/eloquent is installed, the
+  container's persistence maps it (this package's CI installs omnibridge/doctrine only: skipped there).
+
 ## [1.1.0] - 2026-11-13
 
 ### Added: `omnibridge:static:build --cache`, `--only` and `--full`

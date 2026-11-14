@@ -4,6 +4,7 @@ namespace Omnibridge\Laravel\Console;
 
 use Base\Database\Schema\EntitySchema;
 use Omnibridge\Laravel\Omnibase\OmnibaseOption;
+use Omnibridge\Laravel\Persistence;
 use Illuminate\Console\Command;
 use Omnibridge\Schema\Database\SchemaCreator;
 use Omnibridge\Schema\Database\SchemaNotEmpty;
@@ -30,7 +31,7 @@ final class SchemaCreateCommand extends Command
     {
         $config = $this->laravel['config'];
         $options = OmnibaseOption::options($config) + ['project_dir' => $this->laravel->basePath()];
-        $paths = array_values(array_unique([...(array) $config->get('omnibridge.doctrine.entities', []), EntitySchema::coreDirectory('Entity')]));
+        $paths = array_values(array_unique([...Persistence::entityDirectories($this->laravel), EntitySchema::coreDirectory('Entity')]));
         $description = EntitySchema::describe($paths, $options);
 
         $name = $config->get('omnibridge.doctrine.connection') ?? $config->get('database.default');
