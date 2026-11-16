@@ -3,7 +3,6 @@
 namespace Omnibridge\Laravel\Omnibase;
 
 use Omnibridge\Laravel\Container\Definitions;
-use Omnibridge\Laravel\Legacy\Omnibase\EntityListeners;
 use Base\Database\Entity\EntityHydrator;
 use Base\Database\Entity\EntityHydratorInterface;
 use Base\EntityDispatcher\AbstractEventDispatcher;
@@ -58,32 +57,80 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * The entity events too, as Symfony's container wires them: omnibase's entity dispatchers (the
  * user's and the thread's, and an application's, omnibridge.omnibase.entity_dispatchers) and the
  * Doctrine hooks of omnibase's ThreadSubscriber and UserSubscriber on the entity manager's events;
- * what they raise heard by name on Laravel's dispatcher (omnibase's subscribers, an application's:
- * omnibridge.omnibase.subscribers); what they leave to flush flushed once the page is answered, as
+ * what they raise heard by name on Laravel's dispatcher (the core's src/EntitySubscriber and the application's,
+ * ProjectClasses); what they leave to flush flushed once the page is answered, as
  * omnibase's EntityDispatcherFlushSubscriber does on Symfony's kernel.response.
  *
  * Each one only where nothing is bound under its name: an application binds its own first.
  */
 final class OmnibaseServices
 {
-    /** omnibase's own subscribers of the entity events, by name (getSubscribedEvents()). */
-    public const SUBSCRIBERS = ['Base\EntitySubscriber\UserSubscriber', 'Base\EntitySubscriber\ThreadSubscriber'];
+    /**
+     * The entity subscribers of the shared layout: the core's src/EntitySubscriber and the application's (App\EntitySubscriber),
+     * those that subscribe to omnibase's named events (getSubscribedEvents(), heard on Laravel's dispatcher).
+     *
+     * @return list<class-string>
+     */
+    public static function subscribers(Application $app): array
+    {
+        return array_values(array_filter(ProjectClasses::of(self::projectDir($app), ProjectClasses::ENTITY_SUBSCRIBERS), static fn (string $class): bool => method_exists($class, 'getSubscribedEvents')));
+    }
 
     /**
-     * omnibase's entity dispatchers (Doctrine listeners raising the user.* and thread.* events), for a core without
-     * Base\Discovery (4.x): the core's declaration lists them since step F5e slice 4c (Legacy\Omnibase\EntityListeners).
+     * The listeners of omnibase's neutral lifecycle (Base\Contract\Lifecycle\*) by the shared layout: the invokables
+     * of the core's and the application's src/EntitySubscriber (`(object $event): void`), tagged Listeners::TAG so
+     * that the persistence chosen hands them every event - no tag written by the application, as omnibridge/symfony's
+     * LifecycleListenersPass finds them. A subscriber of the named events (getSubscribedEvents()) is not one.
      *
-     * @deprecated read Base\Discovery's `autoconfigure` and Base\Services; removed once omnibase 4.x is no longer served
+     * @return list<class-string>
      */
-    public const DISPATCHERS = EntityListeners::DISPATCHERS;
+    public static function lifecycleListeners(Application $app): array
+    {
+        return array_values(array_filter(ProjectClasses::of(self::projectDir($app), ProjectClasses::ENTITY_SUBSCRIBERS), static fn (string $class): bool => method_exists($class, '__invoke') && !method_exists($class, 'getSubscribedEvents')));
+    }
+
+    /** The project's folder: omnibase's option, else the application's base path. */
+    public static function projectDir(Application $app): string
+    {
+        $option = OmnibaseOption::get($app['config']);
+
+        return \is_array($option) && \is_string($option['project_dir'] ?? null) ? $option['project_dir'] : $app->basePath();
+    }
 
     public static function register(Application $app): void
     {
         // The core's repositories by their interfaces, where the provider did not bind them yet (a configuration
         // given after its registration: a test's).
         if (class_exists(\Base\Repository\Aliases::class)) {
-            \Omnibridge\Laravel\Container\Aliases::bind($app, array_filter(class_exists(\Base\Discovery::class) ? \Base\Discovery::registry('repositories') : \Base\Repository\Aliases::INTERFACES, static fn (string $interface): bool => !$app->bound($interface), \ARRAY_FILTER_USE_KEY));
+            \Omnibridge\Laravel\Container\Aliases::bind($app, array_filter(\Base\Discovery::registry('repositories'), static fn (string $interface): bool => !$app->bound($interface), \ARRAY_FILTER_USE_KEY));
         }
+        // The listeners of the neutral lifecycle, by the layout (one per application, as a Symfony service).
+        $listeners = self::lifecycleListeners($app);
+        foreach ($listeners as $class) {
+            if (!$app->bound($class)) {
+                $app->singleton($class);
+            }
+        }
+        if ([] !== $listeners) {
+            $app->tag($listeners, \Base\Contract\Lifecycle\Listeners::TAG);
+        }
+        // The application's repositories (its src/Repository, the shared layout): each bound to the core's repository
+        // interfaces it implements, as Symfony's autowiring aliases them - no #[AsAlias] needed (still read where a
+        // class carries one: Container\Aliases).
+        foreach (ProjectClasses::in(self::projectDir($app).'/src/'.ProjectClasses::REPOSITORIES, 'App\\'.ProjectClasses::REPOSITORIES.'\\') as $class) {
+            if (!is_a($class, \Base\Database\Repository\ServiceEntityRepository::class, true)) {
+                continue;
+            }
+            foreach ((new \ReflectionClass($class))->getInterfaceNames() as $interface) {
+                if (str_starts_with($interface, 'Base\\Repository\\') && !$app->bound($interface)) {
+                    $app->singleton($interface, static fn (Application $app): object => $app->make($class));
+                }
+            }
+        }
+        // And the application's own interfaces its repositories name with #[AsAlias] (App\Repository\Article\Articles),
+        // as Symfony aliases them: the application binds none itself.
+        $aliases = \Omnibridge\Laravel\Container\Aliases::read(['App\\'.ProjectClasses::REPOSITORIES.'\\' => self::projectDir($app).'/src/'.ProjectClasses::REPOSITORIES]);
+        \Omnibridge\Laravel\Container\Aliases::bind($app, array_filter($aliases, static fn (string $interface): bool => !$app->bound($interface), \ARRAY_FILTER_USE_KEY));
         self::singleton($app, Translator::class, static function (Application $app): Translator {
             $translator = $app->make(CatalogueTranslations::class)->translator();
             $translator->setLocale(self::locale($app, $app->getLocale()));
@@ -148,17 +195,15 @@ final class OmnibaseServices
      * The Doctrine listeners of omnibase and the events each listens to: the services the core's declaration tags
      * doctrine.event_listener, its own tags or those its autoconfiguration gives (Base\Discovery, step F5e slice 4c) - the
      * dispatchers, ThreadSubscriber, UserSubscriber (which mails through the Notifier: without it, nothing of it) -, each
-     * where it is bound, then an application's dispatchers (omnibridge.omnibase.entity_dispatchers) on the events the
-     * autoconfiguration gives their class. The former hand-written list for a core without Base\Discovery (4.x).
+     * where it is bound, then an application's dispatchers (its src/EntityDispatcher) on the events the
+     * autoconfiguration gives their class.
      *
      * @return array<string, list<string>> class => events
      */
     private static function entityListeners(Application $app): array
     {
-        $own = (array) $app['config']->get('omnibridge.omnibase.entity_dispatchers', []);
-        if (!class_exists(\Base\Discovery::class)) {
-            return EntityListeners::listeners($app, $own);
-        }
+        // The application's dispatchers: its src/EntityDispatcher (App\EntityDispatcher\*), the shared layout.
+        $own = array_values(array_filter(ProjectClasses::of(self::projectDir($app), ProjectClasses::ENTITY_DISPATCHERS), static fn (string $class): bool => str_starts_with($class, 'App\\')));
         $autoconfigure = \Base\Discovery::registry('autoconfigure');
         $listeners = [];
         foreach (Definitions::entityListeners(\Base\Services::definitions(), $autoconfigure) as $id => $names) {
@@ -182,8 +227,8 @@ final class OmnibaseServices
     }
 
     /**
-     * The ids of omnibase's entity dispatchers among the entity listeners (the core's and omnibridge.omnibase.
-     * entity_dispatchers'): what omnibridge/eloquent's lifecycle calls when it is the persistence (Persistence).
+     * The ids of omnibase's entity dispatchers among the entity listeners (the core's and the application's
+     * src/EntityDispatcher): what omnibridge/eloquent's lifecycle calls when it is the persistence (Persistence).
      *
      * @return list<string>
      */
@@ -224,10 +269,7 @@ final class OmnibaseServices
         }
 
         // What they raise, heard by name (Laravel's dispatcher gives an omnibridge NamedEvent to the listeners of its name).
-        foreach ([...self::SUBSCRIBERS, ...(array) $app['config']->get('omnibridge.omnibase.subscribers', [])] as $class) {
-            if (!class_exists($class) || !method_exists($class, 'getSubscribedEvents')) {
-                continue;
-            }
+        foreach (self::subscribers($app) as $class) {
             // UserSubscriber mails through the Notifier: without it, nothing of it.
             if ('Base\EntitySubscriber\UserSubscriber' === $class && !$app->bound(Notifier::class)) {
                 continue;

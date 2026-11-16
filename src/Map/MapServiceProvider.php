@@ -67,7 +67,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * The HTTP client is the one bound as "omnimap.http_client", Symfony's
  * otherwise.
  *
- * Registered by OmnibridgeServiceProvider when omnimap is installed; wires
+ * Registered by BaseServiceProvider when omnimap is installed; wires
  * nothing unless config/omnimap.php names a provider.
  */
 final class MapServiceProvider extends ServiceProvider

@@ -7,7 +7,7 @@ use Base\Field\Conformance\Outcome;
 use Base\Form\Definition\FormDefinition;
 use Base\Form\Definition\FormProcessor;
 use Base\Form\Definition\FormView;
-use Omnibridge\Laravel\Form\FormRenderer;
+use Base\Form\FormRenderer;
 
 /**
  * This package as omnisense/omnibase's field conformance suite drives it

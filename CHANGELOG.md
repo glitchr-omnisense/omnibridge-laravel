@@ -1,6 +1,17 @@
 # Changelog
 
-## [Unreleased]
+## [1.0.0] - Unreleased (the "base-agnostic" ensemble)
+
+Every omni* package restarts at 1.0.0: this is the clean end state, no compatibility layer. What this package is:
+the Laravel host of omnisense/omnibase. What a Laravel application sees is under `Base\` (PSR-4 `Base\` =>
+`src/Base/`): `Base\BaseServiceProvider` (bootstrap/providers.php), the middleware `Base\Http\*`, the route helpers
+`Base\Routing\*`, `Base\Auth\*`, the pages' pieces `Base\Page\*` and `Base\View\*`, `Base\Form\FormRenderer`;
+`Omnibridge\Laravel\` is plumbing nobody names. The application's code is the layout every omnibase site shares,
+`src/` under `App\`: its `src/EntitySubscriber` and `src/EntityDispatcher` are picked up (no list in a configuration
+file), its `src/Repository` classes are bound to the core's repository interfaces they implement by convention, its
+repositories are built by the core's registry on either persistence. `config/base.php` is the one source of
+omnibase's options both hosts read: `base.security.access_control` and `base.security.role_hierarchy` replace
+`omnibridge.access_control` and `omniauth.role_hierarchy`. The 4.x layer (`Legacy\`) is gone.
 
 ## [1.2.1] - 2026-11-14
 

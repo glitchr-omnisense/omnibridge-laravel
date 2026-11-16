@@ -4,7 +4,7 @@ namespace Omnibridge\Laravel\Tests;
 
 use Base\Contract\Runtime;
 use Illuminate\Support\Facades\DB;
-use Omnibridge\Laravel\OmnibridgeServiceProvider;
+use Base\BaseServiceProvider;
 use Orchestra\Testbench\TestCase as Testbench;
 
 abstract class TestCase extends Testbench
@@ -13,7 +13,7 @@ abstract class TestCase extends Testbench
 
     protected function getPackageProviders($app): array
     {
-        return [OmnibridgeServiceProvider::class];
+        return [BaseServiceProvider::class];
     }
 
     protected function defineEnvironment($app): void

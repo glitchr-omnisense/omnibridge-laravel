@@ -3,7 +3,7 @@
 namespace Omnibridge\Laravel\Tests;
 
 use Illuminate\Http\Request;
-use Omnibridge\Laravel\Auth\OmnibaseEffects;
+use Base\Auth\OmnibaseEffects;
 
 /**
  * The domain omnibase's site-wide cookies (the browser's PHPUSERID) are written for under Laravel (R29):

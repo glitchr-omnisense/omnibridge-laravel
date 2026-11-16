@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Contract;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Omnibridge\Contract\Requests;
-use Omnibridge\Laravel\Page\SessionView;
+use Base\Page\SessionView;
 
 /**
  * The request being answered under Laravel: the container's request (none in

@@ -86,10 +86,10 @@ final class EntitiesHostTest extends TestCase
         $this->assertSame(42, $pool->getItem('answer')->get());
 
         $this->app->make(EntityManagerInterface::class);
-        $services = (new \ReflectionProperty(\Omnibridge\Doctrine\Omnibase\RepositoryFactory::class, 'services'))->getValue($this->app->make(Mapping::class)->repositories);
-        $this->assertInstanceOf(\Closure::class, $services, 'Mapping::register() was given the host\'s services');
-        $this->assertSame($pool, $services(CacheItemPoolInterface::class));
-        $this->assertNull($services('Nowhere\\Service'), 'a service Laravel has not: null');
+        $services = (new \ReflectionProperty(\Base\Database\Repository\EntityRepositories::class, 'services'))->getValue($this->app->make(Mapping::class)->repositories);
+        $this->assertInstanceOf(\Psr\Container\ContainerInterface::class, $services, 'Mapping::register() was given the host\'s services');
+        $this->assertSame($pool, $services->get(CacheItemPoolInterface::class));
+        $this->assertFalse($services->has('Nowhere\\Service'), 'a service Laravel has not: none');
     }
 
     public function testBaseTraitsMediaServiceIsTheBoundOne(): void

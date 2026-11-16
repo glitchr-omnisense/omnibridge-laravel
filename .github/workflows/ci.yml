@@ -18,4 +18,4 @@ jobs:
   package:
     uses: glitchr-studio/ci/.github/workflows/php-package.yml@133c7eda3cd536a2e3478474ead380257375589e # main, 2026-11-09
     with:
-      smoke-class: 'Omnibridge\Laravel\OmnibridgeServiceProvider'
+      smoke-class: 'Base\BaseServiceProvider'

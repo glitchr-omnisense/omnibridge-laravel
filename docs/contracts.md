@@ -5,7 +5,7 @@ order: 20
 
 # Contracts
 
-Every binding of `OmnibridgeServiceProvider::register()`, all singletons unless said otherwise. The
+Every binding of `BaseServiceProvider::register()`, all singletons unless said otherwise. The
 registry (`Base\Contract\Runtime`, omnisense/omnibridge's `Omnibridge\Runtime` with omnibase's
 accessors) is handed Laravel's application at boot: `Runtime::urls()` is `app(Urls::class)`.
 

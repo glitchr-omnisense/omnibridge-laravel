@@ -3,7 +3,7 @@
 namespace Omnibridge\Laravel\Tests;
 
 use Omnibridge\Doctrine\Omnibase\Mapping;
-use Omnibridge\Doctrine\Omnibase\MetadataSnapshot;
+use Base\Testing\MetadataSnapshot;
 use Omnibridge\Doctrine\Omnibase\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -64,10 +64,12 @@ final class OmnibaseMappingTest extends TestCase
         $this->assertSame('user', $metadata->discriminatorValue);
         $this->assertArrayHasKey('username', $metadata->fieldMappings);
 
-        // Its repository, which extends the core's users' repository: it loads without Security (audit R2).
-        $repository = $entities->getRepository('App\\Entity\\User');
+        // Its repository, which extends the core's users' repository, through the core's registry (Doctrine's own
+        // getRepository() answers its plain repository since omnibase's repositories are agnostic): it loads without
+        // Security (audit R2).
+        $repository = $this->app->make(\Base\Database\Repository\Repositories::class)->of('App\\Entity\\User');
         $this->assertSame('App\\Repository\\UserRepository', $repository::class);
-        $this->assertInstanceOf(\Omnibridge\Doctrine\Omnibase\Repository\UserRepository::class, $repository);
+        $this->assertInstanceOf(\Base\Repository\UserRepository::class, $repository);
     }
 
     /** Invariants 1 and 8: what the application lacks is the core's class by alias, not a subclass. */
@@ -115,7 +117,9 @@ final class OmnibaseMappingTest extends TestCase
             $differences = array_merge($differences, self::differences(self::withoutBundles($symfony['classes'][$className], $here), $laravel['classes'][$className], $className));
         }
         $this->assertSame([], $differences, 'the metadata of '.\count($here).' classes');
-        $this->assertSame($symfony['filters'], $laravel['filters'], 'the filters');
+        // The filters by their names: their classes are omnibridge/doctrine's plumbing, which the Symfony fixture recorded under
+        // former names.
+        $this->assertSame(array_keys($symfony['filters']), array_keys($laravel['filters']), 'the filters');
         foreach ($laravel['types'] as $name => $className) {
             $this->assertSame($symfony['types'][$name] ?? null, $className, 'type '.$name);
         }
@@ -126,7 +130,7 @@ final class OmnibaseMappingTest extends TestCase
         $this->app['config']->set('omnibridge.omnibase', false);
         $this->app->forgetInstance(EntityManagerInterface::class);
         $this->app->forgetInstance(Mapping::class);
-        $provider = new \Omnibridge\Laravel\OmnibridgeServiceProvider($this->app);
+        $provider = new \Base\BaseServiceProvider($this->app);
         $provider->register();
 
         $this->assertNotInstanceOf(RepositoryFactory::class, $this->app->make(EntityManagerInterface::class)->getConfiguration()->getRepositoryFactory());

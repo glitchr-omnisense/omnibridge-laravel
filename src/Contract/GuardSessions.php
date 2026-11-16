@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Contract;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Omnibridge\Contract\Sessions;
-use Omnibridge\Laravel\Auth\AccountUser;
+use Base\Auth\AccountUser;
 
 /**
  * The visitor's session ended by Laravel's guard: a user signed out when it

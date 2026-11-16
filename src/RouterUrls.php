@@ -4,8 +4,8 @@ namespace Omnibridge\Laravel;
 
 use Illuminate\Support\Facades\Route;
 use Omnibridge\Contract\Urls;
-use Omnibridge\Laravel\Routing\LocalizedNames;
-use Omnibridge\Laravel\Routing\TrailingSlash;
+use Base\Routing\LocalizedNames;
+use Base\Routing\TrailingSlash;
 
 /**
  * Addresses answered by Laravel: a route by its name through Laravel's

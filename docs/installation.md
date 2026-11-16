@@ -36,7 +36,7 @@ php artisan vendor:publish --tag=omniauth-config       # config/omniauth.php, fo
 
 ## The provider
 
-`Omnibridge\Laravel\OmnibridgeServiceProvider` is discovered by Laravel (`extra.laravel.providers`).
+`Base\BaseServiceProvider` is discovered by Laravel (`extra.laravel.providers`).
 
 - `register()`: merges `config/omnibridge.php`, binds every contract and service
   ([Contracts](contracts.md)), Doctrine, Twig and the parameters; registers
@@ -76,10 +76,10 @@ use Illuminate\Support\Facades\Route;
 use Omnibridge\Contract\Access;
 use Omnibridge\Contract\Locales;
 use Omnibridge\Contract\Urls;
-use Omnibridge\Laravel\OmnibridgeServiceProvider;
+use Base\BaseServiceProvider;
 use Orchestra\Testbench\Foundation\Application;
 
-$app = Application::create(options: ['extra' => ['providers' => [OmnibridgeServiceProvider::class]]]);
+$app = Application::create(options: ['extra' => ['providers' => [BaseServiceProvider::class]]]);
 $app['config']->set('omnibridge.locales.available', ['fr-FR', 'en-GB']);
 $app['config']->set('omnibridge.translations.paths', [__DIR__.'/translations']);
 $app->setLocale('fr');

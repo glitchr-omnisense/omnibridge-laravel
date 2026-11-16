@@ -12,7 +12,7 @@ use Base\Service\SpamCheckerInterface;
 use Base\Service\TranslatorInterface;
 use Omnibridge\Contract\Translations;
 use Omnibridge\Laravel\Contract\LaravelValidation;
-use Omnibridge\Laravel\Form\FormRenderer;
+use Base\Form\FormRenderer;
 use Omnibridge\Laravel\Omnibase\FlushEntityEvents;
 use Omnibridge\Validation\Constraint\Unique;
 use Symfony\Component\Translation\Translator;
@@ -103,7 +103,7 @@ final class OmnibaseServicesTest extends TestCase
     public function testAFieldTypedTwiceIsPrintedOnceItsPartsAreAndAHelpIsATooltip(): void
     {
         $renderer = new FormRenderer($this->app->make(Translations::class));
-        $form = new \Omnibridge\Laravel\Form\FormView('sign_up', ['method' => 'POST']);
+        $form = new \Base\Form\FormView('sign_up', ['method' => 'POST']);
         $form->add('plainPassword', ['type' => 'password']);
         $form->children['plainPassword']->add('first', ['type' => 'password'])->add('second', ['type' => 'password']);
         $form->add('username', ['type' => 'text', 'help' => 'Your name']);

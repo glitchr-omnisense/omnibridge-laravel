@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Static;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request as LaravelRequest;
-use Omnibridge\Laravel\Routing\ActionRoutes;
+use Base\Routing\ActionRoutes;
 use Omnibridge\Static\Console\Cli;
 use Omnibridge\Static\Render\RequestRenderer;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
  *     php artisan omnibridge:static:build static.php --out=storage/static --actions='App\Action\=src/Action'
  *                                         [--cache=storage/static-cache] [--only=/news/*,/] [--full]
  *
- * Registered by OmnibridgeServiceProvider only where omnibridge/static is installed.
+ * Registered by BaseServiceProvider only where omnibridge/static is installed.
  */
 final class BuildCommand extends Command
 {

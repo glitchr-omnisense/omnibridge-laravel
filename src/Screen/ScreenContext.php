@@ -10,7 +10,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Omnibridge\Contract\Access;
 use Omnibridge\Contract\Locales;
 use Omnibridge\Contract\Urls;
-use Omnibridge\Laravel\Page\Theme;
+use Base\Page\Theme;
 use Omnibridge\Laravel\Parameters\DatabaseSettings;
 
 /**

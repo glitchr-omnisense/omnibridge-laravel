@@ -19,17 +19,17 @@ use Omniauth\WebAuthn\PasskeyRecord;
 use Omniauth\WebAuthn\Testing\InMemoryPasskeys;
 use Omniauth\WebAuthn\Testing\SoftwareAuthenticator;
 use Omnibridge\Contract\Access;
-use Omnibridge\Laravel\Auth\AccountUser;
-use Omnibridge\Laravel\Auth\Controllers\SignIn;
-use Omnibridge\Laravel\Auth\OmniauthGuard;
-use Omnibridge\Laravel\Auth\Settings;
+use Base\Auth\AccountUser;
+use Base\Auth\Controllers\SignIn;
+use Base\Auth\OmniauthGuard;
+use Base\Auth\Settings;
 use Omnibridge\Laravel\Tests\Fixtures\Auth\TotpSecrets;
 use Omnibridge\Laravel\Tests\Fixtures\Auth\User;
 use Omnibridge\Laravel\Tests\Fixtures\Auth\Users;
 use OTPHP\TOTP;
 
 /**
- * omniauth under Laravel through Omnibridge\Laravel\Auth\ (plan "omniauth",
+ * omniauth under Laravel through Base\Auth\ (plan "omniauth",
  * step AU8), in a Testbench application with omnibridge.auth on and every
  * method of config/omniauth.php: each way of signing in signs in, the second
  * factor is asked when the account has one (and only its page opens

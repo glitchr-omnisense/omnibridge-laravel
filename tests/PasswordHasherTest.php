@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Tests;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
-use Omnibridge\Laravel\Auth\Settings;
+use Base\Auth\Settings;
 use Omnibridge\Laravel\Tests\Fixtures\Auth\User;
 use Omnibridge\Laravel\Tests\Fixtures\Auth\Users;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;

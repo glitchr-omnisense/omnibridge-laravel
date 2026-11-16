@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Contract;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Omnibridge\Contract\Access;
-use Omnibridge\Laravel\Auth\AccountUser;
+use Base\Auth\AccountUser;
 
 /**
  * What the visitor may do, answered by Laravel's gate: an attribute is an

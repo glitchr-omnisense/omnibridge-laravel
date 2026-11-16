@@ -7,7 +7,7 @@ use Base\Field\Conformance\Suite;
 use Base\Form\Definition\FormProcessor;
 use Omnibridge\Contract\Validation;
 use Omnibridge\Laravel\Form\Conformance\LaravelHost;
-use Omnibridge\Laravel\Form\FormRenderer;
+use Base\Form\FormRenderer;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
@@ -63,6 +63,14 @@ final class FieldConformanceTest extends TestCase
     private function host(): LaravelHost
     {
         return new LaravelHost($this->app->make(FormRenderer::class), new FormProcessor($this->app->make(Validation::class)));
+    }
+
+    /** The suite's host is in the container, as on Symfony: what a site's or a bundle's conformance test asks for. */
+    public function testTheHostIsBound(): void
+    {
+        $host = $this->app->make(\Base\Field\Conformance\Host::class);
+        self::assertSame('laravel', $host->name());
+        self::assertSame([], Suite::coverage($host));
     }
 
     public function testEveryKindIsDeclared(): void

@@ -16,7 +16,7 @@ use UnitEnum;
  * no value. all() is every parameter by its full name.
  *
  * Omnibase's HotParameters lays the database settings over this one
- * (OmnibridgeServiceProvider): Runtime::parameters() is that overlay.
+ * (BaseServiceProvider): Runtime::parameters() is that overlay.
  */
 final class ConfigParameters implements ParameterBagInterface
 {

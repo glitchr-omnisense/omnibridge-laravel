@@ -79,7 +79,7 @@ With omnibase's sign-in effects, the captcha after failed sign-ins uses it ([Sig
 ## Static export: omnibridge/static
 
 
-Where omnibridge/static is installed, `OmnibridgeServiceProvider` registers
+Where omnibridge/static is installed, `BaseServiceProvider` registers
 the artisan command `omnibridge:static:build`: omnibridge/static's own command
 line (`Console\Cli`), handed a renderer through the application's HTTP kernel
 (each page a visitor's GET, at `--render-origin`, by default `app.url`), the

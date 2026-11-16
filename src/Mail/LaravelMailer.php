@@ -18,16 +18,18 @@ use Symfony\Component\Mime\RawMessage;
  */
 final class LaravelMailer implements MailerInterface
 {
-    public function __construct(private readonly Factory $mail, private readonly ?string $mailer = null)
+    /** @param string|(\Closure(): ?string)|null $mailer the mailer's name, or how to read it when a message is sent (the configuration may change) */
+    public function __construct(private readonly Factory $mail, private readonly string|\Closure|null $mailer = null)
     {
     }
 
     public function send(RawMessage $message, ?Envelope $envelope = null): void
     {
-        $mailer = $this->mail->mailer($this->mailer);
+        $name = $this->mailer instanceof \Closure ? ($this->mailer)() : $this->mailer;
+        $mailer = $this->mail->mailer($name);
         $transport = method_exists($mailer, 'getSymfonyTransport') ? $mailer->getSymfonyTransport() : null;
         if (!$transport instanceof TransportInterface) {
-            throw new \LogicException(\sprintf('The mailer "%s" gives no Symfony transport.', $this->mailer ?? 'default'));
+            throw new \LogicException(\sprintf('The mailer "%s" gives no Symfony transport.', $name ?? 'default'));
         }
         $transport->send($message, $envelope);
     }

@@ -4,10 +4,10 @@ namespace Omnibridge\Laravel\Tests;
 
 use Illuminate\Routing\Router;
 use Omnibridge\Laravel\Container\Aliases;
-use Omnibridge\Laravel\Http\Localize;
+use Base\Http\Localize;
 use Omnibridge\Laravel\RouterUrls;
-use Omnibridge\Laravel\Routing\ActionRoutes;
-use Omnibridge\Laravel\Routing\LocalizedNames;
+use Base\Routing\ActionRoutes;
+use Base\Routing\LocalizedNames;
 use Omnibridge\Laravel\Tests\Fixtures\Action\Home;
 use Omnibridge\Laravel\Tests\Fixtures\Action\Pair;
 use Omnibridge\Laravel\Tests\Fixtures\Action\Travels;

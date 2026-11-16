@@ -7,15 +7,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Illuminate\Http\Request;
 use Omnibridge\Laravel\Doctrine\Connections;
-use Omnibridge\Laravel\Form\FormRenderer;
-use Omnibridge\Laravel\Form\FormView;
-use Omnibridge\Laravel\Page\AppVariable;
-use Omnibridge\Laravel\Page\Site;
-use Omnibridge\Laravel\Page\Theme;
+use Base\Form\FormRenderer;
+use Base\Form\FormView;
+use Base\Page\AppVariable;
+use Base\Page\Site;
+use Base\Page\Theme;
 use Omnibridge\Laravel\Parameters\DatabaseSettings;
 use App\Entity\Destination;
-use Omnibridge\Laravel\View\Breakpoints;
-use Omnibridge\Laravel\View\Encore;
+use Base\View\Breakpoints;
+use Base\View\Encore;
 
 /** Doctrine on Laravel's connection, and the pieces an omnibase page asks of its framework. */
 final class DoctrinePageTest extends TestCase

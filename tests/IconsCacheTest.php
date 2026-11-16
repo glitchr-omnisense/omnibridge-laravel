@@ -3,7 +3,7 @@
 namespace Omnibridge\Laravel\Tests;
 
 use Base\Service\Icons;
-use Omnibridge\Laravel\View\OmnibaseExtensions;
+use Base\View\OmnibaseExtensions;
 
 /**
  * omnibase's icons on Laravel (View\OmnibaseExtensions::bindIcons()): each metadata folder has its own cache. The

@@ -36,11 +36,12 @@
         "illuminate/support": "^12.0|^13.0",
         "illuminate/validation": "^12.0|^13.0",
         "omnibridge/twig": "^1.0",
-        "omnisense/omnibase": "^4.0 || ^5.0 || ^6.0",
+        "omnisense/omnibase": "^1.0",
         "omnisense/omnibridge": "^1.0",
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "symfony/cache": "^7.0|^8.0",
+        "symfony/form": "^7.0|^8.0",
         "symfony/http-client": "^7.0|^8.0",
         "symfony/mailer": "^7.0|^8.0",
         "symfony/routing": "^7.0|^8.0",
@@ -55,7 +56,7 @@
         "omniauth/google": "1.x-dev",
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
-        "omnibridge/doctrine": "^1.0 || ^2.0",
+        "omnibridge/doctrine": "^1.0",
         "omnibridge/static": "1.x-dev",
         "omnimap/maplibre": "^1.0@dev",
         "omnimap/openstreetmap": "^1.0@dev",
@@ -72,10 +73,10 @@
         "omnibridge/doctrine": "omnisense/omnibase on Doctrine (with doctrine/orm and doctrine/dbal): omnibase's entity manager over Laravel's connection (omnibridge.doctrine), its mapping, the settings read through DBAL; a suggestion since omnisense/omnibase's plan \"omnibase agnostic\", step B3 - omnibridge/eloquent runs omnibase without it",
         "omnibridge/eloquent": "omnisense/omnibase on Eloquent (base.persistence: eloquent), on Laravel's own connection: the core's attribute reader on the persistence's shapes, no Doctrine installed",
         "omnibridge/static": "Static\\BuildCommand: php artisan omnibridge:static:build, omnibridge/static's export of the site a static.php declares, rendered by the application's HTTP kernel",
-        "omnisense/omniauth": "Omnibridge\\Laravel\\Auth\\: Laravel's guard and user provider over omniauth, one controller for every way of signing in (password, sign-in link, e-mailed code, backup codes, trusted devices), the second factor's page, the routes; config/omnibridge.php 'auth' => true and config/omniauth.php (nothing of Auth\\ without it)",
-        "omniauth/webauthn": "Passkeys through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: passkey), formerly omniauth/passkey",
-        "omniauth/otp": "Authenticator applications through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: totp; totp.secret_key seals the secrets at rest), formerly omniauth/totp",
-        "omniauth/google": "Google sign-in through Omnibridge\\Laravel\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)",
+        "omnisense/omniauth": "Base\\Auth\\: Laravel's guard and user provider over omniauth, one controller for every way of signing in (password, sign-in link, e-mailed code, backup codes, trusted devices), the second factor's page, the routes; config/omnibridge.php 'auth' => true and config/omniauth.php (nothing of Auth\\ without it)",
+        "omniauth/webauthn": "Passkeys through Base\\Auth\\ (config/omniauth.php: passkey), formerly omniauth/passkey",
+        "omniauth/otp": "Authenticator applications through Base\\Auth\\ (config/omniauth.php: totp; totp.secret_key seals the secrets at rest), formerly omniauth/totp",
+        "omniauth/google": "Google sign-in through Base\\Auth\\ (config/omniauth.php: oauth.providers.google; its GoogleFactory is used when it is installed)",
         "omnisense/omnimap": "Omnibridge\\Laravel\\Map\\: maps through omnimap (config/omnimap.php) - its providers, the map cache over a directory or a bound Omnimap\\Snapshot\\Storage, omnibridge/twig's MapExtension in every page's Twig, the tiles' route",
         "omnisense/omnishield": "Omnibridge\\Laravel\\Shield\\: omnishield's Registry from config/omnishield.php (the Symfony bundle's keys), ALTCHA's widget served by the application; with omnibase, its captcha after failed sign-ins (Auth\\OmnibaseEffects); not on Packagist yet - a vcs repository, https://github.com/glitchr-omnisense/omnishield",
         "omnishield/altcha": "ALTCHA, the captcha omnibase asks after failed sign-ins: served and checked by the application, no third party",
@@ -84,6 +85,7 @@
     },
     "autoload": {
         "psr-4": {
+            "Base\\": "src/Base/",
             "Omnibridge\\Laravel\\": "src/"
         }
     },
@@ -95,13 +97,16 @@
                 "tests/Fixtures/Omnibase/Entity/",
                 "tests/Fixtures/Project/src/Entity/"
             ],
-            "App\\Repository\\": "tests/Fixtures/Omnibase/Repository/"
+            "App\\Repository\\": [
+                "tests/Fixtures/Omnibase/Repository/",
+                "tests/Fixtures/Aliased/src/Repository/"
+            ]
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Omnibridge\\Laravel\\OmnibridgeServiceProvider"
+                "Base\\BaseServiceProvider"
             ]
         },
         "branch-alias": {

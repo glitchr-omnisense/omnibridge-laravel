@@ -1,6 +1,6 @@
 <?php
 
-// omnibridge/laravel's sign-in through omniauth (Omnibridge\Laravel\Auth\, plan "omniauth" §3.2,
+// omnibridge/laravel's sign-in through omniauth (Base\Auth\, plan "omniauth" §3.2,
 // step AU8), on when config/omnibridge.php says 'auth' => true and omnisense/omniauth is
 // installed. The same keys as omnibridge/symfony's config/packages/omniauth.yaml, so one site
 // says the same thing under both hosts: each method's key turns it on (null: off); a method
@@ -71,7 +71,7 @@ return [
     // visitor comes back to the host they left from. link_by_email: true, false, or a binding
     // (omniauth's EmailLinking; null: never an account with a second factor);
     // sign_up_route: where an identity no account is linked to goes (its PendingIdentity in the
-    // session, Omnibridge\Laravel\Auth\Controllers\SignIn::PENDING_IDENTITY).
+    // session, Base\Auth\Controllers\SignIn::PENDING_IDENTITY).
     'oauth' => null,         // ['link_by_email' => null, 'sign_up_route' => null, 'providers' => ['google' => ['client_id' => ..., 'client_secret' => ..., 'scopes' => ['openid', 'email', 'profile'], 'hosted_domain' => null, 'start_path' => '/connect/google', 'start_route' => 'oauth_google', 'check_path' => '/connect/google/check', 'check_route' => 'oauth_google_check', 'redirect_uri' => null, 'service' => null]]
 
     // The second factor's page and check (scheb/2fa's addresses and route names, its template's
@@ -110,10 +110,10 @@ return [
     // password forgets every browser.
     'remember_me' => ['cookie' => 'REMEMBERME', 'lifetime' => 604800],
 
-    // Roles as the gate's abilities: "ROLE_ADMIN" is granted to an account that holds it, or one
-    // above it (security.yaml's role_hierarchy); IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED,
-    // IS_AUTHENTICATED_2FA_IN_PROGRESS and PUBLIC_ACCESS answer as Security's voters do.
-    'role_hierarchy' => [],
+    // Roles as the gate's abilities: "ROLE_ADMIN" is granted to an account that holds it, or one above it -
+    // the hierarchy is base.security.role_hierarchy (config/base.php, the one source both hosts read);
+    // IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED, IS_AUTHENTICATED_2FA_IN_PROGRESS and PUBLIC_ACCESS
+    // answer as Security's voters do.
 
     // The tries, counted on a Laravel cache store (null: the default one) by omniauth's
     // CacheThrottle, its limits by scope ([tries, seconds]: ['password' => [5, 60]]); false: none.
@@ -136,6 +136,6 @@ return [
     // replaced), as the page translates them (the "security" domain).
     'messages' => [],
 
-    // false: declare the routes yourself (Omnibridge\Laravel\Auth\Routes::register()).
+    // false: declare the routes yourself (Base\Auth\Routes::register()).
     'routes' => true,
 ];

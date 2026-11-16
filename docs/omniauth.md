@@ -82,7 +82,7 @@ this page is the reference of the bridge.
 
 ## Turning it on
 
-`Auth\AuthServiceProvider` is registered by `OmnibridgeServiceProvider` when omnisense/omniauth is
+`Auth\AuthServiceProvider` is registered by `BaseServiceProvider` when omnisense/omniauth is
 installed; it merges `config/omniauth.php` and binds its services in `register()`, and wires the guard,
 the gate, the routes and the middleware in `boot()` only when `omnibridge.auth` is true
 (`AuthServiceProvider::on()`). A method whose package is missing stops the boot: `config/omniauth.php

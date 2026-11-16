@@ -125,7 +125,7 @@ return [
     'entity_namespaces' => [],
 
     // Signing in through omniauth (plan "omniauth", step AU8; omnisense/omniauth
-    // installed): true turns on Omnibridge\Laravel\Auth\ - the guard and the user
+    // installed): true turns on Base\Auth\ - the guard and the user
     // provider (config/auth.php: driver "omniauth"), the routes of every way in at
     // the Symfony site's addresses, the second factor's page, the sign-out - on
     // config/omniauth.php (the same keys as omnibridge/symfony's omniauth.yaml).

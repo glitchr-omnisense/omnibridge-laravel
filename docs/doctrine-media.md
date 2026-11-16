@@ -54,7 +54,7 @@ gives what it registered. `OmnibaseMappingTest` checks the metadata against thos
 omnisense/omnibase records from its Symfony harness, class by class.
 
 
-The options are read by `OmnibridgeServiceProvider::omnibase()`: `project_dir` (`base_path()`),
+The options are read by `BaseServiceProvider::omnibase()`: `project_dir` (`base_path()`),
 `environment` (the given one, else Laravel's by omnibase's name: `production` `prod`, `local` and
 `development` `dev`, `testing` `test`), `cache_dir` (`storage/framework/cache/omnibase-doctrine/<env>`),
 `parameters` (the given ones over Laravel's whole `base` config flattened by full name), and any other
@@ -74,10 +74,10 @@ bound under its name:
 - `Localizer`, `SettingBag`, the entity hydrator over the mapping, the `SpamChecker` (the host's
   `HttpClientInterface`, else Symfony's client), the mentions' enhancer; BaseTrait's accessors answer them
   (they ask the registry first), and its project folder is the mapping's `project_dir`;
-- omnibase's entity dispatchers (`user.*`, `thread.*`, and `omnibridge.omnibase.entity_dispatchers`) and the
+- omnibase's entity dispatchers (`user.*`, `thread.*`, and the application's `src/EntityDispatcher`) and the
   Doctrine hooks of `ThreadSubscriber` and `UserSubscriber` on the entity manager's events, built when their
   first event comes (`LazyListener`); their events heard by name on Laravel's dispatcher (omnibase's
-  subscribers, and `omnibridge.omnibase.subscribers`); what they leave to flush flushed once the page is
+  subscribers, and the application's `src/EntitySubscriber`); what they leave to flush flushed once the page is
   answered (`FlushEntityEvents`, global);
 - with a channel policy, omnibase's `Notifier` (and `NotifierInterface`, `BaseNotifierInterface`) on Symfony's
   Notifier, with omnibase's channels: `email` and `email+` by Laravel's mailer's transport, `browser+` (the

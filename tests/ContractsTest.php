@@ -40,6 +40,14 @@ final class ContractsTest extends TestCase
         $this->assertFalse(Runtime::has(Contract\Media::class), 'Media is not bound unless omnibridge.media is on (MediaTest)');
     }
 
+    /** omnisense/omnibridge's contracts answer their Base\ names (Base\Contract\Contracts::NAMES), as on Symfony. */
+    public function testTheContractsAnswerTheirBaseNames(): void
+    {
+        foreach (['Base\Contract\Urls' => Host\Urls::class, 'Base\Contract\Locales' => Host\Locales::class, 'Base\Contract\Access' => Host\Access::class] as $name => $contract) {
+            $this->assertSame($this->app->make($contract), $this->app->make($name), $name);
+        }
+    }
+
     /** An extension of a contract's binding is what the registry gives, once it is handed the container again. */
     public function testAnExtensionOfAContractIsWhatTheRegistryGives(): void
     {
@@ -61,6 +69,11 @@ final class ContractsTest extends TestCase
             public function getAvailableLocales(): array
             {
                 return $this->locales->getAvailableLocales();
+            }
+
+            public function getTimezone(): string
+            {
+                return $this->locales->getTimezone();
             }
         });
         Runtime::setContainer(null);

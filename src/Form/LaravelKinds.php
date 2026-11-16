@@ -28,7 +28,7 @@ final class LaravelKinds
         'file' => 'fileupload', 'image' => 'imageupload', 'avatar' => 'avatar', 'audio' => 'fileupload', 'video' => 'fileupload',
         'association' => 'association', 'association_file' => 'associationfile', 'attribute' => 'attribute', 'array' => 'array',
         'collection' => 'collection2', 'editor' => 'editor', 'wysiwyg' => 'wysiwyg',
-        'repeated' => 'repeated', 'translation' => 'translatable', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
+        'repeated' => 'repeated', 'translation' => 'translatable', 'form' => 'form', 'submit' => 'button', 'button' => 'button', 'html' => 'html',
     ];
 
     /** Why the kinds left unsupported are (plan "omnibase agnostic", step F5d, closed): no form drawn here holds one. */
@@ -81,6 +81,8 @@ final class LaravelKinds
         // not drawn here refuses the whole field.
         'translation' => 'implemented',
         'discriminator' => 'unsupported: the inheritance\'s choice (DiscriminatorType) is not drawn here; the back office shows it on its pages, never on its forms (hideOnForm)',
+        // A nested form (a form type that builds fields of its own, read by the core's TypeReader): its fields' rows.
+        'form' => 'implemented',
         'submit' => 'implemented', 'button' => 'implemented', 'html' => 'implemented',
         'custom' => 'unsupported: a Symfony form type named directly (FieldDescriptor::setFormType()) has no Laravel widget; name a kind',
     ];

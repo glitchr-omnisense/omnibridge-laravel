@@ -5,7 +5,7 @@ namespace Omnibridge\Laravel\Tests;
 use Base\Service\ThemizerInterface;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Gate;
-use Omnibridge\Laravel\Page\Theme;
+use Base\Page\Theme;
 use Omnibridge\Twig\AccessExtension;
 use Twig\Environment;
 

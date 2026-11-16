@@ -44,7 +44,7 @@ declaration Symfony's router reads on the same class - are registered here by `R
 symfony/routing's attribute loader's rules (not the loader itself, which stands on symfony/config).
 
 ```php
-use Omnibridge\Laravel\Routing\ActionRoutes;
+use Base\Routing\ActionRoutes;
 
 // routes/web.php: the application's actions and omnibase's.
 ActionRoutes::register(app('router'), ActionRoutes::load([
@@ -105,7 +105,7 @@ Laravel's locale is set to the two letters. After the page, the language shown i
 `Http\SwitchLocale`, the language menu's links:
 
 ```php
-Route::get('/locale/{_locale?}', Omnibridge\Laravel\Http\SwitchLocale::class)->name('_switch_locale');
+Route::get('/locale/{_locale?}', Base\Http\SwitchLocale::class)->name('_switch_locale');
 ```
 
 A language of the site's: the choice kept in `LANG` as Symfony writes it (`en_GB`), back to the page the

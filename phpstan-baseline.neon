@@ -55,7 +55,7 @@ parameters:
 			path: src/Auth/AuthServiceProvider.php
 
 		-
-			message: '#^Parameter \#3 \$arguments of method Omnibridge\\Laravel\\Auth\\Policies\:\:decide\(\) expects list\<mixed\>, array given\.$#'
+			message: '#^Parameter \#3 \$arguments of method Base\\Auth\\Policies\:\:decide\(\) expects list\<mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Auth/AuthServiceProvider.php
@@ -79,7 +79,7 @@ parameters:
 			path: src/Auth/Controllers/SignIn.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Auth\\Middleware\\AccessRestriction\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
+			message: '#^Method Base\\Auth\\Middleware\\AccessRestriction\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
 			identifier: return.type
 			count: 2
 			path: src/Auth/Middleware/AccessRestriction.php
@@ -175,7 +175,7 @@ parameters:
 			path: src/Auth/Policies.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Auth\\Policies\:\:request\(\) should return Illuminate\\Http\\Request\|null but returns mixed\.$#'
+			message: '#^Method Base\\Auth\\Policies\:\:request\(\) should return Illuminate\\Http\\Request\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Auth/Policies.php
@@ -1309,91 +1309,91 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayEmpty\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:arrayEmpty\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayList\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:arrayList\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:choices\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:choices\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionEntry\(\) has parameter \$list with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:collectionEntry\(\) has parameter \$list with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:dateTimePicker\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:dateTimePicker\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:entity\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:entity\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:flat\(\) has parameter \$choices with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:flat\(\) has parameter \$choices with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:flat\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:flat\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:hidden\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:hidden\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:isExpanded\(\) should return bool but returns mixed\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:isExpanded\(\) should return bool but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:labelled\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:labelled\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:number\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:number\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:select\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:select\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:slug\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:slug\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormRenderer\:\:toggle\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Form\\FormRenderer\:\:toggle\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/FormRenderer.php
@@ -1417,13 +1417,13 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$attributes of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array given\.$#'
+			message: '#^Parameter \#1 \$attributes of method Base\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 15
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$attributes of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$attributes of method Base\\Form\\FormRenderer\:\:attributes\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 10
 			path: src/Form/FormRenderer.php
@@ -1435,31 +1435,31 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$choices of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:flat\(\) expects array, mixed given\.$#'
+			message: '#^Parameter \#1 \$choices of method Base\\Form\\FormRenderer\:\:flat\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 5
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$field of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionRow\(\) expects object, mixed given\.$#'
+			message: '#^Parameter \#1 \$field of method Base\\Form\\FormRenderer\:\:collectionRow\(\) expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$field of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:row\(\) expects object, mixed given\.$#'
+			message: '#^Parameter \#1 \$field of method Base\\Form\\FormRenderer\:\:row\(\) expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 4
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$field of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:widget\(\) expects object, mixed given\.$#'
+			message: '#^Parameter \#1 \$field of method Base\\Form\\FormRenderer\:\:widget\(\) expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 7
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$for of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:label\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#1 \$for of method Base\\Form\\FormRenderer\:\:label\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 4
 			path: src/Form/FormRenderer.php
@@ -1495,85 +1495,85 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:avatarUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:avatarUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:button\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:button\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:checkbox\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:checkbox\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:editor\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:editor\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:fileUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:fileUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:imageUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:imageUpload\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:input\(\) expects array\<string, mixed\>, array given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:input\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 3
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:input\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:input\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:isExpanded\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:isExpanded\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:password\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:password\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:select2\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:select2\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:textarea\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:textarea\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:wysiwyg\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of method Base\\Form\\FormRenderer\:\:wysiwyg\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#1 \$vars of static method Omnibridge\\Laravel\\Form\\FormRenderer\:\:refuse\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			message: '#^Parameter \#1 \$vars of static method Base\\Form\\FormRenderer\:\:refuse\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
@@ -1603,73 +1603,73 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$entry of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayEntry\(\) expects object, mixed given\.$#'
+			message: '#^Parameter \#2 \$entry of method Base\\Form\\FormRenderer\:\:arrayEntry\(\) expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$entry of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionEntry\(\) expects object, mixed given\.$#'
+			message: '#^Parameter \#2 \$entry of method Base\\Form\\FormRenderer\:\:collectionEntry\(\) expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:action\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:action\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:arrayRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:association\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:association\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:associationFile\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:associationFile\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:associationRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:associationRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:attribute\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:attribute\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collection\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:collection\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:collectionRow\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:collectionRow\(\) expects array\<string, mixed\>, mixed given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:collectionRow\(\) expects array\<string, mixed\>, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#2 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:translation\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$vars of method Base\\Form\\FormRenderer\:\:translation\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
@@ -1687,7 +1687,7 @@ parameters:
 			path: src/Form/FormRenderer.php
 
 		-
-			message: '#^Parameter \#3 \$vars of method Omnibridge\\Laravel\\Form\\FormRenderer\:\:arrayEntry\(\) expects array\<string, mixed\>, array given\.$#'
+			message: '#^Parameter \#3 \$vars of method Base\\Form\\FormRenderer\:\:arrayEntry\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Form/FormRenderer.php
@@ -1711,7 +1711,7 @@ parameters:
 			path: src/Form/FormView.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Form\\FormView\:\:getIterator\(\) return type with generic class ArrayIterator does not specify its types\: TKey, TValue$#'
+			message: '#^Method Base\\Form\\FormView\:\:getIterator\(\) return type with generic class ArrayIterator does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Form/FormView.php
@@ -1819,13 +1819,13 @@ parameters:
 			path: src/Http/AccessControl.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Http\\Localize\:\:locale\(\) has parameter \$available with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Http\\Localize\:\:locale\(\) has parameter \$available with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Http/Localize.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Http\\Localize\:\:locale\(\) should return string but returns mixed\.$#'
+			message: '#^Method Base\\Http\\Localize\:\:locale\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Http/Localize.php
@@ -1873,7 +1873,7 @@ parameters:
 			path: src/Http/RequestPage.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Http\\RequestPage\:\:redirectsOnDeny\(\) should return list\<string\> but returns list\.$#'
+			message: '#^Method Base\\Http\\RequestPage\:\:redirectsOnDeny\(\) should return list\<string\> but returns list\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Http/RequestPage.php
@@ -1903,7 +1903,7 @@ parameters:
 			path: src/Http/SwitchLocale.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Http\\SwitchLocale\:\:match\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
+			message: '#^Method Base\\Http\\SwitchLocale\:\:match\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Http/SwitchLocale.php
@@ -2293,19 +2293,19 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\OmnibridgeServiceProvider\:\:omnibase\(\) should return array\<string, mixed\>\|null but returns array\<mixed\>\.$#'
+			message: '#^Method Base\\BaseServiceProvider\:\:omnibase\(\) should return array\<string, mixed\>\|null but returns array\<mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\OmnibridgeServiceProvider\:\:repository\(\) has parameter \$class with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
+			message: '#^Method Base\\BaseServiceProvider\:\:repository\(\) has parameter \$class with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\OmnibridgeServiceProvider\:\:repository\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
+			message: '#^Method Base\\BaseServiceProvider\:\:repository\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -2377,13 +2377,13 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$paths of static method Omnibridge\\Laravel\\OmnibridgeServiceProvider\:\:translationPaths\(\) expects list\<string\>, mixed given\.$#'
+			message: '#^Parameter \#1 \$paths of static method Base\\BaseServiceProvider\:\:translationPaths\(\) expects list\<string\>, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$paths of static method Omnibridge\\Laravel\\View\\Twig\:\:create\(\) expects list\<array\{string, string\|null\}\>, mixed given\.$#'
+			message: '#^Parameter \#1 \$paths of static method Base\\View\\Twig\:\:create\(\) expects list\<array\{string, string\|null\}\>, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -2497,7 +2497,7 @@ parameters:
 			path: src/OmnibridgeServiceProvider.php
 
 		-
-			message: '#^Parameter \#5 \$timezone of static method Omnibridge\\Laravel\\View\\Twig\:\:create\(\) expects string\|null, mixed given\.$#'
+			message: '#^Parameter \#5 \$timezone of static method Base\\View\\Twig\:\:create\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/OmnibridgeServiceProvider.php
@@ -2521,133 +2521,133 @@ parameters:
 			path: src/Page/Site.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Site\:\:menu\(\) never returns array so it can be removed from the return type\.$#'
+			message: '#^Method Base\\Page\\Site\:\:menu\(\) never returns array so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
 			path: src/Page/Site.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Site\:\:menu\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Site\:\:menu\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Site.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Site\:\:slogan\(\) should return string\|null but returns mixed\.$#'
+			message: '#^Method Base\\Page\\Site\:\:slogan\(\) should return string\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Page/Site.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Site\:\:title\(\) should return string\|null but returns mixed\.$#'
+			message: '#^Method Base\\Page\\Site\:\:title\(\) should return string\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Page/Site.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:__construct\(\) has parameter \$noFilter with no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:__construct\(\) has parameter \$noFilter with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:audience\(\) never returns array so it can be removed from the return type\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:audience\(\) never returns array so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:audience\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:audience\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:event\(\) never returns array so it can be removed from the return type\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:event\(\) never returns array so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:event\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:event\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:filter\(\) never returns null so it can be removed from the return type\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:filter\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:filter\(\) should return array\<string, string\>\|null but returns array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:filter\(\) should return array\<string, string\>\|null but returns array\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getAudience\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getAudience\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getAudienceCategories\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getAudienceCategories\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getAvailableEvents\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getAvailableEvents\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getAvailableFilters\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getAvailableFilters\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getAvailableModes\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getAvailableModes\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getAvailableWidths\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getAvailableWidths\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getEvent\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getEvent\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getFilter\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getFilter\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getMode\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getMode\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:getWidth\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:getWidth\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\Page\\Theme\:\:width\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Base\\Page\\Theme\:\:width\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Page/Theme.php
@@ -3145,7 +3145,7 @@ parameters:
 			path: src/View/Encore.php
 
 		-
-			message: '#^Method Omnibridge\\Laravel\\View\\Encore\:\:build\(\) should return array\{entrypoints\: array\<string, array\{js\?\: list\<string\>, css\?\: list\<string\>\}\>, manifest\: array\<string, string\>\} but returns array\{entrypoints\: mixed, manifest\: mixed\}\.$#'
+			message: '#^Method Base\\View\\Encore\:\:build\(\) should return array\{entrypoints\: array\<string, array\{js\?\: list\<string\>, css\?\: list\<string\>\}\>, manifest\: array\<string, string\>\} but returns array\{entrypoints\: mixed, manifest\: mixed\}\.$#'
 			identifier: return.type
 			count: 1
 			path: src/View/Encore.php
@@ -3157,7 +3157,7 @@ parameters:
 			path: src/View/Encore.php
 
 		-
-			message: '#^Property Omnibridge\\Laravel\\View\\Encore\:\:\$read \(array\<string, array\{entrypoints\: array\<string, array\{js\?\: list\<string\>, css\?\: list\<string\>\}\>, manifest\: array\<string, string\>\}\>\) does not accept non\-empty\-array\<int\|string, array\{entrypoints\: mixed, manifest\: mixed\}\>\.$#'
+			message: '#^Property Base\\View\\Encore\:\:\$read \(array\<string, array\{entrypoints\: array\<string, array\{js\?\: list\<string\>, css\?\: list\<string\>\}\>, manifest\: array\<string, string\>\}\>\) does not accept non\-empty\-array\<int\|string, array\{entrypoints\: mixed, manifest\: mixed\}\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/View/Encore.php
@@ -3751,7 +3751,7 @@ parameters:
 			path: tests/OmnibaseMappingTest.php
 
 		-
-			message: '#^Parameter \#1 \$app of class Omnibridge\\Laravel\\OmnibridgeServiceProvider constructor expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Foundation\\Application\|null given\.$#'
+			message: '#^Parameter \#1 \$app of class Base\\BaseServiceProvider constructor expects Illuminate\\Contracts\\Foundation\\Application, Illuminate\\Foundation\\Application\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/OmnibaseMappingTest.php

@@ -5,11 +5,11 @@ namespace Omnibridge\Laravel\Tests;
 use Base\Screen\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
-use Omnibridge\Laravel\Page\RequestView;
-use Omnibridge\Laravel\Page\Theme;
+use Base\Page\RequestView;
+use Base\Page\Theme;
 use Omnibridge\Laravel\Screen\Responder;
-use Omnibridge\Laravel\View\Companions;
-use Omnibridge\Laravel\View\OmnibaseFilters;
+use Base\View\Companions;
+use Base\View\OmnibaseFilters;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

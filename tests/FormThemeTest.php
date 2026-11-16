@@ -3,7 +3,7 @@
 namespace Omnibridge\Laravel\Tests;
 
 use Illuminate\Support\Facades\Blade;
-use Omnibridge\Laravel\Form\FormView;
+use Base\Form\FormView;
 
 /** The generic form theme under Laravel: FormRenderer on a form view's vars, from Blade (omnibase's step F5b). */
 final class FormThemeTest extends TestCase

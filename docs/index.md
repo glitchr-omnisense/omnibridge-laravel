@@ -121,7 +121,7 @@ symfony/dependency-injection needed), the core's repositories by their interface
 omnibase's own list (`Base\Repository\Aliases`):
 
 ```php
-use Omnibridge\Laravel\Routing\ActionRoutes;
+use Base\Routing\ActionRoutes;
 
 // routes/web.php: the application's actions and omnibase's.
 ActionRoutes::register(app('router'), ActionRoutes::load([
@@ -199,7 +199,7 @@ Routes, as `RouterUrls::elsewhere()` their addresses.
 ## How this manual is organised
 
 - [Installation](installation.md): requirements, the provider, the configuration published, a run.
-- [Contracts](contracts.md): every binding of `OmnibridgeServiceProvider`, each adapter's answers.
+- [Contracts](contracts.md): every binding of `BaseServiceProvider`, each adapter's answers.
 - [Routing and actions](routing.md): `Routing\ActionRoutes`, `Screen\Responder`, `Http\Localize`,
   `Http\SwitchLocale`, `Container\Aliases`, `Routing\LocalizedNames`.
 - [Doctrine and images](doctrine-media.md): the connection, omnibase's mapping, the repositories,

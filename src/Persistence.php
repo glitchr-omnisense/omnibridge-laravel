@@ -202,6 +202,9 @@ final class Persistence
             $parameters = $app->bound('Base\Service\ParameterBagInterface') ? $app->make('Base\Service\ParameterBagInterface') : null;
             $parameter = static fn (string $name, mixed $default): mixed => null !== $parameters && null !== ($value = $parameters->get($name)) ? $value : $default;
             $persistence = \Omnibridge\Eloquent\Omnibase\EloquentPersistence::host($connection, $app, self::eloquentEntities($app, $options) + [
+                // What a repository takes beside the registry (a site's cache pool...), from Laravel's container. A
+                // repository itself is the registry's to build (it would ask this host, which asks the registry: a loop).
+                'services' => self::services($app),
                 'lifecycle' => [
                     'empty_trash' => $parameter('base.extension.empty_trash', '+7 days'),
                     'max_revisions' => (int) $parameter('base.extension.max_revisions', 5),
@@ -229,13 +232,18 @@ final class Persistence
 
         // Doctrine's answer, when Eloquent is not the one chosen: what was bound before, else what omnibase's aliases
         // name (the repository interfaces: OmnibaseServices binds them so at boot), else Doctrine's backend.
-        $registry = class_exists(\Base\Discovery::class) ? \Base\Discovery::registry('repositories') : \Base\Repository\Aliases::INTERFACES;
+        $registry = \Base\Discovery::registry('repositories');
         $doctrine = static function (Application $app, string $id, ?\Closure $before) use ($registry): mixed {
             if (null !== $before) {
                 return $before($app);
             }
             if (isset($registry[$id])) {
                 return $app->make($registry[$id]);
+            }
+            if ('Base\Database\Repository\Repositories' === $id || 'Base\Database\Repository\Finders' === $id) {
+                $mapping = $app->make(\Omnibridge\Doctrine\Omnibase\Mapping::class);
+
+                return 'Base\Database\Repository\Finders' === $id ? $mapping->finders : $mapping->repositories;
             }
             if ('Omnibridge\Persistence\Backend' === $id && class_exists(\Omnibridge\Doctrine\Omnibase\DoctrineBackend::class)) {
                 return new \Omnibridge\Doctrine\Omnibase\DoctrineBackend($app->make('Omnibridge\Persistence\UnitOfWork'));
@@ -252,10 +260,36 @@ final class Persistence
             'Omnibridge\Persistence\Snapshots' => $from('unitOfWork'),
             'Omnibridge\Persistence\Backend' => $from('backend'),
             'Base\Database\Repository\Repositories' => $from('repositories'),
+            'Base\Database\Repository\Finders' => $from('finders'),
         ] + self::interfaces() as $id => $eloquent) {
             $before = self::binding($app, $id);
             $app->singleton($id, static fn (Application $app): mixed => self::eloquent($app) ? $eloquent($app) : $doctrine($app, $id, $before));
         }
+    }
+
+    /**
+     * Laravel's container for the core's repository registry (EntityRepositories), the repositories left out: the
+     * registry builds those, and Laravel's container would hand them back to it (BaseServiceProvider binds a
+     * repository class to Repositories::of()).
+     */
+    public static function services(Application $app): \Psr\Container\ContainerInterface
+    {
+        return new class($app) implements \Psr\Container\ContainerInterface {
+            public function __construct(private readonly Application $app)
+            {
+            }
+
+            public function has(string $id): bool
+            {
+                return !is_a($id, \Base\Database\Repository\ServiceEntityRepository::class, true)
+                    && ($this->app->bound($id) || class_exists($id) && !(new \ReflectionClass($id))->isAbstract());
+            }
+
+            public function get(string $id): mixed
+            {
+                return $this->has($id) ? $this->app->make($id) : throw new class(\sprintf('%s is no service here.', $id)) extends \RuntimeException implements \Psr\Container\NotFoundExceptionInterface {};
+            }
+        };
     }
 
     /** @return array<class-string, \Closure(Application): object> the core's repository interfaces on Eloquent */

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
  * the HTTP-free ones: ALTCHA, the disposable domains, the tests' fixed
  * one...), the WidgetPrinter, and ALTCHA's widget served by the
  * application at the address the bundle serves it (serve_scripts), its
- * gateways' default script then. Registered by OmnibridgeServiceProvider
+ * gateways' default script then. Registered by BaseServiceProvider
  * when omnishield is installed; wires nothing without a gateway.
  */
 final class ShieldServiceProvider extends ServiceProvider

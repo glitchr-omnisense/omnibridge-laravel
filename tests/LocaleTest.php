@@ -2,8 +2,8 @@
 
 namespace Omnibridge\Laravel\Tests;
 
-use Omnibridge\Laravel\Http\Localize;
-use Omnibridge\Laravel\Http\SwitchLocale;
+use Base\Http\Localize;
+use Base\Http\SwitchLocale;
 
 /**
  * omnibase's language under Laravel, as its LocalizerSubscriber and

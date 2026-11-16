@@ -86,7 +86,7 @@ protocol and its 409) through `Screen\Responder`, as `Base\Bridge\Symfony\Screen
 answers it under Symfony:
 
 ```php
-use Omnibridge\Laravel\Screen\Responder;
+use Base\Screen\Responder;
 
 Route::get('/{destination}/articles/{slug}', Responder::action(App\Action\Blog\Article::class))->name('app_article');
 ```
@@ -114,7 +114,7 @@ symfony/dependency-injection needed), the core's repositories by their interface
 omnibase's own list (`Base\Repository\Aliases`):
 
 ```php
-use Omnibridge\Laravel\Routing\ActionRoutes;
+use Base\Routing\ActionRoutes;
 
 // routes/web.php: the application's actions and omnibase's.
 ActionRoutes::register(app('router'), ActionRoutes::load([
@@ -372,7 +372,7 @@ them). Capturing and deleting a picture is omnibridge/symfony's
 
 ## omnibase's console commands
 
-With omnibase 5.0, `OmnibridgeServiceProvider` registers the core's console tasks (`Base\Console\Task\*`) as
+With omnibase 5.0, `BaseServiceProvider` registers the core's console tasks (`Base\Console\Task\*`) as
 artisan commands of the same names as omnibridge/symfony's: `translation:crud`, `translation:entities`,
 `translation:enums`, `translation:controllers`, `translation:settings`, `cache:clear:sessions`, `demo:reset`,
 `uploader:entities`, `uploader:images`, `uploader:images:crop`, and `omnibase:cache:clear` (Laravel keeps its own
@@ -393,7 +393,7 @@ php artisan translation:entities --locale=fr
 
 ## The schema created from the description: `omnibridge:schema:create`
 
-With omnibase 5.0 and its mapping on (`omnibridge.omnibase`), `OmnibridgeServiceProvider` registers
+With omnibase 5.0 and its mapping on (`omnibridge.omnibase`), `BaseServiceProvider` registers
 `omnibridge:schema:create` (`Console\SchemaCreateCommand`; omnibase's plan "omnibase agnostic", step F7a): the tables of
 the installed entities - those the chosen persistence describes (`Persistence::describedDirectories()`: on Doctrine
 `omnibridge.doctrine.entities` beside the core's, on Eloquent `omnibase.project_dir`'s `src/Entity` too, since 1.2.1),
@@ -411,7 +411,7 @@ php artisan omnibridge:schema:create              # "132 tables created (289 sta
 
 ## Static export (omnibridge/static)
 
-Where omnibridge/static is installed, `OmnibridgeServiceProvider` registers
+Where omnibridge/static is installed, `BaseServiceProvider` registers
 the artisan command `omnibridge:static:build`: omnibridge/static's own command
 line (`Console\Cli`), handed a renderer through the application's HTTP kernel
 (each page a visitor's GET, at `--render-origin`, by default `app.url`), the
