@@ -11,8 +11,9 @@ order: 10
 |---|---|
 | PHP | ^8.4 |
 | Laravel (`illuminate/auth`, `config`, `contracts`, `http`, `routing`, `support`) | 12 or 13 |
-| `omnisense/omnibase` | ^4.0 or ^5.0 (a stable project: 5.0.1 or later) |
-| `omnisense/omnibridge`, `omnibridge/twig`, `omnibridge/doctrine` | ^1.0 |
+| `omnisense/omnibase` | ^7.0 |
+| `omnisense/omnibridge`, `omnibridge/twig` | ^2.0 |
+| `omnibridge/doctrine` | ^3.0 |
 | `doctrine/orm` ^3.4, `doctrine/dbal` ^4.2 | |
 | `symfony/cache`, `mailer`, `routing`, `translation`, `yaml` | 7 or 8 |
 | `twig/twig` | ^3.10 |

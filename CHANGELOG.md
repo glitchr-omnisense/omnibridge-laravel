@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.0.0] - Unreleased (the "base-agnostic" ensemble)
+## [2.0.0]
 
-Every omni* package restarts at 1.0.0: this is the clean end state, no compatibility layer. What this package is:
+Every package of the ensemble takes its next major version: this is the clean end state, no compatibility layer. What this package is:
 the Laravel host of omnisense/omnibase. What a Laravel application sees is under `Base\` (PSR-4 `Base\` =>
 `src/Base/`): `Base\BaseServiceProvider` (bootstrap/providers.php), the middleware `Base\Http\*`, the route helpers
 `Base\Routing\*`, `Base\Auth\*`, the pages' pieces `Base\Page\*` and `Base\View\*`, `Base\Form\FormRenderer`;

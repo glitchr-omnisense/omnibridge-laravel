@@ -35,9 +35,9 @@
         "illuminate/routing": "^12.0|^13.0",
         "illuminate/support": "^12.0|^13.0",
         "illuminate/validation": "^12.0|^13.0",
-        "omnibridge/twig": "^1.0",
-        "omnisense/omnibase": "^1.0",
-        "omnisense/omnibridge": "^1.0",
+        "omnibridge/twig": "^2.0",
+        "omnisense/omnibase": "^7.0",
+        "omnisense/omnibridge": "^2.0",
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "symfony/cache": "^7.0|^8.0",
@@ -56,7 +56,7 @@
         "omniauth/google": "1.x-dev",
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
-        "omnibridge/doctrine": "^1.0",
+        "omnibridge/doctrine": "^3.0",
         "omnibridge/static": "1.x-dev",
         "omnimap/maplibre": "^1.0@dev",
         "omnimap/openstreetmap": "^1.0@dev",
@@ -110,7 +110,7 @@
             ]
         },
         "branch-alias": {
-            "dev-1.x": "1.x-dev"
+            "dev-2.x": "2.x-dev"
         }
     },
     "config": {
