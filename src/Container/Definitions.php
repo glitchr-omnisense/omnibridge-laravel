@@ -304,7 +304,7 @@ final class Definitions
                 } else {
                     $found = match (true) {
                         isset($options['param']) => $parameter($options['param']),
-                        isset($options['env']) => self::resolve($container, '%env('.$options['env'].')%', $parameter),
+                        isset($options['env']) => self::resolve($container, '%env('.(\is_string($options['env']) ? $options['env'] : '').')%', $parameter),
                         \array_key_exists('value', $options) || \array_key_exists(0, $options) => self::resolve($container, $options['value'] ?? $options[0], $parameter),
                         default => null,
                     };

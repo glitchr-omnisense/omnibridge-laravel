@@ -119,7 +119,7 @@ final class AuthServiceProvider extends ServiceProvider
             // The roles' hierarchy is base.security.role_hierarchy (config/base.php): the one source both hosts read.
             $omniauth = (\is_array($omniauth) ? $omniauth : []) + ['role_hierarchy' => $config->get('base.security.role_hierarchy', [])];
 
-            return new Settings(Settings::stringKeys(\is_array($omniauth) ? $omniauth : []), Settings::string($config->get('app.key')));
+            return new Settings(Settings::stringKeys($omniauth), Settings::string($config->get('app.key')));
         });
         $this->app->singleton(SessionState::class, fn (Application $app) => new SessionState($app));
         $this->app->alias(SessionState::class, State::class);

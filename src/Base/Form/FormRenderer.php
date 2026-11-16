@@ -748,7 +748,7 @@ final class FormRenderer
      * the type (base_privacy: form-privacy), its label, the notice its type gives (PrivacyType's, as its
      * base_privacy_row prints it), its fields' rows, its errors.
      *
-     * @param array<string, mixed> $vars
+     * @param array<mixed> $vars
      */
     private function nested(object $field, array $vars): string
     {

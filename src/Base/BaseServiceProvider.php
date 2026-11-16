@@ -495,7 +495,12 @@ final class BaseServiceProvider extends ServiceProvider
             // The neutral lifecycle events relayed from Doctrine's to the listeners tagged for them (the application's
             // src/EntitySubscriber, the packages'), as on Symfony.
             if (class_exists(\Omnibridge\Doctrine\Omnibase\LifecycleRelay::class)) {
-                \Omnibridge\Doctrine\Omnibase\LifecycleRelay::attach($entityManager, static fn (): iterable => $app->tagged(\Base\Contract\Lifecycle\Listeners::TAG));
+                \Omnibridge\Doctrine\Omnibase\LifecycleRelay::attach($entityManager, /** @return iterable<callable(object): void> */ static function () use ($app): iterable {
+                    /** @var iterable<callable(object): void> $listeners the tagged services are invokable listeners */
+                    $listeners = $app->tagged(\Base\Contract\Lifecycle\Listeners::TAG);
+
+                    return $listeners;
+                });
             }
 
             return $entityManager;
@@ -810,7 +815,9 @@ final class BaseServiceProvider extends ServiceProvider
     {
         $id = $app['config']->get('base.router.fallback');
 
-        return \is_string($id) && '' !== $id ? $app->make($id) : null;
+        $service = \is_string($id) && '' !== $id ? $app->make($id) : null;
+
+        return \is_object($service) ? $service : null;
     }
 
     /**
@@ -823,7 +830,10 @@ final class BaseServiceProvider extends ServiceProvider
      */
     private static function twigPaths(array $paths): array
     {
-        $paths = array_values(array_filter($paths, \is_array(...)));
+        $paths = array_values(array_map(
+            static fn (array $path): array => [\is_string($path[0] ?? null) ? $path[0] : '', \is_string($path[1] ?? null) ? $path[1] : null],
+            array_filter($paths, \is_array(...)),
+        ));
         if (class_exists(\Base\Services::class) && [] === array_filter($paths, static fn (array $path): bool => 'Base' === ($path[1] ?? null))) {
             $templates = \dirname((string) (new \ReflectionClass(\Base\Services::class))->getFileName(), 2).'/templates';
             if (is_dir($templates)) {

@@ -181,10 +181,7 @@ final class OmnibaseServices
             $app->singleton(MentionEnhancerInterface::class, MentionEnhancer::class);
         }
         // The entity listeners (the dispatchers, ThreadSubscriber): the core's declaration binds them (Base\Services, through
-        // Container\Definitions) since step F5e slice 4c; by hand for a core without Base\Discovery (4.x).
-        if (!class_exists(\Base\Discovery::class)) {
-            EntityListeners::bind($app);
-        }
+        // Container\Definitions).
 
         if (null !== self::policy($app)) {
             self::registerNotifier($app);
