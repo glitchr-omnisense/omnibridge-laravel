@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1]
+
+`symfony/form` is no longer required: it moves to `suggest` (and `require-dev` for the tests). The provider binds the
+form definitions read from Symfony form types only when `symfony/form` is installed, so a Laravel application
+installs omnisense/omnibase without any of Symfony's framework.
+
 ## [2.0.0]
 
 Every package of the ensemble takes its next major version: this is the clean end state, no compatibility layer. What this package is:

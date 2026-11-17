@@ -41,7 +41,6 @@
         "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "symfony/cache": "^7.0|^8.0",
-        "symfony/form": "^7.0|^8.0",
         "symfony/http-client": "^7.0|^8.0",
         "symfony/mailer": "^7.0|^8.0",
         "symfony/routing": "^7.0|^8.0",
@@ -67,7 +66,8 @@
         "omnishield/altcha": "1.x-dev",
         "orchestra/testbench": "^10.0|^11.0",
         "phpunit/phpunit": "^11.5|^12.0",
-        "symfony/dependency-injection": "^7.0|^8.0"
+        "symfony/dependency-injection": "^7.0|^8.0",
+        "symfony/form": "^7.0|^8.0"
     },
     "suggest": {
         "omnibridge/doctrine": "omnisense/omnibase on Doctrine (with doctrine/orm and doctrine/dbal): omnibase's entity manager over Laravel's connection (omnibridge.doctrine), its mapping, the settings read through DBAL; a suggestion since omnisense/omnibase's plan \"omnibase agnostic\", step B3 - omnibridge/eloquent runs omnibase without it",
@@ -81,7 +81,8 @@
         "omnisense/omnishield": "Omnibridge\\Laravel\\Shield\\: omnishield's Registry from config/omnishield.php (the Symfony bundle's keys), ALTCHA's widget served by the application; with omnibase, its captcha after failed sign-ins (Auth\\OmnibaseEffects); not on Packagist yet - a vcs repository, https://github.com/glitchr-omnisense/omnishield",
         "omnishield/altcha": "ALTCHA, the captcha omnibase asks after failed sign-ins: served and checked by the application, no third party",
         "omnisense/omnidrive": "Omnidrive\\Drives: Laravel's disks as omnidrive's drives by their storage names (Omnidrive\\Flysystem\\OperatorDrives over Media\\DiskStorages), omnibase's Flysystem on them, and omnimap's cache.drive; bound only where it is installed (omnisense/omnibase 5.0 requires it)",
-        "omnibase/consent": "omnibase/consent's cookie answer in the pages (View\\OmnibaseExtensions: consent_options(), consent_settings() on config/omnibridge.php's consent.config)"
+        "omnibase/consent": "omnibase/consent's cookie answer in the pages (View\\OmnibaseExtensions: consent_options(), consent_settings() on config/omnibridge.php's consent.config)",
+        "symfony/form": "Form definitions read from Symfony form types (Base\\Form\\Definition\\TypeReader), bound only where it is installed"
     },
     "autoload": {
         "psr-4": {
