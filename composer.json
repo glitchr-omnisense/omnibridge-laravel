@@ -50,12 +50,12 @@
         "twig/twig": "^3.10"
     },
     "require-dev": {
-        "doctrine/dbal": "^4.2",
+        "doctrine/dbal": "^4.6",
         "doctrine/orm": "^3.4",
         "omniauth/google": "1.x-dev",
         "omniauth/otp": "1.x-dev",
         "omniauth/webauthn": "1.x-dev",
-        "omnibridge/doctrine": "^3.0",
+        "omnibridge/doctrine": "^3.0|^4.0",
         "omnibridge/static": "1.x-dev",
         "omnimap/maplibre": "^1.0@dev",
         "omnimap/openstreetmap": "^1.0@dev",
