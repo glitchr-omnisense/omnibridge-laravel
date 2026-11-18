@@ -41,14 +41,15 @@ final class DoctrinePageTest extends TestCase
 
         $destination = new Destination();
         $destination->slug = 'japon';
-        $destination->startedAt = new \DateTime('2026-04-10 18:05:00', new \DateTimeZone('Asia/Tokyo'));
+        $destination->startedAt = $started = new \DateTimeImmutable('2026-04-10 18:05:00', new \DateTimeZone('Asia/Tokyo'));
         $entities->persist($destination);
         $entities->flush();
         $entities->clear();
 
         $read = $entities->getRepository(Destination::class)->findOneBy(['slug' => 'japon']);
         $this->assertSame('2026-04-10 09:05:00', \DB::table('destination')->value('startedAt'), 'stored in UTC');
-        $this->assertEquals(new \DateTime('2026-04-10 09:05:00', new \DateTimeZone('UTC')), $read->startedAt);
+        $this->assertEquals(new \DateTimeImmutable('2026-04-10 09:05:00', new \DateTimeZone('UTC')), $read->startedAt);
+        $this->assertSame('Asia/Tokyo', $started->getTimezone()->getName(), 'the date given is left as it is');
     }
 
     public function testTheSiteIsReadInItsSettings(): void

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.2
+
+Tested on omnibridge/doctrine 4.0, whose date types are immutable (`require-dev`: `^3.0|^4.0`, doctrine/dbal `^4.6`).
+The test entity `App\Entity\Destination` maps `startedAt` as omnibase's `datetime` on a `?\DateTimeInterface`
+property: Doctrine reads a `\DateTimeImmutable` in UTC where 3.x gave a `\DateTime`, which the `?\DateTime` property
+refused (`DoctrinePageTest`). The test writes a `\DateTimeImmutable` in Asia/Tokyo, reads it back in UTC, and checks
+the date given is left as it is. `src/` assumed no mutable date from Doctrine: unchanged.
+
 ## [2.0.1]
 
 `symfony/form` is no longer required: it moves to `suggest` (and `require-dev` for the tests). The provider binds the

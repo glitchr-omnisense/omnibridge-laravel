@@ -13,6 +13,7 @@ class Destination
     #[ORM\Column]
     public string $slug = '';
 
-    #[ORM\Column(nullable: true)]
-    public ?\DateTime $startedAt = null;
+    // omnibase's datetime (omnibridge/doctrine 4.0): read as a \DateTimeImmutable in UTC, any \DateTimeInterface written.
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    public ?\DateTimeInterface $startedAt = null;
 }
