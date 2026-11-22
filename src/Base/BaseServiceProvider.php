@@ -406,6 +406,11 @@ final class BaseServiceProvider extends ServiceProvider
         // mapping on, where the core describes them with no persistence (5.x) and omnisense/omnibridge writes them.
         if ($this->app->runningInConsole() && class_exists(\Base\Database\Schema\EntitySchema::class) && class_exists(\Omnibridge\Schema\Database\SchemaCreator::class) && null !== self::omnibase($this->app)) {
             $this->commands([Console\SchemaCreateCommand::class]);
+            // omnibridge:schema:update (2.1): an existing database brought to the description, where omnisense/omnibridge
+            // writes the ALTERs (2.1, AlterStatements).
+            if (interface_exists(\Omnibridge\Schema\Database\AlterStatements::class)) {
+                $this->commands([Console\SchemaUpdateCommand::class]);
+            }
         }
     }
 
@@ -468,13 +473,39 @@ final class BaseServiceProvider extends ServiceProvider
                 return EntityManagers::create($app->make(Connection::class), $paths, (bool) $app['config']->get('app.debug'));
             }
 
-            // omnibase's own entities, as BaseBundle maps them under Symfony, beside the application's.
-            $core = \dirname((string) (new \ReflectionClass(\Base\Entity\User::class))->getFileName());
+            // omnibase's own entities, as BaseBundle maps them under Symfony, beside the application's; since 2.1 the
+            // Composer packages' that require the core (Base\Discovery's `entities`: each one's src/Entity, its src/Enum,
+            // its interfaces' default targets under the application's), the folders left out excluded.
+            $entities = Persistence::eloquentEntities($app, $options);
+            $options['resolve_target_entities'] = $entities['resolve_target_entities'];
+            $enumerations = [];
+            foreach ((array) ($options['enumerations'] ?? []) as $enumeration) {
+                if (\is_string($enumeration)) {
+                    $enumerations[] = $enumeration;
+                }
+            }
+            foreach (array_keys($entities['packages']) as $package) {
+                if (is_dir($package.'/src/Enum')) {
+                    $enumerations[] = $package.'/src/Enum';
+                }
+            }
+            $options['enumerations'] = array_values(array_unique($enumerations));
+            $exclude = $entities['exclude'];
             $entityManager = EntityManagers::create(
                 $app->make(Connection::class),
-                array_values(array_unique([...$paths, $core])),
+                Persistence::doctrineDirectories($entities),
                 (bool) $app['config']->get('app.debug'),
-                configure: Mapping::configure(...),
+                configure: static function (\Doctrine\ORM\Configuration $configuration) use ($exclude): void {
+                    Mapping::configure($configuration);
+                    // The attribute driver, inside omnibridge/doctrine's wrappers: the files and folders left out.
+                    $driver = $configuration->getMetadataDriverImpl();
+                    while (\is_object($driver) && !method_exists($driver, 'addExcludePaths') && method_exists($driver, 'getDriver')) {
+                        $driver = $driver->getDriver();
+                    }
+                    if ([] !== $exclude && \is_object($driver) && method_exists($driver, 'addExcludePaths')) {
+                        $driver->addExcludePaths($exclude);
+                    }
+                },
             );
             // omnibase's Flysystem with the media on (R6): what an entity's #[Uploader] reads (an
             // upload's public address, an article's audio) goes through the attribute reader's.

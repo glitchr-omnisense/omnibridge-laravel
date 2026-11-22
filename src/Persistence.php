@@ -29,30 +29,92 @@ final class Persistence
     private const ELOQUENT = 'Omnibridge\Eloquent\Omnibase\EloquentPersistence';
 
     /**
-     * The configuration key of the application's entity folders, read by both persistences: the folders Doctrine's
-     * entity manager maps beside the core's, and the ones omnibridge/eloquent describes beside the core's and the
-     * omnibase project's src/Entity (its `directories`), as omnibridge:schema:create reads them. Its name is Doctrine's
-     * for what came first; there is no second key.
+     * The former configuration key of the application's entity folders (a list of folders), read by both persistences.
+     *
+     * @deprecated since 2.1, ENTITY_FOLDERS's `include` (config/base.php: 'entity_folders' => ['include' => [folder =>
+     *             namespace or null]]): the folders a package's src/Entity holds are discovered (Base\Discovery's
+     *             `entities`), the others declared under omnibase's own option, one name on every host
      */
     public const ENTITIES = 'omnibridge.doctrine.entities';
 
     /**
-     * The entity folders the application declares (ENTITIES), whichever persistence runs.
+     * omnibase's option of the folders of mapped classes beside those discovered (omnisense/omnibase 7.2): `include`
+     * (folder => namespace, null when the folder's files say it) and `exclude` (files and folders left out), the keys a
+     * Symfony site writes under base.entity_folders.
+     */
+    public const ENTITY_FOLDERS = 'base.entity_folders';
+
+    /** @var array<string, bool> the deprecations said, by key */
+    private static array $said = [];
+
+    /**
+     * The entity folders the application declares (ENTITY_FOLDERS's `include`, then the deprecated ENTITIES), whichever
+     * persistence runs: the folders, not the ones discovered.
      *
      * @return list<string>
      */
     public static function entityDirectories(Application $app): array
     {
+        return array_keys(self::includedFolders($app));
+    }
+
+    /**
+     * The entities of the core, of the Composer packages that require it and of the application, as Base\Discovery
+     * finds them (omnisense/omnibase 7.2: each package's src/Entity, src/Enum and #[ResolveTargetEntity] interfaces), with
+     * the folders the application declares (ENTITY_FOLDERS, ENTITIES) and those it leaves out: `paths` (folder =>
+     * namespace), `exclude`, `packages` (folder => namespace), `resolve_target_entities` (the packages' defaults). With
+     * a core that predates the discovery, the declared folders only.
+     *
+     * @return array{paths: array<string, string>, exclude: list<string>, packages: array<string, string>, resolve_target_entities: array<string, string>}
+     */
+    public static function discoveredEntities(Application $app, string $projectDir): array
+    {
         $config = $app->make('config');
         \assert($config instanceof \Illuminate\Contracts\Config\Repository);
-        $directories = [];
-        foreach ((array) $config->get(self::ENTITIES, []) as $directory) {
-            if (\is_string($directory) && '' !== $directory) {
-                $directories[] = $directory;
+        $include = self::includedFolders($app);
+        $exclude = [];
+        foreach ((array) $config->get(self::ENTITY_FOLDERS.'.exclude', []) as $path) {
+            if (\is_string($path) && '' !== $path) {
+                $exclude[] = $path;
+            }
+        }
+        // A core that predates 7.2 has no `entities` kind.
+        if (!class_exists(\Base\Discovery::class) || !\in_array('entities', \Base\Discovery::KINDS, true)) { // @phpstan-ignore function.alreadyNarrowedType
+            return ['paths' => array_map(static fn (?string $namespace): string => (string) $namespace, $include), 'exclude' => $exclude, 'packages' => [], 'resolve_target_entities' => []];
+        }
+        $packages = \Base\Discovery::packages();
+
+        return [
+            'paths' => \Base\Discovery::entities($projectDir, $packages, $include),
+            'exclude' => $exclude,
+            'packages' => $packages,
+            'resolve_target_entities' => \Base\Discovery::targets($packages),
+        ];
+    }
+
+    /** @return array<string, string|null> ENTITY_FOLDERS's include, then the deprecated ENTITIES's folders */
+    private static function includedFolders(Application $app): array
+    {
+        $config = $app->make('config');
+        \assert($config instanceof \Illuminate\Contracts\Config\Repository);
+        $folders = [];
+        foreach ((array) $config->get(self::ENTITY_FOLDERS.'.include', []) as $folder => $namespace) {
+            if (\is_string($folder) && '' !== $folder) {
+                $folders[$folder] = \is_string($namespace) && '' !== $namespace ? $namespace : null;
+            }
+        }
+        $former = (array) $config->get(self::ENTITIES, []);
+        if ([] !== $former && !isset(self::$said[self::ENTITIES])) {
+            self::$said[self::ENTITIES] = true;
+            @trigger_error(\sprintf('Since omnibridge/laravel 2.1: the configuration key "%s" is deprecated, use "%s.include" (folder => namespace) in config/base.php; a package\'s src/Entity is discovered.', self::ENTITIES, self::ENTITY_FOLDERS), \E_USER_DEPRECATED);
+        }
+        foreach ($former as $folder) {
+            if (\is_string($folder) && '' !== $folder) {
+                $folders[$folder] ??= null;
             }
         }
 
-        return array_values(array_unique($directories));
+        return $folders;
     }
 
     /** The persistence chosen (doctrine, eloquent), null when none is installed. */
@@ -148,16 +210,27 @@ final class Persistence
      * @param array<string, mixed>|null $omnibase omnibase's mapping options (project_dir, types, enumerations,
      *                                            resolve_target_entities...), null when off
      *
-     * @return array{project_dir: string, directories: list<string>}&array<string, mixed>
+     * @return array{project_dir: string, directories: list<string>, exclude: list<string>, packages: array<string, string>, resolve_target_entities: array<mixed>}&array<string, mixed>
      */
     public static function eloquentEntities(Application $app, ?array $omnibase = null): array
     {
         $projectDir = $omnibase['project_dir'] ?? null;
+        $projectDir = \is_string($projectDir) && '' !== $projectDir ? $projectDir : $app->basePath();
+        $discovered = self::discoveredEntities($app, $projectDir);
+        // The core's and the project's src/Entity are EntitySchema::directories()'s own: given once, by it.
+        $declared = self::entityDirectories($app);
+        $own = [\Base\Database\Schema\EntitySchema::coreDirectory('Entity'), rtrim($projectDir, '/').'/src/Entity'];
+        $schema = array_intersect_key($omnibase ?? [], array_flip(self::SCHEMA_OPTIONS));
 
+        // 2.1: the discovered packages (their enumerations, their interfaces' targets under the application's) and the
+        // folders left out.
         return [
-            'project_dir' => \is_string($projectDir) && '' !== $projectDir ? $projectDir : $app->basePath(),
-            'directories' => self::entityDirectories($app),
-        ] + array_intersect_key($omnibase ?? [], array_flip(self::SCHEMA_OPTIONS));
+            'project_dir' => $projectDir,
+            'directories' => array_values(array_unique([...$declared, ...array_filter(array_keys($discovered['paths']), static fn (string $directory): bool => !\in_array($directory, $own, true))])),
+            'exclude' => $discovered['exclude'],
+            'packages' => $discovered['packages'],
+            'resolve_target_entities' => (array) ($schema['resolve_target_entities'] ?? []) + $discovered['resolve_target_entities'],
+        ] + $schema;
     }
 
     /**
@@ -177,6 +250,19 @@ final class Persistence
             return \Base\Database\Schema\EntitySchema::directories($entities['project_dir'], $entities['directories']);
         }
 
+        return self::doctrineDirectories($entities);
+    }
+
+    /**
+     * The folders Doctrine's entity manager maps: eloquentEntities()'s directories (the declared ones, the packages'
+     * discovered), then the core's - the project's src/Entity left out unless it is declared, as before 2.1.
+     *
+     * @param array{project_dir: string, directories: list<string>} $entities eloquentEntities()
+     *
+     * @return list<string>
+     */
+    public static function doctrineDirectories(array $entities): array
+    {
         return array_values(array_unique([...$entities['directories'], \Base\Database\Schema\EntitySchema::coreDirectory('Entity')]));
     }
 

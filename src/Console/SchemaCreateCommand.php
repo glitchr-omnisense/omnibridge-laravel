@@ -33,6 +33,8 @@ final class SchemaCreateCommand extends Command
         $config = $this->laravel['config'];
         /** @var array<string, mixed> $options */
         $options = OmnibaseOption::options($config) + ['project_dir' => $this->laravel->basePath()];
+        // 2.1: the Composer packages' entities discovered, their enumerations and targets, the folders left out.
+        $options = Persistence::eloquentEntities($this->laravel, $options) + $options;
         // The folders the chosen persistence describes: on Eloquent the project's src/Entity among them (1.2.1).
         $description = EntitySchema::describe(Persistence::describedDirectories($this->laravel, $options), $options);
 

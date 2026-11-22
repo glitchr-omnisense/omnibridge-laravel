@@ -48,7 +48,9 @@ return [
     // and the application's entities' folders - the ones the entity manager maps
     // (omnibridge/doctrine) and, on base.persistence "eloquent", the ones
     // omnibridge/eloquent describes (beside omnibase.project_dir's src/Entity):
-    // one key for both persistences, whatever its name.
+    // one key for both persistences, whatever its name. Deprecated since 2.1: a package's
+    // src/Entity is discovered (omnisense/omnibase 7.2), and the other folders are named in
+    // config/base.php's 'entity_folders' => ['include' => [folder => namespace], 'exclude' => [...]].
     // doctrine.omnibase, the former name of "omnibase" above, is still read when
     // that one is not given (deprecated, removed at 2.0).
     'doctrine' => [

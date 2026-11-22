@@ -70,7 +70,7 @@ final class EloquentEntitiesTest extends TestCase
     {
         $this->config()->set(Persistence::ENTITIES, [self::FIXTURES.'/Entity', '', self::FIXTURES.'/Entity']);
 
-        $this->assertSame(['project_dir' => $this->application()->basePath(), 'directories' => [self::FIXTURES.'/Entity']], Persistence::eloquentEntities($this->application()));
+        $this->assertSame(['project_dir' => $this->application()->basePath(), 'directories' => [self::FIXTURES.'/Entity']], array_intersect_key(Persistence::eloquentEntities($this->application()), ['project_dir' => true, 'directories' => true]));
     }
 
     private function application(): Application

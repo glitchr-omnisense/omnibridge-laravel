@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.1.0
+
+Additive, for omnisense/omnibase 7.2 (Doctrine dispensable for a package's entities):
+
+- **The packages' entities discovered** (`Persistence::discoveredEntities()`): the core's, each Composer package's that
+  requires the core (`Base\Discovery::packages()`: its `src/Entity`, its `src/Enum`, its interfaces'
+  `#[ResolveTargetEntity]`), the application's - on omnibridge/eloquent (`Persistence::eloquentEntities()` gives
+  `exclude`, `packages` and the targets beside `directories`) and on Doctrine's entity manager (its folders, the package
+  enumerations, the targets under the application's, the excluded paths on its attribute driver;
+  `Persistence::doctrineDirectories()`).
+- **`base.entity_folders`** in `config/base.php` (`include`: folder => namespace or null, `exclude`: files and folders),
+  omnibase's own option, the same keys as on Symfony. `omnibridge.doctrine.entities` (`Persistence::ENTITIES`) is a
+  deprecated alias of its `include`, still read (an `E_USER_DEPRECATED` once a process).
+- **`omnibridge:schema:update`** on artisan (`--dump-sql`, `--force`): an existing database brought to the description
+  by omnisense/omnibridge 2.1's `SchemaCreator::update()`, the tables it does not hold (Laravel's own) kept.
+
 ## 2.0.2
 
 Tested on omnibridge/doctrine 4.0, whose date types are immutable (`require-dev`: `^3.0|^4.0`, doctrine/dbal `^4.6`).

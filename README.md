@@ -393,6 +393,14 @@ php artisan translation:entities --locale=fr
 
 ## The schema created from the description: `omnibridge:schema:create`
 
+Since 2.1 (omnisense/omnibase 7.2), the entities of every Composer package that requires the core are found by
+themselves (`Base\Discovery::packages()`: each one's `src/Entity`, its `src/Enum`'s column types, its interfaces'
+`#[ResolveTargetEntity]`), on Eloquent and on Doctrine's entity manager alike. Other folders are named in
+`config/base.php`, under omnibase's own option - `'entity_folders' => ['include' => [folder => namespace or null],
+'exclude' => [files and folders left out]]` - which `omnibridge.doctrine.entities` is now a deprecated alias of
+(still read). `omnibridge:schema:update` (`--dump-sql`, `--force`) brings an existing database to the description
+(omnisense/omnibridge 2.1's `SchemaCreator::update()`, MySQL and SQLite), the tables it does not hold kept.
+
 With omnibase 5.0 and its mapping on (`omnibridge.omnibase`), `BaseServiceProvider` registers
 `omnibridge:schema:create` (`Console\SchemaCreateCommand`; omnibase's plan "omnibase agnostic", step F7a): the tables of
 the installed entities - those the chosen persistence describes (`Persistence::describedDirectories()`: on Doctrine

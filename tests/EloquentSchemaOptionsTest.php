@@ -70,8 +70,11 @@ final class EloquentSchemaOptionsTest extends TestCase
         $this->assertSame([
             'project_dir' => self::PROJECT,
             'directories' => [self::FIXTURES.'/Entity', self::PROJECT.'/src/Entity'],
-            'enumerations' => [self::FIXTURES.'/Enumerations'],
+            // 2.1: the packages discovered (none requires the core in this suite) and the folders left out.
+            'exclude' => [],
+            'packages' => [],
             'resolve_target_entities' => [TravellerInterface::class => Destination::class],
+            'enumerations' => [self::FIXTURES.'/Enumerations'],
             'types' => ['visit_state' => VisitState::class],
         ], $options);
     }
